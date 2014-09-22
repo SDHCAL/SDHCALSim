@@ -1,0 +1,38 @@
+#ifndef LyonPhysicsList_h
+#define LyonPhysicsList_h 1
+
+#include <globals.hh>
+#include <G4VUserPhysicsList.hh>
+class LyonPhysicsList:public G4VUserPhysicsList
+{
+   public:
+      LyonPhysicsList();
+      ~LyonPhysicsList();
+      void ConstructParticle();
+      void ConstructProcess();
+   protected:
+      void SetOff( G4String  );
+      G4bool IsOff( G4String );
+      void ConstructBosons();
+      void ConstructLeptons();
+      void ConstructMesons();
+      void ConstructBaryons();
+      void ConstructGeneral();
+      void ConstructEM();
+      void ConstructElectroNu();
+      void ConstructHad();
+      void ConstructIon();
+//      void ConstructOp();
+//      void SetVerbose(G4int verbose);
+      void SetCuts();
+
+      void ConstructAllIons();
+      void ConstructAllShortLiveds();
+      void AddParameterisation();
+   private:
+      G4double cutForGamma,cutForElectron,cutForPositron;
+      G4String *offString;
+};
+
+#endif//DYB_PHY_HH
+

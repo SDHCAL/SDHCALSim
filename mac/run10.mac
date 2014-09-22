@@ -1,0 +1,8 @@
+/LyonLcio/distance 0.22
+/LyonLcio/chardiswidth 10.0
+/LyonLcio/halfNPad 8
+/LyonLcio/padsize 1.05
+
+/gun/particle pi-
+/gun/energy 10 GeV
+/run/beamOn 10
