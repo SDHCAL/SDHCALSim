@@ -16,12 +16,16 @@
 #include "IMPL/LCEventImpl.h"
 #include "IMPL/LCCollectionVec.h"
 #include "IMPL/LCFlagImpl.h"
+#include "IMPL/SimCalorimeterHitImpl.h"
+#include "IMPL/MCParticleImpl.h"
 #include <UTIL/LCSplitWriter.h>
 #include "UTIL/CellIDDecoder.h"
 #include <IO/LCRunListener.h>
 #include <IO/LCEventListener.h>
 
 #include <cstdlib>
+
+#include "LyonTrackHit.hh"
 
 using namespace std ;
 using namespace lcio ;
@@ -89,7 +93,7 @@ public:
   //! Interface for readStream
   void modifyRunHeader(LCRunHeader* run){ /* not needed */ ;}
   //void createRawCalorimeterHits();
-  void createSimCalorimeterHits();
+  void createSimCalorimeterHits(std::vector<LyonTrackHit*> lyonTrackHitVec,IMPL::MCParticleImpl *part);
  protected:
  
  private:
@@ -99,7 +103,9 @@ public:
   IMPL::LCEventImpl* evtOutput_; /// LCIO Event output ptr
   IMPL::LCRunHeaderImpl* runh_; /// LCIO Run Heder ptr
   IMPL::LCCollectionVec *SimVec;
-
+  IMPL::LCCollectionVec *mcVec;
+  IMPL::MCParticleCont* _step;
+  IMPL::LCGenericObjectImpl* _particle;
 };
 
 #endif

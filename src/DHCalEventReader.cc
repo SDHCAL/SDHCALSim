@@ -3,8 +3,7 @@
 #include <map>
 
 #include <UTIL/CellIDEncoder.h>
-#include "IMPL/SimCalorimeterHitImpl.h"
-extern MCParticleContVec vec;
+#include "globals.hh"
 
 
 extern double _Seuil;
@@ -16,11 +15,13 @@ DHCalEventReader::DHCalEventReader()
   runh_ = 0;
   lcReader_=0;
   lcWriter_=0;
-  
+  _step=new MCParticleCont();
 }
 
 DHCalEventReader::~DHCalEventReader()
 {
+  delete _step;
+  delete _particle;
   clear();
 }
 
@@ -44,6 +45,7 @@ void DHCalEventReader::processEvent( LCEvent * evt )
    
     evt_ = (IMPL::LCEventImpl*) evt;
     SimVec=new IMPL::LCCollectionVec(LCIO::SIMCALORIMETERHIT) ;
+    mcVec=new IMPL::LCCollectionVec(LCIO::LCGENERICOBJECT) ;
 
     IMPL::LCFlagImpl chFlag(0) ;
     EVENT::LCIO bitinfo;
@@ -71,22 +73,34 @@ int KeytoK(int key) {return key/100/100;}
 
 
 
-void DHCalEventReader::createSimCalorimeterHits()
+void DHCalEventReader::createSimCalorimeterHits(std::vector<LyonTrackHit*> lyonTrackHitVec,IMPL::MCParticleImpl *part)
 {
 
   UTIL::CellIDEncoder<SimCalorimeterHitImpl> IDcoder("M:3,S-1:3,I:9,J:9,K-1:6",SimVec);
+  double lengthUnit=mm;
+  double energyUnit=eV;
+  double timeUnit=ns;
 
 
   std::map<int,IMPL::SimCalorimeterHitImpl* > hitMap;
-  for (MCParticleContVec::iterator it=vec.begin(); it != vec.end(); it++)
+  for (std::vector<LyonTrackHit*>::iterator it=lyonTrackHitVec.begin(); 
+       it != lyonTrackHitVec.end(); it++)
     {
-      IMPL::MCParticleCont& step=*(*it);
-      int I=int((499.584+step.StepPosition[0])/10.408);
-      int J=int((499.584+step.StepPosition[1])/10.408);
-      int K=int((627.114+step.StepPosition[2])/26.131);
-      //      int K=int((-1.22+651.944+step.StepPosition[2])/26.131);
+      
+      _step->Particle = part;
+      _step->Energy = (*it)->energyDeposited()/energyUnit;
+      _step->Time = (*it)->time()/timeUnit;;
+      _step->PDG = (*it)->pdgID();
+      _step->StepPosition[0] = (*it)->entrancePoint().x()/lengthUnit + (*it)->deltaPosition().x()/2/lengthUnit;
+      _step->StepPosition[1] = (*it)->entrancePoint().y()/lengthUnit + (*it)->deltaPosition().y()/2/lengthUnit;
+      _step->StepPosition[2] = (*it)->entrancePoint().z()/lengthUnit + (*it)->deltaPosition().z()/2/lengthUnit;
+      
+      int I=int((499.584+_step->StepPosition[0])/10.408);
+      int J=int((499.584+_step->StepPosition[1])/10.408);
+      int K=int((627.114+_step->StepPosition[2])/26.131);
+      //      int K=int((-1.22+651.944+_step.StepPosition[2])/26.131);
 
-      if (K>47) {cout << "WARNING K=" <<K<< " position step= " << step.StepPosition[2] << " so " << (-1.22+651.944+step.StepPosition[2])/26.131 << endl; K=47;}
+      if (K>47) {cout << "WARNING K=" <<K<< " position _step= " << _step->StepPosition[2] << " so " << (-1.22+651.944+_step->StepPosition[2])/26.131 << endl; K=47;}
 
       int key=IJKtoKey(I,J,K);
       if (hitMap.count(key)==0)
@@ -107,14 +121,26 @@ void DHCalEventReader::createSimCalorimeterHits()
 	  //on retranslate les positions
 	  hitMap[key]->setPosition(pos);
 	}
-      hitMap[key]->addMCParticleContribution( step.Particle,
-					      step.Energy,
-					      step.Time,
-					      step.PDG, 
-					      step.StepPosition
+      hitMap[key]->addMCParticleContribution( _step->Particle,
+					      _step->Energy,
+					      _step->Time,
+					      _step->PDG, 
+					      _step->StepPosition
 					      ) ;
+
+      _particle=new LCGenericObjectImpl();
+      _particle->setIntVal(0,hitMap[key]->getCellID0());
+      _particle->setIntVal(1,hitMap[key]->getNMCContributions());
+      _particle->setFloatVal(0,(*it)->entrancePoint().x()/lengthUnit);
+      _particle->setFloatVal(1,(*it)->entrancePoint().y()/lengthUnit);
+      _particle->setFloatVal(2,(*it)->entrancePoint().z()/lengthUnit);
+      _particle->setFloatVal(3,(*it)->exitPoint().x()/lengthUnit);
+      _particle->setFloatVal(4,(*it)->exitPoint().y()/lengthUnit);
+      _particle->setFloatVal(5,(*it)->exitPoint().z()/lengthUnit);
+
+      mcVec->addElement(_particle);
       
-    } //end for vec iterator
+    } 
   
   for (std::map<int,IMPL::SimCalorimeterHitImpl* >::iterator itmap=hitMap.begin();
        itmap != hitMap.end(); itmap++)
@@ -133,14 +159,16 @@ void DHCalEventReader::openOutput(std::string filename)
 
 void DHCalEventReader::writeEvent(int runNum,int evtNum,std::string srhcol)
 {
-  std::cout<<"Event written" <<std::endl; 
+  std::cout<<"Event written" <<std::endl;   
   evt_->setRunNumber(runNum);
   evt_->setEventNumber(evtNum);
   evt_->setTimeStamp(0);
   evt_->setDetectorName("SimuLyonPrototype");
   evt_->setWeight(0);
   evt_->addCollection(SimVec,srhcol);
+  evt_->addCollection(mcVec,"particleGenericObject");
   LCTOOLS::dumpEvent(evt_);
+  //LCTOOLS::printLCGenericObjects(mcVec); //for DEBUG
   lcWriter_->writeEvent(evt_);
 }
 

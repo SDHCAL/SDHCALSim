@@ -15,14 +15,10 @@
 #include "lcio.h"
 #include "IO/LCWriter.h"
 #include "IMPL/LCRunHeaderImpl.h"
-//#include "SD_ReadASCII_LCIO_SlowControl.hh"
-//#include "SD_LCIO_RawEvent.hh"
 #include "IMPL/LCEventImpl.h"
 
 using namespace lcio;															
 
-//class TFile;
-//class TTree;
 class DHCalEventReader;
 class LyonRunActionMessenger;
 class LyonRun : public G4Run
@@ -35,25 +31,13 @@ public:
 
   virtual void RecordEvent(const G4Event*);
 
-   //by rhan--------------------  
- 
-  //for pad map
- 
-
- 
-
- 
 
 private:
   G4String _collectionName;
   G4int _collectionID;
   
 private:
-  //For Root Tree
-//  TFile *_rootFile;
-//  TTree *_rootTree;
 //  //for LCIO by rhan
-  //IO::LCWriter*  lcWriter; 
   LCRunHeader* run;
   IMPL::LCEventImpl* evt_; /// LCIO Event ptr
   DHCalEventReader* dher_;
@@ -75,7 +59,7 @@ private:
   float _InducedCharge[_maxTrack];//by rhan
   int _PadID[_maxTrack];//by rhan
 
-  MCParticleImpl _mcpart;
+  MCParticleImpl* _mcpart;
 
 };
 
