@@ -127,6 +127,7 @@ void LyonPrimaryGeneratorAction::PrintInfo()
 	   << "GAUSSIAN GUN SIGMA = " << gaussianSigma << G4endl;
   else if(gunOptionMomentum==std::string("uniform"))
     G4cout << "UNIFORM GUN PARAMETER = " << uniformParameter<< G4endl;
-  G4cout << "Gun position = " << pos << G4endl;
+
+  G4cout << "Gun position = " << particleGun->getPrimaryVertex() << G4endl;
   G4cout << "Gun momentum = " << v << G4endl;
 }
