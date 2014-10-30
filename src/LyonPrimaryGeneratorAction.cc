@@ -109,7 +109,10 @@ void LyonPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
   particleGun->SetParticleMomentumDirection(v);
   particleGun->GeneratePrimaryVertex(anEvent);
-  PrintInfo();
+  _primaryMom=v;
+  //PrintInfo();
+  //G4cout << "Gun position = " << pos << G4endl;
+  //G4cout << "Gun momentum = " << v << G4endl;
 }
 
 void LyonPrimaryGeneratorAction::PrintInfo()
@@ -117,7 +120,6 @@ void LyonPrimaryGeneratorAction::PrintInfo()
   G4cout << "GUN POSITION OPTION = " << gunOptionPosition << G4endl;
   if(gunOptionPosition==std::string("random"))
     G4cout << "randMaxPos = " << randMaxPos << G4endl;
-
   G4cout << "GUN MOMENTUM OPTION = " << gunOptionMomentum << G4endl;
   if(gunOptionMomentum==std::string("solidAngle"))
     G4cout << "SOLID ANGLE X0 = " << solidAngleX0 << "\t"
@@ -127,6 +129,4 @@ void LyonPrimaryGeneratorAction::PrintInfo()
 	   << "GAUSSIAN GUN SIGMA = " << gaussianSigma << G4endl;
   else if(gunOptionMomentum==std::string("uniform"))
     G4cout << "UNIFORM GUN PARAMETER = " << uniformParameter<< G4endl;
-  G4cout << "Gun position = " << pos << G4endl;
-  G4cout << "Gun momentum = " << v << G4endl;
 }

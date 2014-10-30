@@ -2,8 +2,10 @@
 #include <math.h>
 #include <map>
 
+#include <G4RunManager.hh>
 #include <UTIL/CellIDEncoder.h>
 #include "globals.hh"
+#include "LyonPrimaryGeneratorAction.hh"
 
 
 extern double _Seuil;
@@ -167,6 +169,16 @@ void DHCalEventReader::writeEvent(int runNum,int evtNum,std::string srhcol)
   evt_->setWeight(0);
   evt_->addCollection(SimVec,srhcol);
   evt_->addCollection(mcVec,"particleGenericObject");
+
+  G4RunManager *runManager=G4RunManager::GetRunManager();
+  const G4VUserPrimaryGeneratorAction *primaryGeneratorAction = runManager->GetUserPrimaryGeneratorAction();
+  const LyonPrimaryGeneratorAction* anAction=dynamic_cast<const LyonPrimaryGeneratorAction*>(primaryGeneratorAction);
+  FloatVec momentum;
+  momentum.push_back(anAction->GetPrimaryGeneratorMomentum().x());
+  momentum.push_back(anAction->GetPrimaryGeneratorMomentum().y());
+  momentum.push_back(anAction->GetPrimaryGeneratorMomentum().z());
+  evt_->parameters().setValues("ParticleMomentum", momentum) ;
+
   LCTOOLS::dumpEvent(evt_);
   //LCTOOLS::printLCGenericObjects(mcVec); //for DEBUG
   lcWriter_->writeEvent(evt_);

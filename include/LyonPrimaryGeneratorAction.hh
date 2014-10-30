@@ -13,7 +13,7 @@ class G4Event; //
 
 class LyonPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
-  public:
+public:
   LyonPrimaryGeneratorAction();
   ~LyonPrimaryGeneratorAction();
 
@@ -31,9 +31,11 @@ class LyonPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
   inline void setUniformParameter(double val){uniformParameter=val;}
 
   void PrintInfo();
+  G4ThreeVector GetPrimaryGeneratorMomentum()const{return _primaryMom;}
   public:
   void GeneratePrimaries(G4Event* anEvent); //methode de G4VUserPrimaryGeneratorAction
-  private:
+private:
+  G4ThreeVector  _primaryMom;
   G4ParticleGun* particleGun;
   LyonPrimaryGeneratorActionMessenger* _thePrimaryGeneratorMessenger;
 
