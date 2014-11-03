@@ -50,6 +50,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(PROJECT_SRC
 	${CMAKE_CURRENT_SOURCE_DIR}/src/LyonDetectorFieldMessenger.cc  
 	${CMAKE_CURRENT_SOURCE_DIR}/src/LyonPrimaryGeneratorAction.cc  
+	${CMAKE_CURRENT_SOURCE_DIR}/src/LyonPrimaryGeneratorActionMessenger.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/src/LyonRun.cc                
 	${CMAKE_CURRENT_SOURCE_DIR}/src/LyonDetectorFieldSetup.cc	
 	${CMAKE_CURRENT_SOURCE_DIR}/src/LyonRunAction.cc               
@@ -65,6 +66,7 @@ set(PROJECT_SRC
 set(PROJECT_HEADER
 	${CMAKE_CURRENT_SOURCE_DIR}/include/LyonDetectorFieldMessenger.hh  
 	${CMAKE_CURRENT_SOURCE_DIR}/include/LyonPrimaryGeneratorAction.hh  
+	${CMAKE_CURRENT_SOURCE_DIR}/include/LyonPrimaryGeneratorActionMessenger.hh  
 	${CMAKE_CURRENT_SOURCE_DIR}/include/LyonRun.hh                
 	${CMAKE_CURRENT_SOURCE_DIR}/include/LyonDetectorFieldSetup.hh	
 	${CMAKE_CURRENT_SOURCE_DIR}/include/LyonRunAction.hh               

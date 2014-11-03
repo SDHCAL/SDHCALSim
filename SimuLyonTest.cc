@@ -13,7 +13,7 @@
 #include "LyonPrimaryGeneratorAction.hh"
 #include "LyonRunAction.hh"
 #include "LyonDetectorFieldSetup.hh"
-#include "FTFP_BERT_HP.hh"
+#include "FTFP_BERT.hh"
 
 #include "Randomize.hh" //modif pour random seed
 
@@ -52,11 +52,11 @@ int main(int argc,char** argv)
   visManager->Initialize();
 #endif
 
-  G4VUserPhysicsList* physics = new FTFP_BERT_HP;
+  G4VUserPhysicsList* physics = new FTFP_BERT;
   runManager->SetUserInitialization(physics);
   // set mandatory user action class
   //
-  G4VUserPrimaryGeneratorAction* gen_action = new LyonPrimaryGeneratorAction;
+  LyonPrimaryGeneratorAction* gen_action = new LyonPrimaryGeneratorAction();
   runManager->SetUserAction(gen_action);
 
   // set optional user action class
