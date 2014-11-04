@@ -128,7 +128,7 @@ void LyonPrimaryGeneratorActionMessenger::SetNewValue(G4UIcommand* command, G4St
   if(command == gaussianMeanCmd)
     primaryGenerator->setGaussianMean(gaussianMeanCmd->GetNewDoubleValue(newValue));
   if(command == gaussianSigmaCmd)
-    primaryGenerator->setGaussianMean(randPosMaxCmd->GetNewDoubleValue(newValue));
+    primaryGenerator->setGaussianSigma(randPosMaxCmd->GetNewDoubleValue(newValue));
   
 
   if(command == uniformParameterCmd)
