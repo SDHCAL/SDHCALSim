@@ -61,7 +61,7 @@ void LyonPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   particleGun->SetParticlePosition(pos);
   
   if( gunOptionPosition==std::string("cosmic") ){
-    if( gunOptionMomentum!=std::string("cosmic_gaus") || gunOptionMomentum!=std::string("cosmic_uniform") ){
+    if( gunOptionMomentum!=std::string("cosmic_gaus") && gunOptionMomentum!=std::string("cosmic_uniform") ){
       G4cout << " ERROR : wrong option : GunOptionPosition=cosmic should be used together with cosmic_gaus or cosmic_uniform as GunOptionMomentum" << G4endl;
       G4cout << " I PREFER KILL THE RUN" << G4endl;
       throw;
