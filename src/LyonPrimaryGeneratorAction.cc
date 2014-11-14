@@ -53,9 +53,29 @@ void LyonPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     float yo=2*randMaxPos*G4UniformRand()-randMaxPos;
     pos=G4ThreeVector(xo*m, yo*m,-.700*m);
   }
+  if(gunOptionPosition==std::string("cosmic")){
+    float xo=2*randMaxPos*G4UniformRand()-randMaxPos;
+    float zo=2*randMaxPos*G4UniformRand()-randMaxPos;
+    pos=G4ThreeVector(xo*m,.1000*m,zo*m);
+  }
   particleGun->SetParticlePosition(pos);
   
+  if( gunOptionPosition==std::string("cosmic") ){
+    if( gunOptionMomentum!=std::string("cosmic_gaus") || gunOptionMomentum!=std::string("cosmic_uniform") ){
+      G4cout << " ERROR : wrong option : GunOptionPosition=cosmic should be used together with cosmic_gaus or cosmic_uniform as GunOptionMomentum" << G4endl;
+      G4cout << " I PREFER KILL THE RUN" << G4endl;
+      throw;
+    }
+  }
   
+  if( gunOptionMomentum==std::string("cosmic_gaus") || gunOptionMomentum==std::string("cosmic_uniform") ){
+    if( gunOptionPosition!=std::string("cosmic") ){
+      G4cout << " ERROR : wrong option : GunOptionMomentum=cosmic_gaus or cosmic_uniform should be used together with cosmic GunOptionPosition" << G4endl;
+      G4cout << " I PREFER KILL THE RUN" << G4endl;
+      throw;
+    }
+  }
+
   if(gunOptionMomentum==std::string("solidAngle")){
     G4double R0 = std::sqrt(solidAngleRad*solidAngleRad/4+solidAngleRad*solidAngleRad/4);  
     G4double rndm1, rndm2;  
@@ -103,6 +123,27 @@ void LyonPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     if(G4UniformRand()>uniformParameter) py=G4UniformRand();
     else py=-G4UniformRand();
     G4double pz=1.0;
+    v=G4ThreeVector(px,py,pz);
+    v/=v.mag();
+  }
+  else if(gunOptionMomentum==std::string("cosmic_gaus")){
+    TF1 *func=new TF1("func","gaus",-1,1);
+    func->SetParameters(1,gaussianMean,gaussianSigma);
+    G4double px=func->GetRandom();
+    G4double py=1.0;
+    G4double pz=func->GetRandom();
+    v=G4ThreeVector(px,py,pz);
+    v/=v.mag();
+    delete func;
+  }
+  else if(gunOptionMomentum==std::string("cosmic_uniform")){
+    G4double px;
+    G4double py=1.0;
+    G4double pz;
+    if(G4UniformRand()>uniformParameter)px=G4UniformRand();
+    else px=-G4UniformRand();
+    if(G4UniformRand()>uniformParameter) pz=G4UniformRand();
+    else pz=-G4UniformRand();
     v=G4ThreeVector(px,py,pz);
     v/=v.mag();
   }
