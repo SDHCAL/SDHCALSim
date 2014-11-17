@@ -56,7 +56,7 @@ void LyonPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   if(gunOptionPosition==std::string("cosmic")){
     float xo=2*randMaxPos*G4UniformRand()-randMaxPos;
     float zo=2*randMaxPos*G4UniformRand()-randMaxPos;
-    pos=G4ThreeVector(xo*m,.1000*m,zo*m);
+    pos=G4ThreeVector(xo*m,-.503*m,zo*m);
   }
   particleGun->SetParticlePosition(pos);
   
