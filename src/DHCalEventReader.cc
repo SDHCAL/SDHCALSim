@@ -79,9 +79,9 @@ void DHCalEventReader::createSimCalorimeterHits(std::vector<LyonTrackHit*> lyonT
 {
 
   UTIL::CellIDEncoder<SimCalorimeterHitImpl> IDcoder("M:3,S-1:3,I:9,J:9,K-1:6",SimVec);
-  double lengthUnit=mm;
-  double energyUnit=eV;
-  double timeUnit=ns;
+  double lengthUnit=CLHEP::mm;
+  double energyUnit=CLHEP::eV;
+  double timeUnit=CLHEP::ns;
 
 
   std::map<int,IMPL::SimCalorimeterHitImpl* > hitMap;

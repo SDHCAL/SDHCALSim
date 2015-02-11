@@ -18,7 +18,6 @@
 
 
 int _nevt=0;
-extern double _Distance;
 
 LyonRun::LyonRun()
 {

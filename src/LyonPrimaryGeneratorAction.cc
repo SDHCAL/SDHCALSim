@@ -25,16 +25,16 @@ LyonPrimaryGeneratorAction::LyonPrimaryGeneratorAction()
   G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
   G4String particleName;
   particleGun->SetParticleDefinition(particleTable->FindParticle(particleName="mu+"));
-  particleGun->SetParticleEnergy(1.0*GeV); 
+  particleGun->SetParticleEnergy(1.0*CLHEP::GeV); 
   
   _thePrimaryGeneratorMessenger = new LyonPrimaryGeneratorActionMessenger(this);
   gunOptionPosition = std::string("default");// could be with primary_gun_action_messenger class
   gunOptionMomentum = std::string("normal"); // could be with primary_gun_action_messenger class
   randMaxPos=0.4;
-  solidAngleX0 = 2.0*m; 
-  solidAngleRad = 0.5*m; 
-  gaussianMean = 0.0*m;
-  gaussianSigma = 0.1*m;
+  solidAngleX0 = 2.0*CLHEP::m; 
+  solidAngleRad = 0.5*CLHEP::m; 
+  gaussianMean = 0.0*CLHEP::m;
+  gaussianSigma = 0.1*CLHEP::m;
   uniformParameter = 0.5;  
 }
 
@@ -46,17 +46,17 @@ LyonPrimaryGeneratorAction::~LyonPrimaryGeneratorAction()
 
 void LyonPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
-  G4ThreeVector pos(0.0*m, 0.0*m,-0.700*m);//default could be modified with primary_gun_action_messenger class
+  G4ThreeVector pos(0.0*CLHEP::m, 0.0*CLHEP::m,-0.700*CLHEP::m);//default could be modified with primary_gun_action_messenger class
   G4ThreeVector v(0.0,0.0,1.0); // par default could be modified with primary_gun_action_messenger class
   if(gunOptionPosition==std::string("random")){
     float xo=2*randMaxPos*G4UniformRand()-randMaxPos;
     float yo=2*randMaxPos*G4UniformRand()-randMaxPos;
-    pos=G4ThreeVector(xo*m, yo*m,-.700*m);
+    pos=G4ThreeVector(xo*CLHEP::m, yo*CLHEP::m,-.700*CLHEP::m);
   }
   if(gunOptionPosition==std::string("cosmic")){
     float xo=2*randMaxPos*G4UniformRand()-randMaxPos;
     float zo=2*randMaxPos*G4UniformRand()-randMaxPos;
-    pos=G4ThreeVector(xo*m,-.503*m,zo*m);
+    pos=G4ThreeVector(xo*CLHEP::m,-.503*CLHEP::m,zo*CLHEP::m);
   }
   particleGun->SetParticlePosition(pos);
   
@@ -86,7 +86,7 @@ void LyonPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     MinTheta = 0.; 
     MaxTheta = std::atan(R0/solidAngleX0);   
     MinPhi = 0.; 
-    MaxPhi = twopi; 		
+    MaxPhi = CLHEP::twopi; 		
     G4double sintheta, sinphi, costheta, cosphi, tantheta; 
     do{
       rndm1 = G4UniformRand();  
@@ -102,7 +102,7 @@ void LyonPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       pz = costheta; 
       projx = solidAngleX0*tantheta*cosphi;  
       projy = solidAngleX0*tantheta*sinphi;   
-    }while(sqrt(projx*projx)>500*cm||sqrt(projy*projy)>500*cm);
+    }while(sqrt(projx*projx)>500*CLHEP::cm||sqrt(projy*projy)>500*CLHEP::cm);
     v=G4ThreeVector(px,py,pz);
   }
   else if(gunOptionMomentum==std::string("gaus")){

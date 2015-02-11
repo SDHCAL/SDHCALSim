@@ -52,7 +52,7 @@
 #include "G4CashKarpRKF45.hh"
 #include "G4RKG3_Stepper.hh"
 #include "LyonDetectorFieldSetup.hh"
- #include "LyonDetectorFieldMessenger.hh"
+#include "LyonDetectorFieldMessenger.hh"
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -63,18 +63,18 @@ LyonDetectorFieldSetup::LyonDetectorFieldSetup()
   :  fChordFinder(0), fLocalChordFinder(0), fStepper(0)
 {
   fEMfield = new G4UniformElectricField(
-                 G4ThreeVector(0.0,0,0.0));
+					G4ThreeVector(0.0,0,0.0));
   fLocalEMfield = new G4UniformElectricField(
-                 G4ThreeVector(0.0,0.0,80*kilovolt/mm));
-					     //      G4ThreeVector(0.0,0.0,0.0)); 
+					     G4ThreeVector(0.0,0.0,80*CLHEP::kilovolt/CLHEP::mm));
+  //      G4ThreeVector(0.0,0.0,0.0)); 
 
-    fFieldMessenger = new LyonDetectorFieldMessenger(this) ;  
+  fFieldMessenger = new LyonDetectorFieldMessenger(this) ;  
  
   fEquation = new G4EqMagElectricField(fEMfield); ; 
   fLocalEquation = new G4EqMagElectricField(fLocalEMfield); 
  
-  fMinStep     = 1*mm ; // minimal step of 1 mm is default
-  fMinLocalStep     = 0.010*mm ; // minimal step of 1 mm is default
+  fMinStep     = 1*CLHEP::mm ; // minimal step of 1 mm is default
+  fMinLocalStep     = 0.010*CLHEP::mm ; // minimal step of 1 mm is default
   fStepperType = 4 ;      // ClassicalRK4 is default stepper
 
   fFieldManager = GetGlobalFieldManager();
@@ -95,10 +95,10 @@ LyonDetectorFieldSetup::LyonDetectorFieldSetup(G4ThreeVector pFV)
 
   fLocalEMfield = new G4UniformElectricField(pFV);
 
-   fFieldMessenger = new LyonDetectorFieldMessenger(this) ;  
+  fFieldMessenger = new LyonDetectorFieldMessenger(this) ;  
   fEquation = new G4EqMagElectricField(fEMfield); 
   fLocalEquation = new G4EqMagElectricField(fLocalEMfield); 
-  fMinStep     = 0.010*mm ; // minimal step of 10 microns
+  fMinStep     = 0.010*CLHEP::mm ; // minimal step of 10 microns
   fStepperType = 4 ;        // ClassicalRK4 -- the default stepper
 
   fFieldManager = GetGlobalFieldManager();
@@ -125,8 +125,8 @@ LyonDetectorFieldSetup::~LyonDetectorFieldSetup()
 void LyonDetectorFieldSetup::UpdateField()
 {
   SetStepper();
-  G4cout<<"The minimal Global step is equal to "<<fMinStep/mm<<" mm"<<G4endl ;
-  G4cout<<"The minimal RPCGap step is equal to "<<fMinLocalStep/mm<<" mm"<<G4endl ;
+  G4cout<<"The minimal Global step is equal to "<<fMinStep/CLHEP::mm<<" mm"<<G4endl ;
+  G4cout<<"The minimal RPCGap step is equal to "<<fMinLocalStep/CLHEP::mm<<" mm"<<G4endl ;
 
   fFieldManager->SetDetectorField(fEMfield );
   fLocalFieldManager->SetDetectorField(fLocalEMfield );
@@ -138,8 +138,8 @@ void LyonDetectorFieldSetup::UpdateField()
 				     fStepper, 
                                      fStepper->GetNumberOfVariables() );
   fLocalIntgrDriver = new G4MagInt_Driver(fMinLocalStep, 
-				     fStepper, 
-                                     fStepper->GetNumberOfVariables() );
+					  fStepper, 
+					  fStepper->GetNumberOfVariables() );
 
   fChordFinder = new G4ChordFinder(fIntgrDriver);
   fLocalChordFinder = new G4ChordFinder( fLocalIntgrDriver);
@@ -159,7 +159,7 @@ void LyonDetectorFieldSetup::SetStepper()
   G4int nvar = 8;
 
   switch ( fStepperType ) 
-  {
+    {
     case 0:  
       fStepper = new G4ExplicitEuler( fEquation,nvar ); 
       fLocalStepper = new G4ExplicitEuler( fLocalEquation,nvar ); 
@@ -213,7 +213,7 @@ void LyonDetectorFieldSetup::SetStepper()
     default: 
       fStepper = 0;
       fLocalStepper = 0 ;   
-  }
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -239,20 +239,20 @@ void LyonDetectorFieldSetup::SetFieldValue(G4ThreeVector fieldVector)
   if(fLocalEMfield) delete fLocalEMfield;
 
   if(fieldVector != G4ThreeVector(0.,0.,0.))
-  { 
-    fLocalEMfield = new  G4UniformElectricField(fieldVector);
-  }
+    { 
+      fLocalEMfield = new  G4UniformElectricField(fieldVector);
+    }
   else 
-  {
-    // If the new field's value is Zero, then 
-    //  setting the pointer to zero ensures 
-    //  that it is not used for propagation.
-    fLocalEMfield = 0; 
-  }
+    {
+      // If the new field's value is Zero, then 
+      //  setting the pointer to zero ensures 
+      //  that it is not used for propagation.
+      fLocalEMfield = 0; 
+    }
 
   // Either  
-   //UpdateField() to reset all (ChordFinder, Equation);
-      UpdateField();
+  //UpdateField() to reset all (ChordFinder, Equation);
+  UpdateField();
   //   or simply update the field manager & equation of motion 
   //      with pointer to new field
   GetGlobalFieldManager()->SetDetectorField(fLocalEMfield);
@@ -267,7 +267,7 @@ void LyonDetectorFieldSetup::SetFieldValue(G4ThreeVector fieldVector)
 G4FieldManager*  LyonDetectorFieldSetup::GetGlobalFieldManager()
 {
   return G4TransportationManager::GetTransportationManager()
-	                        ->GetFieldManager();
+    ->GetFieldManager();
 }
 
 
