@@ -61,6 +61,7 @@ set(PROJECT_SRC
 	${CMAKE_CURRENT_SOURCE_DIR}/src/LyonRunActionMessenger.cc      
 	${CMAKE_CURRENT_SOURCE_DIR}/src/LyonTrackHit.cc           
 	${CMAKE_CURRENT_SOURCE_DIR}/src/LyonGlobalMagneticField.cc           
+	${CMAKE_CURRENT_SOURCE_DIR}/src/LyonStepLinkingAlgo.cc           
     )
 
 set(PROJECT_HEADER
@@ -77,6 +78,7 @@ set(PROJECT_HEADER
 	${CMAKE_CURRENT_SOURCE_DIR}/include/LyonRunActionMessenger.hh      
 	${CMAKE_CURRENT_SOURCE_DIR}/include/LyonTrackHit.hh           
 	${CMAKE_CURRENT_SOURCE_DIR}/include/LyonGlobalMagneticField.hh           
+	${CMAKE_CURRENT_SOURCE_DIR}/include/LyonStepLinkingAlgo.hh
     )
 
 #----------------------------------------------------------------------------

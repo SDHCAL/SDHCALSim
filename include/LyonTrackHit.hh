@@ -43,7 +43,11 @@ public:
   G4int trackid() const{ return _trackid;}//by rhan
   G4int parentid() const{ return _parentid;}//by rhan
   const G4ThreeVector& momentum() const {return _momentum;}//Anais
+
+  bool shouldBeLinkedTo(LyonTrackHit *hit);
+  void UpdateWith(LyonTrackHit* hit);
 };
+
 
 #include "G4THitsCollection.hh"
 typedef G4THitsCollection<LyonTrackHit> LyonTrackHitsCollection;

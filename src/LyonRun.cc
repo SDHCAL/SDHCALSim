@@ -1,5 +1,6 @@
 #include "LyonRun.hh"
 #include "LyonRunActionMessenger.hh"
+#include "LyonStepLinkingAlgo.hh"
 #include "G4Event.hh"
 #include "G4HCofThisEvent.hh"
 #include "G4SDManager.hh"
@@ -110,11 +111,15 @@ void LyonRun::RecordEvent(const G4Event* evt)
       LyonTrackHit* hitP=(*HitVector)[i];
       lyonTrackHitVec.push_back(hitP);
     }
-  dher_->createSimCalorimeterHits(lyonTrackHitVec,_mcpart); 
+
+  LyonStepLinkingAlgo* link=new LyonStepLinkingAlgo(lyonTrackHitVec);
+
+  //dher_->createSimCalorimeterHits(lyonTrackHitVec,_mcpart); 
+  dher_->createSimCalorimeterHits(link->getLinkedStepList(),_mcpart); 
 
   dher_->writeEvent(_collectionID,numberOfEvent,"SDHCAL_Proto_EndCap");
  
-   
+  delete link;
   lyonTrackHitVec.clear();
 }
 

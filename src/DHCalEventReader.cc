@@ -88,7 +88,20 @@ void DHCalEventReader::createSimCalorimeterHits(std::vector<LyonTrackHit*> lyonT
   for (std::vector<LyonTrackHit*>::iterator it=lyonTrackHitVec.begin(); 
        it != lyonTrackHitVec.end(); it++)
     {
-      
+      //G4cout << "(*it)->trackid() = " << (*it)->trackid() << "\t" 
+      //	     << "(*it)->replicaCopyNumber() = " << (*it)->replicaCopyNumber() << "\t"
+      //	     << "(*it)->pdgID() = " << (*it)->pdgID() << "\t"
+      //	     << "(*it)->time() = " << (*it)->time() << "\t"
+      //	     << "(*it)->length = " << ((*it)->entrancePoint()-(*it)->exitPoint()).mag() << G4endl;
+      //for(std::vector<LyonTrackHit*>::iterator jt=it+1; jt != lyonTrackHitVec.end(); jt++){
+      //	if( (*jt)->shouldBeLinkedTo(*it) )
+      //	  G4cout << "(*jt)->trackid() = " << (*jt)->trackid() << "\t" 
+      //		 << "(*jt)->replicaCopyNumber() = " << (*jt)->replicaCopyNumber() << "\t"
+      //		 << "(*jt)->pdgID() = " << (*jt)->pdgID() << "\t"
+      //		 << "(*jt)->time() = " << (*jt)->time() << "\t"
+      //		 << "(*jt)->length = " << ((*jt)->entrancePoint()-(*jt)->exitPoint()).mag() << G4endl;
+      //}
+    
       _step->Particle = part;
       _step->Energy = (*it)->energyDeposited()/energyUnit;
       _step->Time = (*it)->time()/timeUnit;;

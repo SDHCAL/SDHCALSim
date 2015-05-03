@@ -1,0 +1,10 @@
+#include "LyonStepLinkingAlgo.hh"
+
+LyonStepLinkingAlgo::LyonStepLinkingAlgo(std::vector<LyonTrackHit*> &vec)
+{
+  _inputStepList=vec;
+}
+
+void LyonStepLinkingAlgo::LinkStep()
+{
+}

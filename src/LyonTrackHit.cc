@@ -28,3 +28,22 @@ LyonTrackHit::LyonTrackHit(const G4Step* aStep,int replicaCountLevel)
   //  if(aStep->GetTrack()->GetCreatorProcess() != 0)processName = aStep->GetTrack()->GetCreatorProcess()->GetProcessName();
   //G4cout<<"g4 processName= ***********************"<<processName<<G4endl;
 }
+
+bool LyonTrackHit::shouldBeLinkedTo(LyonTrackHit* hit)
+{
+  return ( 
+	  this->trackid()==hit->trackid() &&
+	  this->replicaCopyNumber()==hit->replicaCopyNumber() ) 
+    ? true : false;
+}
+
+void LyonTrackHit::UpdateWith(LyonTrackHit* hit)
+{
+  _energyDeposited+=hit->energyDeposited();
+  if( _entrancePoint.z() > hit->entrancePoint().z() )
+    _entrancePoint=hit->entrancePoint();
+  if( _exitPoint.z() < hit->exitPoint().z() )
+    _exitPoint=hit->exitPoint();
+
+  _deltaPosition=_exitPoint-_entrancePoint;
+}
