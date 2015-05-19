@@ -152,6 +152,7 @@ void DHCalEventReader::createSimCalorimeterHits(std::vector<LyonTrackHit*> lyonT
       _particle->setFloatVal(3,(*it)->exitPoint().x()/lengthUnit);
       _particle->setFloatVal(4,(*it)->exitPoint().y()/lengthUnit);
       _particle->setFloatVal(5,(*it)->exitPoint().z()/lengthUnit);
+      _particle->setFloatVal(6,(*it)->trueLength()/lengthUnit);
 
       mcVec->addElement(_particle);
       

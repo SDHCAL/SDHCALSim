@@ -25,6 +25,7 @@ private:
   G4int _pdgID;
   G4int _charge;
   G4double _time;
+  G4double _trueLength;
   G4int _trackid;//by rhan
   G4String processName;//by rhan
   G4int _parentid;//by rhan
@@ -42,6 +43,7 @@ public:
   G4double time() const {return _time; }
   G4int trackid() const{ return _trackid;}//by rhan
   G4int parentid() const{ return _parentid;}//by rhan
+  G4double trueLength() const{ return _trueLength;}
   const G4ThreeVector& momentum() const {return _momentum;}//Anais
 
   bool shouldBeLinkedTo(LyonTrackHit *hit);
