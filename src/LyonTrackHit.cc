@@ -25,6 +25,8 @@ LyonTrackHit::LyonTrackHit(const G4Step* aStep,int replicaCountLevel)
   //  G4cout<<"A "<<aStep->GetTrack()->GetDynamicParticle()->GetDefinition()->GetParticleName()<<" enters gap "<<_replicaCopyNumber<<" at time "<<aStep->GetPreStepPoint()->GetGlobalTime()<<" and exits at "<<aStep->GetPostStepPoint()->GetGlobalTime()<<G4endl;
   _charge=(int) aStep->GetTrack()->GetDynamicParticle()->GetCharge();
   
+  _trackVertexVolumeName=aStep->GetTrack()->GetLogicalVolumeAtVertex()->GetName();
+  
   //G4cout<<aStep->GetTrack()->GetCreatorProcess()<<G4endl;
   //  if(aStep->GetTrack()->GetCreatorProcess() != 0)processName = aStep->GetTrack()->GetCreatorProcess()->GetProcessName();
   //G4cout<<"g4 processName= ***********************"<<processName<<G4endl;
