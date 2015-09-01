@@ -15,6 +15,6 @@
 
 /geometry/test/grid_test true
 
-/gun/particle geantino
-/gun/energy 10 GeV
-/run/beamOn 5
+/gun/particle gamma
+/gun/energy 611.7 keV
+/run/beamOn 10000
