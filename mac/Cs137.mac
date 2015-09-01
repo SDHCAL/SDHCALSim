@@ -1,0 +1,20 @@
+
+
+/GunParameter/gunOptionPosition default
+#/GunParameter/randomMaxPosition 0.2
+
+#/GunParameter/gunOptionMomentum solidAngle
+#/GunParameter/gunOptionMomentum gaus
+/GunParameter/gunOptionMomentum fix
+#/GunParameter/solidAngleX0 1.0
+#/GunParameter/solidAngleRad 0.8
+#/GunParameter/gaussianMean 0.0
+#/GunParameter/gaussianSigma 0.2
+#/GunParameter/uniformParameter 0.3
+
+
+/geometry/test/grid_test true
+
+/gun/particle geantino
+/gun/energy 10 GeV
+/run/beamOn 5

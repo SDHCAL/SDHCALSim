@@ -126,6 +126,13 @@ void LyonPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     v=G4ThreeVector(px,py,pz);
     v/=v.mag();
   }
+  else if(gunOptionMomentum==std::string("fix")){
+    G4double px=0.0;
+    G4double py=0.0;
+    G4double pz=1.0;
+    v=G4ThreeVector(px,py,pz);
+    v/=v.mag();
+  }
   else if(gunOptionMomentum==std::string("cosmic_gaus")){
     TF1 *func=new TF1("func","gaus",-1,1);
     func->SetParameters(1,gaussianMean,gaussianSigma);

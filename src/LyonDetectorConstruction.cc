@@ -161,8 +161,8 @@ G4VPhysicalVolume* LyonDetectorConstruction::Construct()
 
 
   G4Material *defaultMaterial=Vacuum;
-  G4Material *AbsorberMaterial=Steel;
-  G4Material *AdditionalAbsorberLayerMaterial=Steel;
+  G4Material *AbsorberMaterial=Al;
+  G4Material *AdditionalAbsorberLayerMaterial=Al;
   G4Material *GapMaterial=RPCGaz;//polystyren;
 
   G4cout <<"" << G4endl;   G4cout <<"" << G4endl; 
@@ -176,9 +176,9 @@ G4VPhysicalVolume* LyonDetectorConstruction::Construct()
 
   //Geometry parameters
   //by rhan
-  //G4int  NbOfLayers=1;
-  G4int NbOfLayers=48;  //by rhan
-  G4double AbsorberThickness            =2*CLHEP::cm; //M=
+  //G4int  NbOfLayers=48;
+  G4int NbOfLayers=1;  // GG : a greater modification will be needed to put more than 1 layer
+  G4double AbsorberThickness            =2.5*CLHEP::mm; //M=
   //G4double AbsorberThickness            =   0*CLHEP::cm; //M=
   //G4double AdditionalAirThickness       =0.5*CLHEP::cm;
   //G4double AdditionalAluThickness       =0.3*CLHEP::cm;
@@ -209,7 +209,7 @@ G4VPhysicalVolume* LyonDetectorConstruction::Construct()
 
 
   //Absorber in front of RPC
-  G4double AdditionalAbsorberLayerThickness=1.75*CLHEP::cm;  
+  G4double AdditionalAbsorberLayerThickness=2.5*CLHEP::mm;  
   G4double AdditionalAbsorberPos  =-CalorThickness/2-AdditionalAbsorberLayerThickness/2;
   //end of Absorber in front of RPC
 

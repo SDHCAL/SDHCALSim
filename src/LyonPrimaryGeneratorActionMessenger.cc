@@ -57,7 +57,7 @@ LyonPrimaryGeneratorActionMessenger::LyonPrimaryGeneratorActionMessenger(LyonPri
   gunOptionMomentumCmd =  new G4UIcmdWithAString("/GunParameter/gunOptionMomentum",this);
   gunOptionMomentumCmd->SetGuidance("Set primary gun option momentum");
   gunOptionMomentumCmd->SetParameterName("gunOptionMomentum",true);
-  gunOptionMomentumCmd->SetCandidates("normal solidAngle gaus uniform cosmic_gaus cosmic_uniform");					
+  gunOptionMomentumCmd->SetCandidates("normal solidAngle gaus uniform cosmic_gaus cosmic_uniform fix");					
 
   randPosMaxCmd = new G4UIcmdWithADouble("/GunParameter/randomMaxPosition",this);
   randPosMaxCmd->SetGuidance("Set max position parameter for random gun");
