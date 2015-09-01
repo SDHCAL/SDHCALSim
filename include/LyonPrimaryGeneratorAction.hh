@@ -6,6 +6,7 @@
 #include "globals.hh"
 #include "iostream"
 #include "vector"
+#include "G4ThreeVector.hh"
 #include "LyonPrimaryGeneratorActionMessenger.hh"
 
 class G4ParticleGun;//genere un faisceau de particules dont on determine le nombre
