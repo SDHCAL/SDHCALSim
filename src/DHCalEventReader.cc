@@ -18,12 +18,13 @@ DHCalEventReader::DHCalEventReader()
   lcReader_=0;
   lcWriter_=0;
   _step=new MCParticleCont();
+  _particle=NULL;
 }
 
 DHCalEventReader::~DHCalEventReader()
 {
   delete _step;
-  delete _particle;
+  if (_particle) delete _particle;
   clear();
 }
 
