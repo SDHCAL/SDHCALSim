@@ -178,7 +178,7 @@ G4VPhysicalVolume* LyonDetectorConstruction::Construct()
   //by rhan
   //G4int  NbOfLayers=48;
   G4int NbOfLayers=1;  // GG : a greater modification will be needed to put more than 1 layer
-  G4double AbsorberThickness            =2.5*CLHEP::mm; //M=
+  G4double AbsorberThickness            =0.25*CLHEP::cm; //M=
   //G4double AbsorberThickness            =   0*CLHEP::cm; //M=
   //G4double AdditionalAirThickness       =0.5*CLHEP::cm;
   //G4double AdditionalAluThickness       =0.3*CLHEP::cm;
@@ -209,7 +209,7 @@ G4VPhysicalVolume* LyonDetectorConstruction::Construct()
 
 
   //Absorber in front of RPC
-  G4double AdditionalAbsorberLayerThickness=2.5*CLHEP::mm;  
+  G4double AdditionalAbsorberLayerThickness=0.25*CLHEP::cm;  
   G4double AdditionalAbsorberPos  =-CalorThickness/2-AdditionalAbsorberLayerThickness/2;
   //end of Absorber in front of RPC
 
@@ -225,7 +225,8 @@ G4VPhysicalVolume* LyonDetectorConstruction::Construct()
   G4double WorldSizeY=2.2*CalorSizeY;
   G4double WorldSizeX=2.2*CalorSizeX;
   G4double WorldSizeZ=6*(CalorThickness+AdditionalAbsorberLayerThickness);
-
+  //Assure Particule Gun is inside World
+  if (WorldSizeZ<10*CLHEP::m) WorldSizeZ=10*CLHEP::m;
   
 
   G4double AbsorberZ         =LayerThickness/2-AbsorberThickness/2;
