@@ -127,9 +127,11 @@ void LyonPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     v/=v.mag();
   }
   else if(gunOptionMomentum==std::string("fix")){
-    G4double px=0.0;
+    //G4double angle=10*CLHEP::degree;
+    G4double angle=0;
+    G4double px=1.0*std::sin(angle);
     G4double py=0.0;
-    G4double pz=1.0;
+    G4double pz=1.0*std::cos(angle);
     v=G4ThreeVector(px,py,pz);
     v/=v.mag();
   }
