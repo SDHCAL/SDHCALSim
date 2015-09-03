@@ -16,5 +16,5 @@
 /geometry/test/grid_test true
 
 /gun/particle gamma
-/gun/energy 611.7 keV
+/gun/energy 661.7 keV
 /run/beamOn 10000
