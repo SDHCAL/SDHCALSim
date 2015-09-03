@@ -85,10 +85,11 @@ set(PROJECT_HEADER
 # Add the executable, and link it to the Geant4 libraries
 #
 add_executable(SDHCAL_Simu SimuLyonTest.cc ${PROJECT_HEADER} ${PROJECT_SRC})
+add_executable(analyseCs137Sim analyseCs137Sim.cc ${PROJECT_HEADER} ${PROJECT_SRC})
 #
 target_link_libraries(SDHCAL_Simu ${Geant4_LIBRARIES} ${EXTRA_LIB})
 
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
-install(TARGETS SDHCAL_Simu DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+install(TARGETS SDHCAL_Simu analyseCs137Sim DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/bin)
