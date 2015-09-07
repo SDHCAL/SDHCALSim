@@ -7,6 +7,7 @@
 #include "globals.hh"
 #include "LyonPrimaryGeneratorAction.hh"
 
+#include "LyonDetectorConstruction.hh"
 
 extern double _Seuil;
 extern int _nPad;
@@ -113,10 +114,28 @@ void DHCalEventReader::createSimCalorimeterHits(std::vector<LyonTrackHit*> lyonT
       
       int I=int((499.584+_step->StepPosition[0])/10.408);
       int J=int((499.584+_step->StepPosition[1])/10.408);
-      int K=int((627.114+_step->StepPosition[2])/26.131);
-      //      int K=int((-1.22+651.944+_step.StepPosition[2])/26.131);
 
-      if (K>47) {cout << "WARNING K=" <<K<< " position _step= " << _step->StepPosition[2] << " so " << (-1.22+651.944+_step->StepPosition[2])/26.131 << endl; K=47;}
+      //compute K
+      
+      //first sanity check
+      if (LyonDetectorConstruction::m_GeometryDataForLCIO.calorthickness != LyonDetectorConstruction::m_GeometryDataForLCIO.nbLayers*LyonDetectorConstruction::m_GeometryDataForLCIO.layerThickness) 
+	{
+	  cout << "inconsistant calorimeter Z size and layer size" << endl;
+	  abort();
+	}
+      //For GIF, first layer is on source side (on the Z>0 side), opposite to usual SDHCAL orientation
+      //translate stepZ to end of calorimeter
+      double stepFromCaloEnd=_step->StepPosition[2]-LyonDetectorConstruction::m_GeometryDataForLCIO.calorthickness/2;
+      //here every step should be located at a negative Z position
+      int K=int(-stepFromCaloEnd/LyonDetectorConstruction::m_GeometryDataForLCIO.layerThickness);
+
+      if (K>=LyonDetectorConstruction::m_GeometryDataForLCIO.nbLayers) 
+	{
+	  cout << "WARNING K=" <<K<< " position _step= " << _step->StepPosition[2] 
+	       << " for calo in [" << -LyonDetectorConstruction::m_GeometryDataForLCIO.calorthickness/2  
+	       << ","<<LyonDetectorConstruction::m_GeometryDataForLCIO.calorthickness/2 << "]" <<endl; 
+	  K=LyonDetectorConstruction::m_GeometryDataForLCIO.nbLayers-1;
+	}
 
       int key=IJKtoKey(I,J,K);
       if (hitMap.count(key)==0)
@@ -132,7 +151,16 @@ void DHCalEventReader::createSimCalorimeterHits(std::vector<LyonTrackHit*> lyonT
 	  float pos[3]; //la position est le centre de la cellule dans les 3 directions
 	  pos[0]=I*10.408 + 5.204 - 499.584;
 	  pos[1]=J*10.408 + 5.204 - 499.584;
-	  pos[2]=(K)*26.131 - 625.213;
+	  pos[2]=LyonDetectorConstruction::m_GeometryDataForLCIO.calorthickness/2-K*LyonDetectorConstruction::m_GeometryDataForLCIO.layerThickness-(LyonDetectorConstruction::m_GeometryDataForLCIO.layerThickness/2-LyonDetectorConstruction::m_GeometryDataForLCIO.gapRelativeMiddlePositionInLayer);
+	  //check
+	  if (fabs(pos[2]-_step->StepPosition[2])>LyonDetectorConstruction::m_GeometryDataForLCIO.gapThickness/2)
+	    {
+	      cout << "WARNING  " << pos[2] << " vs " << _step->StepPosition[2] << " not within "
+		   <<  LyonDetectorConstruction::m_GeometryDataForLCIO.gapThickness/2 << endl;
+	      if (fabs(pos[2]-_step->StepPosition[2])>1.002*LyonDetectorConstruction::m_GeometryDataForLCIO.gapThickness/2)
+		abort();
+	    }
+	  //pos[2]=(K)*26.131 - 625.213;
 	  //	  pos[2]=(K+1)*26.131 - 651.944 + 0.6;
 	  //on retranslate les positions
 	  hitMap[key]->setPosition(pos);

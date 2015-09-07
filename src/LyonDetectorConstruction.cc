@@ -28,6 +28,9 @@ using namespace std;
 #define PI 3.1415926
 
 
+GeometryDataForLCIO LyonDetectorConstruction::m_GeometryDataForLCIO=GeometryDataForLCIO();
+
+
 //helper print function
 void printInterval(ostream& flux, const char* name, G4double middle, G4double halfsize)
 {
@@ -300,7 +303,13 @@ G4VPhysicalVolume* LyonDetectorConstruction::Construct()
     }
   mydgfile.close();
 
-
+  //fill static information for LCIO to determine Z positions of layers;
+  m_GeometryDataForLCIO.calorthickness=CalorThickness;
+  m_GeometryDataForLCIO.layerThickness=LayerThickness;
+  m_GeometryDataForLCIO.nbLayers=NbOfLayers;
+  m_GeometryDataForLCIO.gapThickness=RPC_Gap_Thickness;
+  m_GeometryDataForLCIO.gapRelativeMiddlePositionInLayer=RPC_GapPosZ;
+  
 
   G4cout << "EL/ -----------------------------------" << G4endl;
   G4cout << "EL/ Cross check on geometry" << G4endl;
