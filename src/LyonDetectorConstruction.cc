@@ -26,6 +26,14 @@
 using namespace std;
 
 #define PI 3.1415926
+
+
+//helper print function
+void printInterval(ostream& flux, const char* name, G4double middle, G4double halfsize)
+{
+  flux << name << " " << middle << " middle of [" << middle-halfsize << " , " << middle+halfsize <<"]" << endl;
+}
+
 //#define MAGNETIC_FIELD
 LyonDetectorConstruction::LyonDetectorConstruction()
 { 
@@ -160,7 +168,8 @@ G4VPhysicalVolume* LyonDetectorConstruction::Construct()
   
 
 
-  G4Material *defaultMaterial=Vacuum;
+  //G4Material *defaultMaterial=Vacuum;
+  G4Material *defaultMaterial=Air;
   G4Material *AbsorberMaterial=Al;
   G4Material *AdditionalAbsorberLayerMaterial=Al;
   G4Material *GapMaterial=RPCGaz;//polystyren;
@@ -177,11 +186,11 @@ G4VPhysicalVolume* LyonDetectorConstruction::Construct()
   //Geometry parameters
   //by rhan
   //G4int  NbOfLayers=48;
-  G4int NbOfLayers=1;  // GG : a greater modification will be needed to put more than 1 layer
-  G4double AbsorberThickness            =0.25*CLHEP::cm; //M=
+  G4int NbOfLayers=7;  // GG : GIF++ setup
+  G4double AbsorberThickness            =0.2*CLHEP::cm; //M=
   //G4double AbsorberThickness            =   0*CLHEP::cm; //M=
-  //G4double AdditionalAirThickness       =0.5*CLHEP::cm;
-  //G4double AdditionalAluThickness       =0.3*CLHEP::cm;
+  G4double AdditionalAirThickness       =5.5*CLHEP::cm; //GIF has chambers every 5.5 cm (to check if K7 included or not)
+  G4double AdditionalAluThickness       =0.3*CLHEP::cm; //For K7 cover on the thick glass side
   
   G4double RPC_Thickness                =6.131*CLHEP::mm;//by rhan from 6.00 to 6.031
   G4double RPC_PCB_Thickness            =1.200*CLHEP::mm;//by rhan from 0.8 to 1.2
@@ -197,8 +206,8 @@ G4VPhysicalVolume* LyonDetectorConstruction::Construct()
   G4double RPC_Free_Thickness=RPC_Thickness-RPC_ChipPackageThickness-RPC_PCB_Thickness-RPC_mylar_ThicknessAnode-RPC_mylar_ThicknessCathode-RPC_Graphite_ThicknessAnode-RPC_Graphite_ThicknessCathode-RPC_ThinGlass-RPC_ThickGlass-RPC_Gap_Thickness;
 
 
-  //G4double LayerThickness   = AbsorberThickness +2*AdditionalAirThickness+ RPC_Thickness+AdditionalAluThickness;
-  G4double LayerThickness   = AbsorberThickness+ RPC_Thickness;
+  G4double LayerThickness   = AbsorberThickness +AdditionalAirThickness+ RPC_Thickness+AdditionalAluThickness;
+  //G4double LayerThickness   = AbsorberThickness+ RPC_Thickness;
   G4double CalorThickness   =NbOfLayers*LayerThickness;
   //  G4double CalorSizeX=342.5*mm;
   //  G4double CalorSizeY=90.5*mm;
@@ -209,7 +218,7 @@ G4VPhysicalVolume* LyonDetectorConstruction::Construct()
 
 
   //Absorber in front of RPC
-  G4double AdditionalAbsorberLayerThickness=0.25*CLHEP::cm;  
+  G4double AdditionalAbsorberLayerThickness=0.*CLHEP::cm;  
   G4double AdditionalAbsorberPos  =-CalorThickness/2-AdditionalAbsorberLayerThickness/2;
   //end of Absorber in front of RPC
 
@@ -229,7 +238,9 @@ G4VPhysicalVolume* LyonDetectorConstruction::Construct()
   if (WorldSizeZ<10*CLHEP::m) WorldSizeZ=10*CLHEP::m;
   
 
-  G4double AbsorberZ         =LayerThickness/2-AbsorberThickness/2;
+  G4double AdditionalAirZ    =LayerThickness/2-AdditionalAirThickness/2;
+  //G4double AbsorberZ         =LayerThickness/2-AbsorberThickness/2;
+  G4double AbsorberZ         =AdditionalAirZ-AdditionalAirThickness/2-AbsorberThickness/2;
   G4double RPCChipPackageZ   =AbsorberZ -AbsorberThickness/2 -RPC_ChipPackageThickness/2;
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   //G4double RPCChipPackageZ   =-LayerThickness/2+RPC_ChipPackageThickness/2;
@@ -242,6 +253,7 @@ G4VPhysicalVolume* LyonDetectorConstruction::Construct()
   G4double RPC_GraphitePosZ2 =RPC_ThickGlassPosZ-RPC_ThickGlass/2          -RPC_Graphite_ThicknessCathode/2;
   G4double RPC_mylarPosZ2    =RPC_GraphitePosZ2 -RPC_Graphite_ThicknessCathode/2  -RPC_mylar_ThicknessCathode/2;
   G4double RPC_FreePosZ      =RPC_mylarPosZ2-RPC_mylar_ThicknessCathode/2-RPC_Free_Thickness/2;
+  G4double AdditionalAluZ    =RPC_FreePosZ-RPC_Free_Thickness/2-AdditionalAluThickness/2;
   
   ////////////////////////////////////////////////////////////A VERIFIER///////////////////////////////////////////////////////////////////////
   /*
@@ -259,12 +271,36 @@ G4VPhysicalVolume* LyonDetectorConstruction::Construct()
     G4double RPC_mylarPosZ2    =RPC_GraphitePosZ2 +RPC_Graphite_ThicknessCathode/2  +RPC_mylar_ThicknessCathode/2;
     G4double RPC_FreePosZ      =RPC_mylarPosZ2+RPC_mylar_ThicknessCathode/2+RPC_Free_Thickness/2;
   */
-  //G4double AdditionalAluZ    =RPC_FreePosZ+RPC_Free_Thickness/2+AdditionalAluThickness/2;
 
-  //G4double AdditionalAirZ    =LayerThickness/2-AdditionalAirThickness/2;
   //G4double AbsorberZ         =-AbsorberThickness/2;//***********************************************************????????????????????????????
   //G4double AbsorberZ         =AdditionalAirZ-AdditionalAirThickness/2-AbsorberThickness/2;
   //G4double AdditionalAirZ0   =AbsorberZ-AdditionalAirThickness/2-AbsorberThickness/2;
+
+  ofstream mydgfile ("geometry_debug.txt");
+  if (mydgfile.is_open())
+    {
+      mydgfile << "LayerThickness " <<  LayerThickness << endl; 
+      mydgfile << "AdditionalAirZ+AdditionalAirThickness/2 " << AdditionalAirZ+AdditionalAirThickness/2 << endl;
+      //mydgfile << "AbsorberZ+AbsorberThickness/2 " <<  AbsorberZ+AbsorberThickness/2 << endl;
+      printInterval(mydgfile,"AdditionalAirZ"    ,AdditionalAirZ    ,AdditionalAirThickness/2       );
+      printInterval(mydgfile,"AbsorberZ"         ,AbsorberZ         ,AbsorberThickness/2            );
+      printInterval(mydgfile,"RPCChipPackageZ"   ,RPCChipPackageZ   ,RPC_ChipPackageThickness/2     );
+      printInterval(mydgfile,"RPC_PCBPosZ"       ,RPC_PCBPosZ       ,RPC_PCB_Thickness/2            );
+      printInterval(mydgfile,"RPC_mylarPosZ"     ,RPC_mylarPosZ     ,RPC_mylar_ThicknessAnode/2     );
+      printInterval(mydgfile,"RPC_GraphitePosZ"  ,RPC_GraphitePosZ  ,RPC_Graphite_ThicknessAnode/2  );
+      printInterval(mydgfile,"RPC_ThinGlassPosZ" ,RPC_ThinGlassPosZ ,RPC_ThinGlass/2                );
+      printInterval(mydgfile,"RPC_GapPosZ"       ,RPC_GapPosZ       ,RPC_Gap_Thickness/2            );
+      printInterval(mydgfile,"RPC_ThickGlassPosZ",RPC_ThickGlassPosZ,RPC_ThickGlass/2               );
+      printInterval(mydgfile,"RPC_GraphitePosZ2" ,RPC_GraphitePosZ2 ,RPC_Graphite_ThicknessCathode/2);
+      printInterval(mydgfile,"RPC_mylarPosZ2"    ,RPC_mylarPosZ2    ,RPC_mylar_ThicknessCathode/2   );
+      printInterval(mydgfile,"RPC_FreePosZ"      ,RPC_FreePosZ      ,RPC_Free_Thickness/2           );
+      //mydgfile << "RPC_FreePosZ-RPC_Free_Thickness/2 " << RPC_FreePosZ-RPC_Free_Thickness/2 << endl;
+      printInterval(mydgfile,"AdditionalAluZ"    ,AdditionalAluZ    ,AdditionalAluThickness/2       );
+      mydgfile << "AdditionalAluZ-AdditionalAluThickness/2 " << AdditionalAluZ-AdditionalAluThickness/2 << endl;
+    }
+  mydgfile.close();
+
+
 
   G4cout << "EL/ -----------------------------------" << G4endl;
   G4cout << "EL/ Cross check on geometry" << G4endl;
@@ -488,27 +524,27 @@ G4VPhysicalVolume* LyonDetectorConstruction::Construct()
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  /*
+  
   //Additional layer of air
 
   G4Box *solidAdditionalAir = new G4Box("AdditionalAir",		//its name
-  CalorSizeX/2,CalorSizeY/2,AdditionalAirThickness/2); 
+					CalorSizeX/2,CalorSizeY/2,AdditionalAirThickness/2); 
                           
   G4LogicalVolume *logicAdditionalAir = new G4LogicalVolume(solidAdditionalAir,    //its solid
-  Air, //its material
-  "AdditionalAir"); //name
+							    Air, //its material
+							    "AdditionalAir"); //name
       			                  
   G4VPhysicalVolume *physiAdditionalAir = new G4PVPlacement(0,		   //no rotation
-  G4ThreeVector(0.,0.,AdditionalAirZ),  //its position
-  logicAdditionalAir,     //its logical volume		    
-  "AdditionalAir", //its name
-  logicLayer,        //its mother
-  false,             //no boulean operat
-  0,true);                //copy number
+							    G4ThreeVector(0.,0.,AdditionalAirZ),  //its position
+							    logicAdditionalAir,     //its logical volume     	    
+							    "AdditionalAir", //its name
+							    logicLayer,        //its mother
+							    false,             //no boulean operat
+							    0,true);                //copy number
 
 
   //
-  */
+  
   
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   
@@ -724,27 +760,27 @@ G4VPhysicalVolume* LyonDetectorConstruction::Construct()
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
  
  
-  //Additional layer of air
+  //Additional layer of Alu (in fact absorber)
 
-  /*G4Box *solidAdditionalAlu = new G4Box("AdditionalAlu",		//its name
-    CalorSizeX/2,CalorSizeY/2,AdditionalAluThickness/2); 
+  G4Box *solidAdditionalAlu = new G4Box("AdditionalAlu",		//its name
+					CalorSizeX/2,CalorSizeY/2,AdditionalAluThickness/2); 
                           
-    G4LogicalVolume *logicAdditionalAlu = new G4LogicalVolume(solidAdditionalAlu,    //its solid
-    Al, //its material
-    "AdditionalAl"); //name
+  G4LogicalVolume *logicAdditionalAlu = new G4LogicalVolume(solidAdditionalAlu,    //its solid
+							    Al, //its material
+							    "AdditionalAl"); //name
       			                  
-    G4VPhysicalVolume *physiAdditionalAlu = new G4PVPlacement(0,		   //no rotation
-    G4ThreeVector(0.,0.,AdditionalAluZ),  //its position
-    logicAdditionalAlu,     //its logical volume		    
-    "AdditionalAlu", //its name
-    logicLayer,        //its mother
-    false,             //no boulean operat
-    0,true);                //copy number
+  G4VPhysicalVolume *physiAdditionalAlu = new G4PVPlacement(0,		   //no rotation
+							    G4ThreeVector(0.,0.,AdditionalAluZ),  //its position
+							    logicAdditionalAlu,     //its logical volume     
+							    "AdditionalAlu", //its name
+							    logicLayer,        //its mother
+							    false,             //no boulean operat
+							    0,true);                //copy number
+  
 
 
 
-
-  */
+ 
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
