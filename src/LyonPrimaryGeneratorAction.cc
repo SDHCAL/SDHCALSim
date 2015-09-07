@@ -18,6 +18,8 @@
 //#define SOLID_ANGLE
 #define GAUSSIAN_GUN
 
+#include "LyonDetectorConstruction.hh"
+
 LyonPrimaryGeneratorAction::LyonPrimaryGeneratorAction()
 {
   G4int n_particle = 1;// on genere une particlue
@@ -46,7 +48,9 @@ LyonPrimaryGeneratorAction::~LyonPrimaryGeneratorAction()
 
 void LyonPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
-  G4ThreeVector pos(0.0*CLHEP::m, 0.0*CLHEP::m,-0.700*CLHEP::m);//default could be modified with primary_gun_action_messenger class
+  //G4ThreeVector pos(0.0*CLHEP::m, 0.0*CLHEP::m,-0.700*CLHEP::m);//default could be modified with primary_gun_action_messenger class
+  //Change to shoot from GIF Cesium source
+  G4ThreeVector pos(0.0*CLHEP::m, 0.0*CLHEP::m,LyonDetectorConstruction::m_GeometryDataForLCIO.calorthickness/2+207*CLHEP::cm-LyonDetectorConstruction::m_GeometryDataForLCIO.airThickness);//default could be modified with primary_gun_action_messenger class
   G4ThreeVector v(0.0,0.0,1.0); // par default could be modified with primary_gun_action_messenger class
   if(gunOptionPosition==std::string("random")){
     float xo=2*randMaxPos*G4UniformRand()-randMaxPos;
@@ -131,7 +135,7 @@ void LyonPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     G4double angle=0;
     G4double px=1.0*std::sin(angle);
     G4double py=0.0;
-    G4double pz=1.0*std::cos(angle);
+    G4double pz=-1.0*std::cos(angle); //GIF source is in direction at z bigger htan Zof GRPCs
     v=G4ThreeVector(px,py,pz);
     v/=v.mag();
   }

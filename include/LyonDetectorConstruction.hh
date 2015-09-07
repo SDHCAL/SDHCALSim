@@ -19,6 +19,7 @@ struct GeometryDataForLCIO
   G4int nbLayers;
   G4double gapThickness;
   G4double gapRelativeMiddlePositionInLayer; 
+  G4double airThickness;
 };
 
 

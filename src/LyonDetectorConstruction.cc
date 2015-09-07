@@ -309,7 +309,7 @@ G4VPhysicalVolume* LyonDetectorConstruction::Construct()
   m_GeometryDataForLCIO.nbLayers=NbOfLayers;
   m_GeometryDataForLCIO.gapThickness=RPC_Gap_Thickness;
   m_GeometryDataForLCIO.gapRelativeMiddlePositionInLayer=RPC_GapPosZ;
-  
+  m_GeometryDataForLCIO.airThickness=AdditionalAirThickness;
 
   G4cout << "EL/ -----------------------------------" << G4endl;
   G4cout << "EL/ Cross check on geometry" << G4endl;
