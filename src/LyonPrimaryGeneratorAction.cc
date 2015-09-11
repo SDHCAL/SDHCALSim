@@ -50,7 +50,7 @@ void LyonPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
   //G4ThreeVector pos(0.0*CLHEP::m, 0.0*CLHEP::m,-0.700*CLHEP::m);//default could be modified with primary_gun_action_messenger class
   //Change to shoot from GIF Cesium source
-  G4ThreeVector pos(0.0*CLHEP::m, 0.0*CLHEP::m,LyonDetectorConstruction::m_GeometryDataForLCIO.calorthickness/2+207*CLHEP::cm-LyonDetectorConstruction::m_GeometryDataForLCIO.airThickness);//default could be modified with primary_gun_action_messenger class
+  G4ThreeVector pos(0/*.5*/*CLHEP::cm, 0/*.5*/*CLHEP::cm,LyonDetectorConstruction::m_GeometryDataForLCIO.calorthickness/2+207*CLHEP::cm-LyonDetectorConstruction::m_GeometryDataForLCIO.airThickness);//default could be modified with primary_gun_action_messenger class
   G4ThreeVector v(0.0,0.0,1.0); // par default could be modified with primary_gun_action_messenger class
   if(gunOptionPosition==std::string("random")){
     float xo=2*randMaxPos*G4UniformRand()-randMaxPos;
