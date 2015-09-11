@@ -1,5 +1,5 @@
-#ifndef SDHCAL_Util_CaloHitVector_h
-#define SDHCAL_Util_CaloHitVector_h 1
+#ifndef SDHCAL_Util_CaloHitVector_template_h
+#define SDHCAL_Util_CaloHitVector_template_h 1
 
 #include "lcio.h"
 #include <string>
@@ -9,9 +9,9 @@
 
 //lcio stuff
 #include "UTIL/LCTypedVector.h"
-#include "EVENT/CalorimeterHit.h"
-#include "EVENT/SimCalorimeterHit.h"
-#include "EVENT/RawCalorimeterHit.h"
+//#include "EVENT/CalorimeterHit.h"
+//#include "EVENT/SimCalorimeterHit.h"
+//#include "EVENT/RawCalorimeterHit.h"
 #include <UTIL/CellIDDecoder.h>
 
 using namespace lcio ;
@@ -20,32 +20,7 @@ using namespace lcio ;
 
 namespace SDHCAL 
 {
-
-
-  //////////////////////////////////////////////////////////////////////////////////////////
-  // 
-  //  typedef for various kind of vectors of calorimeter hit and iterators
-  //
-  //  LCTypedVector is template <class T> class LCTypedVector : public  std::vector<T*> 
-  //  with following constructor LCTypedVector( EVENT::LCCollection* col )
-  //  and with accessor : EVENT::LCCollection* col();
-  //
-  //////////////////////////////////////////////////////////////////////////////////////////
-  
-  typedef LCTypedVector<CalorimeterHit> CaloHitVector;      //type = vector<CalorimeterHit*>
-  typedef CaloHitVector::iterator CaloHitIterator;          //type = CalorimeterHit**
-  typedef std::pair< CaloHitIterator, CaloHitIterator > CaloHitPairIterator;
-
-  typedef LCTypedVector<SimCalorimeterHit> SimCaloHitVector;      //type = vector<SimCalorimeterHit*>
-  typedef SimCaloHitVector::iterator SimCaloHitIterator;          //type = SimCalorimeterHit**
-  typedef std::pair< SimCaloHitIterator, SimCaloHitIterator > SimCaloHitPairIterator;
-
-  typedef LCTypedVector<RawCalorimeterHit> RawCaloHitVector;      //type = vector<RawCalorimeterHit*>
-  typedef RawCaloHitVector::iterator RawCaloHitIterator;          //type = RawCalorimeterHit**
-  typedef std::pair< RawCaloHitIterator, RawCaloHitIterator > RawCaloHitPairIterator;
-
-
-  //base class for stuff commopn to all types of hits (Raw,Sim and CalorimeterHit)
+  //base class for stuff common to all types of hits (Raw,Sim and CalorimeterHit)
   template <class HIT>
     class LCIO_hitVectorManipulation
     {
@@ -195,112 +170,6 @@ namespace SDHCAL
       if ( 0 == left->getPosition() || 0 == right->getPosition() ) return true;
       return dotProduct(left->getPosition(),left->getPosition()) < dotProduct(right->getPosition(),right->getPosition());
     }
-
-
-  //////////////////////////////////////////////////////////////////////////////////////////
-  //
-  // Explicit functions sorting
-  //
-  //////////////////////////////////////////////////////////////////////////////////////////
-  //sort by Layer
-  inline void CalorimeterHitVector_sortbyLayer(CaloHitVector& v) 
-  {
-    LCIO_hitVectorManipulation<CalorimeterHit> a;
-    return a.CalorimeterHitVector_sortbyLayer(v);
-  }
-   inline void CalorimeterHitVector_sortbyLayer(SimCaloHitVector& v) 
-  {
-    LCIO_hitVectorManipulation<SimCalorimeterHit> a;
-    return a.CalorimeterHitVector_sortbyLayer(v);
-  }
-   inline void CalorimeterHitVector_sortbyLayer(RawCaloHitVector& v) 
-  {
-    LCIO_hitVectorManipulation<RawCalorimeterHit> a;
-    return a.CalorimeterHitVector_sortbyLayer(v);
-  }
-  
-   //sort by Z
-   inline void CalorimeterHitVector_sortbyZ(CaloHitVector& v) 
-   {
-     std::sort(v.begin(),v.end(),CalorimeterHit_lessZ<CalorimeterHit>);
-   }
-   inline void CalorimeterHitVector_sortbyZ(SimCaloHitVector& v) 
-   {
-     std::sort(v.begin(),v.end(),CalorimeterHit_lessZ<SimCalorimeterHit>);
-   }
-   
-
-   //sort by position along given direction
-   inline void CalorimeterHitVector_sortbyPosInDir(CaloHitVector& v,float *dir)
-   {
-     std::sort(v.begin(),v.end(),CalorimeterHit_lessDir<CalorimeterHit>(dir));
-   }
-   inline void CalorimeterHitVector_sortbyPosInDir(SimCaloHitVector& v,float *dir)
-   {
-     std::sort(v.begin(),v.end(),CalorimeterHit_lessDir<SimCalorimeterHit>(dir));
-   }
-
-   //sort by radius
-   inline void CalorimeterHitVector_sortbyRadius(CaloHitVector& v)
-   {
-     std::sort(v.begin(),v.end(),CalorimeterHit_lessRadius<CalorimeterHit>);
-   }
-   inline void CalorimeterHitVector_sortbyRadius(SimCaloHitVector& v)
-   {
-     std::sort(v.begin(),v.end(),CalorimeterHit_lessRadius<SimCalorimeterHit>);
-   }
-
-
-  //////////////////////////////////////////////////////////////////////////////////////////
-  //
-  // Explicit functions sorting+partitioning
-  //
-  //////////////////////////////////////////////////////////////////////////////////////////
-  //partition against layer number
-  inline std::vector< CaloHitPairIterator > partition_byLayer(CaloHitVector& v)
-    {
-      LCIO_hitVectorManipulation<CalorimeterHit> a;
-      return a.partition_byLayer(v);
-    }
-  inline std::vector< SimCaloHitPairIterator > partition_byLayer(SimCaloHitVector& v)
-    {
-      LCIO_hitVectorManipulation<SimCalorimeterHit> a;
-      return a.partition_byLayer(v);
-    }
-  inline std::vector< RawCaloHitPairIterator > partition_byLayer(RawCaloHitVector& v)
-    {
-      LCIO_hitVectorManipulation<RawCalorimeterHit> a;
-      return a.partition_byLayer(v);
-    }
-
-
-  //partition against Z position
-  inline std::vector< CaloHitPairIterator > partition_byZ(CaloHitVector &v)
-    { 
-      LCIO_hitVectorManipulation<CalorimeterHit> a;
-      return a.calohitvec_sort_and_partition(v,CalorimeterHit_lessZ<CalorimeterHit>);
-    }
-  inline std::vector< SimCaloHitPairIterator > partition_byZ(SimCaloHitVector &v)
-    { 
-      LCIO_hitVectorManipulation<SimCalorimeterHit> a;
-      return a.calohitvec_sort_and_partition(v,CalorimeterHit_lessZ<SimCalorimeterHit>);
-    }
-
-  //partition against given direction 
-  inline std::vector< CaloHitPairIterator > partition_byPosInDir(CaloHitVector& v,float *dir)
-    {
-      CalorimeterHit_lessDir<CalorimeterHit> predicate(dir);
-      LCIO_hitVectorManipulation<CalorimeterHit> a;
-      return a.calohitvec_sort_and_partition(v,predicate);
-    }
-  inline std::vector< SimCaloHitPairIterator > partition_byPosInDir(SimCaloHitVector& v,float *dir)
-    {
-      CalorimeterHit_lessDir<SimCalorimeterHit> predicate(dir);
-      LCIO_hitVectorManipulation<SimCalorimeterHit> a;
-      return a.calohitvec_sort_and_partition(v,predicate);
-    }
-
-
 
 
   /*
