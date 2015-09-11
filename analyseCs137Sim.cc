@@ -18,6 +18,8 @@
 #include "EVENT/SimCalorimeterHit.h" 
 #include "EVENT/LCGenericObject.h"
 
+#include "SDHCAL_Simu_EventAnalyser.h"
+
 using namespace std ;
 using namespace lcio ; 
 
@@ -39,6 +41,8 @@ public:
 private:
   LCGenericObject& _ref;
 };
+
+
 
 struct compteurs
 {
@@ -100,6 +104,7 @@ void compteurs::printDistributions()
   cout << "other:"<<other<<endl;
 
 }
+
 
 struct myEventStuff
 {
@@ -212,12 +217,14 @@ int main(int argc, char** argv ){
   
   LCEvent* event = NULL ;
   
-
+  //The analyser
+  SDHCAL_Simu_EventAnalyser analyser("SDHCAL_Proto_EndCap",NULL,"particleGenericObject");
   //----------- the event loop -----------
   try{
     while( (event = lcReader->readNextEvent()) != 0 )
       {
 	myEventStuff evt(event);
+	analyser.newEvent(event);
       }
   }
   catch( lcio::IOException& e )
@@ -229,6 +236,8 @@ int main(int argc, char** argv ){
 
   myEventStuff::count.printStat();
   myEventStuff::count.printDistributions();
+
+  analyser.printStat();
 
     // free lcReader
     lcReader->close();

@@ -64,6 +64,11 @@ set(PROJECT_SRC
 	${CMAKE_CURRENT_SOURCE_DIR}/src/LyonStepLinkingAlgo.cc           
     )
 
+set(ANALYSER_SRC
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/SDHCAL_Simu_EventAnalyser.cc 
+    )
+  
+
 set(PROJECT_HEADER
 	${CMAKE_CURRENT_SOURCE_DIR}/include/LyonDetectorFieldMessenger.hh  
 	${CMAKE_CURRENT_SOURCE_DIR}/include/LyonPrimaryGeneratorAction.hh  
@@ -81,11 +86,18 @@ set(PROJECT_HEADER
 	${CMAKE_CURRENT_SOURCE_DIR}/include/LyonStepLinkingAlgo.hh
     )
 
+set(ANALYSER_HEADER
+	${CMAKE_CURRENT_SOURCE_DIR}/include/SDHCAL_Util_CaloHitVector_template.h
+	${CMAKE_CURRENT_SOURCE_DIR}/include/SDHCAL_Util_CaloHitVector.h
+	${CMAKE_CURRENT_SOURCE_DIR}/include/SDHCAL_Simu_EventAnalyser.h
+    )
+
+
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Geant4 libraries
 #
 add_executable(SDHCAL_Simu SimuLyonTest.cc ${PROJECT_HEADER} ${PROJECT_SRC})
-add_executable(analyseCs137Sim analyseCs137Sim.cc ${PROJECT_HEADER} ${PROJECT_SRC})
+add_executable(analyseCs137Sim analyseCs137Sim.cc ${ANALYSER_HEADER} ${ANALYSER_SRC})
 #
 target_link_libraries(SDHCAL_Simu ${Geant4_LIBRARIES} ${EXTRA_LIB})
 
