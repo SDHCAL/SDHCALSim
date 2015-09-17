@@ -136,9 +136,10 @@ namespace SDHCAL
 	
 	bool operator()(const HIT* left , const HIT* right) 
 	{ return getValue(left)<getValue(right);}
-      private:
-	//CellIDDecoder<HIT> m_decoder;
+
 	static MyCellIDDecoder m_decoder;
+
+      private:
 	std::string m_codingString;
 	
 	long64 getValue(const HIT* h)

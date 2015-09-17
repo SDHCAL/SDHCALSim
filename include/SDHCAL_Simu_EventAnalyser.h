@@ -63,6 +63,7 @@ class HitDataStat
 {
   std::map<unsigned int,int> distributionNombreHit;
   std::map<unsigned int,int> distributionNombrePlan;
+  std::map<unsigned int,int> distributionNumeroPlan;
  public:
   HitDataStat() {}
 
@@ -75,6 +76,13 @@ class HitDataStat
       //std::vector< LocalCaloHitPairIterator > b=a.partition_byLayer(hits);
       std::vector< LocalCaloHitPairIterator > b=a.partition_byLayer(hits);
       distributionNombrePlan[b.size()]++;
+      for (typename std::vector< LocalCaloHitPairIterator >::iterator it=b.begin(); it!= b.end(); ++it)
+	{
+	  const HIT* h=*(it->first);
+	  SDHCAL::LCIO_hitVectorManipulation<HIT>::CalorimeterHit_lessCellID::m_decoder.setValue(h->getCellID0(),h->getCellID1());
+	  int layer= SDHCAL::LCIO_hitVectorManipulation<HIT>::CalorimeterHit_lessCellID::m_decoder.BF()["K-1"];
+	  distributionNumeroPlan[layer]++;
+	}
     }
 
 
@@ -89,6 +97,7 @@ class HitDataStat
   {
     std::cout << "Number of hit distribution : "; showMap(distributionNombreHit);
     std::cout << "Number of plane distribution : "; showMap(distributionNombrePlan);
+    std::cout << "Numero of plane distribution : "; showMap(distributionNumeroPlan);
   }
 };
 
