@@ -6,6 +6,7 @@
 #include <vector>
 #include <set>
 #include <algorithm>
+#include <iostream>
 
 //lcio stuff
 #include "UTIL/LCTypedVector.h"
@@ -20,6 +21,41 @@ using namespace lcio ;
 
 namespace SDHCAL 
 {
+  //kind of static BitField64
+  class MyCellIDDecoder
+  {
+  public:
+  MyCellIDDecoder() : _bf(NULL), _col(NULL) {}
+  ~MyCellIDDecoder() {delete _bf;}
+
+  inline void setCollection(std::string tut)
+  {
+    if (tut.size()==0) tut="DUMMY:8";
+    delete _bf;
+    _bf=new BitField64(tut);
+  }
+
+  inline void setCollection(const LCCollection *col)
+  {
+    if (_col==col) return;
+    else _col=col;
+    setCollection(col->getParameters().getStringVal(  LCIO::CellIDEncoding ));
+  }
+  
+  inline void setValue(long64 cellID0, long64 cellID1)
+  {
+    _bf->setValue( ( cellID0 & 0xffffffff ) |  ( cellID1 << 32 ) );
+  }
+
+  BitField64& BF() {return *_bf;}
+
+  private:
+  BitField64 *_bf;
+  const LCCollection *_col;
+  
+  };
+
+
   //base class for stuff common to all types of hits (Raw,Sim and CalorimeterHit)
   template <class HIT>
     class LCIO_hitVectorManipulation
@@ -93,14 +129,23 @@ namespace SDHCAL
       {
       public:
       CalorimeterHit_lessCellID(const std::string& encoder_str, const std::string& coding) 
-	: m_decoder(encoder_str), m_codingString(coding) {}
+	: m_codingString(coding) { m_decoder.setCollection(encoder_str);}
       CalorimeterHit_lessCellID( const LCCollection* col, const std::string& coding) 
-	: m_decoder(col), m_codingString(coding) {}
+	: m_codingString(coding) { m_decoder.setCollection(col);}
+
+	
 	bool operator()(const HIT* left , const HIT* right) 
-	{return m_decoder(left)[m_codingString]<m_decoder(right)[m_codingString];}
+	{ return getValue(left)<getValue(right);}
       private:
-	CellIDDecoder<HIT> m_decoder;
+	//CellIDDecoder<HIT> m_decoder;
+	static MyCellIDDecoder m_decoder;
 	std::string m_codingString;
+	
+	long64 getValue(const HIT* h)
+	{
+	  m_decoder.setValue(h->getCellID0(),h->getCellID1());
+	  return m_decoder.BF()[m_codingString];
+	}
       };
 
       //////////////////////////////////////////////////////////////////////////////////////////
@@ -127,8 +172,10 @@ namespace SDHCAL
 
       
     };
-  
-  
+
+  template <class HIT>
+    MyCellIDDecoder LCIO_hitVectorManipulation<HIT>::CalorimeterHit_lessCellID::m_decoder=MyCellIDDecoder();
+
   //Stuff common to Sim and CalorimeterHit only : getPosition and getEnergy defined function
   //////////////////////////////////////////////////////////////////////////////////////////
   // 

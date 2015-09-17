@@ -5,6 +5,7 @@
 
 #include <string>
 #include <iostream>
+#include <map>
 
 //lcio stuff
 #include "UTIL/LCTypedVector.h"
@@ -48,6 +49,49 @@ class SDHCAL_Simu_CollectionLoader
   
 };
 
+/*class HitDataStatByPlan
+{
+ public:
+  std::map<unsigned int,int> distributionNombreHit;
+  std::vector<double> hitDistance;
+  std::vector<double> hitDistanceMin;
+};
+*/
+
+template <class HIT>
+class HitDataStat
+{
+  std::map<unsigned int,int> distributionNombreHit;
+  std::map<unsigned int,int> distributionNombrePlan;
+ public:
+  HitDataStat() {}
+
+  void Add(LCTypedVector<HIT>& hits)
+    {
+      distributionNombreHit[hits.size()]++;
+      if (hits.empty()) return;
+      SDHCAL::LCIO_hitVectorManipulation<HIT> a;
+      typedef typename SDHCAL::LCIO_hitVectorManipulation<HIT>::TCaloHitPairIterator LocalCaloHitPairIterator;
+      //std::vector< LocalCaloHitPairIterator > b=a.partition_byLayer(hits);
+      std::vector< LocalCaloHitPairIterator > b=a.partition_byLayer(hits);
+      distributionNombrePlan[b.size()]++;
+    }
+
+
+  void showMap(std::map<unsigned int,int> &m, std::ostream& flux=std::cout, char ending='\n')
+    {
+      for(std::map<unsigned int,int>::const_iterator it = m.begin(); it != m.end(); ++it)
+	flux << it->first << ":" << it->second << ",  ";
+      flux << ending;
+  }
+
+  void printDistr()
+  {
+    std::cout << "Number of hit distribution : "; showMap(distributionNombreHit);
+    std::cout << "Number of plane distribution : "; showMap(distributionNombrePlan);
+  }
+};
+
 class SDHCAL_Simu_EventAnalyser
 {
  public:
@@ -61,7 +105,11 @@ class SDHCAL_Simu_EventAnalyser
   SDHCAL_Simu_CollectionLoader<CalorimeterHit> _recoHits;
   SDHCAL_Simu_CollectionLoader<SimCalorimeterHit> _simHits;
   SDHCAL_Simu_CollectionLoader<LCGenericObject> _steps;
- 
+  
+  HitDataStat<CalorimeterHit> _recoHitsStat;
+  HitDataStat<SimCalorimeterHit> _simHitsStat;
+  
+
   bool _OKreco,_OKsim,_OKsteps;
   
   //compteurs
