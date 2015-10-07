@@ -31,6 +31,7 @@ private:
   G4int _parentid;//by rhan
   G4ThreeVector _momentum;//Anais
   G4String _trackVertexVolumeName;
+  G4int _trackStatus;
 
 public:
   G4double energyDeposited() const {return _energyDeposited;} 
@@ -46,6 +47,7 @@ public:
   G4int trackid() const{ return _trackid;}//by rhan
   G4int parentid() const{ return _parentid;}//by rhan
   G4double trueLength() const{ return _trueLength;}
+  G4int trackStatus() const{return _trackStatus;}
   const G4ThreeVector& momentum() const {return _momentum;}//Anais
   G4String trackVertexVolumeName() const{return _trackVertexVolumeName;}
   bool shouldBeLinkedTo(LyonTrackHit *hit);

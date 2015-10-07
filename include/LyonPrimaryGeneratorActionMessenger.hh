@@ -65,6 +65,8 @@ private:
   G4UIcmdWithADouble* gaussianMeanCmd;
   G4UIcmdWithADouble* gaussianSigmaCmd;
   G4UIcmdWithADouble* uniformParameterCmd;
+  G4UIcmdWithADouble* xPositionSigmaCmd;
+  G4UIcmdWithADouble* yPositionSigmaCmd;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

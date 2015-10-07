@@ -6,8 +6,9 @@
 #include "globals.hh"
 #include "iostream"
 #include "vector"
-#include "G4ThreeVector.hh"
+#include "G4ThreeVector.hh" 
 #include "LyonPrimaryGeneratorActionMessenger.hh"
+#include "TF1.h"
 
 class G4ParticleGun;//genere un faisceau de particules dont on determine le nombre
 class G4Event; //
@@ -28,15 +29,19 @@ public:
 
   inline void setGaussianMean(double val){gaussianMean=val;}
   inline void setGaussianSigma(double val){gaussianSigma=val;}
+  inline void setXPositionSigma(double val){_xPosSigma=val;}
+  inline void setYPositionSigma(double val){_yPosSigma=val;}
 
   inline void setUniformParameter(double val){uniformParameter=val;}
 
   void PrintInfo();
+  G4ThreeVector GetPrimaryGeneratorPosition()const{return _primaryPos;}
   G4ThreeVector GetPrimaryGeneratorMomentum()const{return _primaryMom;}
   public:
   void GeneratePrimaries(G4Event* anEvent); //methode de G4VUserPrimaryGeneratorAction
 private:
   G4ThreeVector  _primaryMom;
+  G4ThreeVector  _primaryPos;
   G4ParticleGun* particleGun;
   LyonPrimaryGeneratorActionMessenger* _thePrimaryGeneratorMessenger;
 
@@ -51,6 +56,10 @@ private:
   double gaussianSigma;//gaussian sigma value for gaussian gun momentum option
   
   double uniformParameter;//uniform parameter value for uniform gun momentum option
+  TF1* _gunPosition_x_function;
+  TF1* _gunPosition_y_function;
+  double _xPosSigma;
+  double _yPosSigma;
 };
 
 #endif
