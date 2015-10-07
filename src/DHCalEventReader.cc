@@ -146,6 +146,7 @@ void DHCalEventReader::createSimCalorimeterHits(std::vector<LyonTrackHit*> lyonT
       _particle=new LCGenericObjectImpl();
       _particle->setIntVal(0,hitMap[key]->getCellID0());
       _particle->setIntVal(1,hitMap[key]->getNMCContributions());
+      _particle->setIntVal(2,(*it)->trackStatus());
       _particle->setFloatVal(0,(*it)->entrancePoint().x()/lengthUnit);
       _particle->setFloatVal(1,(*it)->entrancePoint().y()/lengthUnit);
       _particle->setFloatVal(2,(*it)->entrancePoint().z()/lengthUnit);
@@ -192,6 +193,11 @@ void DHCalEventReader::writeEvent(int runNum,int evtNum,std::string srhcol)
   momentum.push_back(anAction->GetPrimaryGeneratorMomentum().y());
   momentum.push_back(anAction->GetPrimaryGeneratorMomentum().z());
   evt_->parameters().setValues("ParticleMomentum", momentum) ;
+  FloatVec position;
+  position.push_back(anAction->GetPrimaryGeneratorPosition().x());
+  position.push_back(anAction->GetPrimaryGeneratorPosition().y());
+  position.push_back(anAction->GetPrimaryGeneratorPosition().z());
+  evt_->parameters().setValues("GunPosition", position) ;
 
   LCTOOLS::dumpEvent(evt_);
   //LCTOOLS::printLCGenericObjects(mcVec); //for DEBUG

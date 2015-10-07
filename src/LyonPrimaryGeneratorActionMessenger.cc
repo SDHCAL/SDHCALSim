@@ -52,7 +52,7 @@ LyonPrimaryGeneratorActionMessenger::LyonPrimaryGeneratorActionMessenger(LyonPri
   gunOptionPositionCmd =  new G4UIcmdWithAString("/GunParameter/gunOptionPosition",this);
   gunOptionPositionCmd->SetGuidance("Set primary gun option position");
   gunOptionPositionCmd->SetParameterName("gunOptionPosition",true);
-  gunOptionPositionCmd->SetCandidates("default random cosmic");					
+  gunOptionPositionCmd->SetCandidates("default random cosmic beamtest");					
 
   gunOptionMomentumCmd =  new G4UIcmdWithAString("/GunParameter/gunOptionMomentum",this);
   gunOptionMomentumCmd->SetGuidance("Set primary gun option momentum");
@@ -89,6 +89,16 @@ LyonPrimaryGeneratorActionMessenger::LyonPrimaryGeneratorActionMessenger(LyonPri
   uniformParameterCmd->SetGuidance("Set uniform paramter value for uniform gun momentum");
   uniformParameterCmd->SetParameterName("uniformParameter",true);
   uniformParameterCmd->SetDefaultValue(0.1);
+
+  xPositionSigmaCmd = new G4UIcmdWithADouble("/GunParameter/xPositionSigma",this);
+  xPositionSigmaCmd->SetGuidance("Set gaussian sigma value for gaussian gun position (x) in mm");
+  xPositionSigmaCmd->SetParameterName("xPositionSigma",true);
+  xPositionSigmaCmd->SetDefaultValue(50);
+
+  yPositionSigmaCmd = new G4UIcmdWithADouble("/GunParameter/yPositionSigma",this);
+  yPositionSigmaCmd->SetGuidance("Set gaussian sigma value for gaussian gun position (y) in mm");
+  yPositionSigmaCmd->SetParameterName("yPositionSigma",true);
+  yPositionSigmaCmd->SetDefaultValue(50);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -104,6 +114,9 @@ LyonPrimaryGeneratorActionMessenger::~LyonPrimaryGeneratorActionMessenger()
   delete gaussianMeanCmd;
   delete gaussianSigmaCmd;
   
+  delete xPositionSigmaCmd;
+  delete yPositionSigmaCmd;
+
   delete runDir;   
 }
 
@@ -128,8 +141,12 @@ void LyonPrimaryGeneratorActionMessenger::SetNewValue(G4UIcommand* command, G4St
   if(command == gaussianMeanCmd)
     primaryGenerator->setGaussianMean(gaussianMeanCmd->GetNewDoubleValue(newValue));
   if(command == gaussianSigmaCmd)
-    primaryGenerator->setGaussianSigma(randPosMaxCmd->GetNewDoubleValue(newValue));
+    primaryGenerator->setGaussianSigma(gaussianSigmaCmd->GetNewDoubleValue(newValue));
   
+  if(command == xPositionSigmaCmd)
+    primaryGenerator->setXPositionSigma(xPositionSigmaCmd->GetNewDoubleValue(newValue));
+  if(command == yPositionSigmaCmd)
+    primaryGenerator->setYPositionSigma(yPositionSigmaCmd->GetNewDoubleValue(newValue));
 
   if(command == uniformParameterCmd)
     primaryGenerator->setUniformParameter(randPosMaxCmd->GetNewDoubleValue(newValue));

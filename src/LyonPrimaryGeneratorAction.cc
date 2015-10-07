@@ -8,11 +8,11 @@
 #include "globals.hh"
 #include "Randomize.hh"
 #include "TRandom.h"
-#include "TF1.h"
 #include "TF2.h"
 #include "TMath.h"
 #include <time.h>  
 #include <iostream>
+#include <fstream>
 
 #define RANDOM_GUN
 //#define SOLID_ANGLE
@@ -36,29 +36,49 @@ LyonPrimaryGeneratorAction::LyonPrimaryGeneratorAction()
   gaussianMean = 0.0*CLHEP::m;
   gaussianSigma = 0.1*CLHEP::m;
   uniformParameter = 0.5;  
+
+  _xPosSigma = 50.0;// mm
+  _yPosSigma = 50.0;// mm
+
+  _gunPosition_x_function=new TF1("func","gaus",-500,500);
+  _gunPosition_y_function=new TF1("func","gaus",-500,500);
+  //positionSigma = 50;
+  //posfunc->SetParameters(1,0,positionSigma);
 }
 
 LyonPrimaryGeneratorAction::~LyonPrimaryGeneratorAction()
 {
+  PrintInfo();
   delete particleGun;
   delete _thePrimaryGeneratorMessenger;
+  delete _gunPosition_x_function;
+  delete _gunPosition_y_function;
 }
 
 void LyonPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
-  G4ThreeVector pos(0.0*CLHEP::m, 0.0*CLHEP::m,-0.700*CLHEP::m);//default could be modified with primary_gun_action_messenger class
+  _primaryPos=G4ThreeVector(0.0*CLHEP::m, 0.0*CLHEP::m,-0.700*CLHEP::m);//default could be modified with primary_gun_action_messenger class
   G4ThreeVector v(0.0,0.0,1.0); // par default could be modified with primary_gun_action_messenger class
   if(gunOptionPosition==std::string("random")){
     float xo=2*randMaxPos*G4UniformRand()-randMaxPos;
     float yo=2*randMaxPos*G4UniformRand()-randMaxPos;
-    pos=G4ThreeVector(xo*CLHEP::m, yo*CLHEP::m,-.700*CLHEP::m);
+    _primaryPos=G4ThreeVector(xo*CLHEP::m, yo*CLHEP::m,-.700*CLHEP::m);
   }
   if(gunOptionPosition==std::string("cosmic")){
     float xo=2*randMaxPos*G4UniformRand()-randMaxPos;
     float zo=2*randMaxPos*G4UniformRand()-randMaxPos;
-    pos=G4ThreeVector(xo*CLHEP::m,-.503*CLHEP::m,zo*CLHEP::m);
+    _primaryPos=G4ThreeVector(xo*CLHEP::m,-.503*CLHEP::m,zo*CLHEP::m);
   }
-  particleGun->SetParticlePosition(pos);
+  if(gunOptionPosition==std::string("beamtest")){
+    _gunPosition_x_function->SetParameters(1.0,0.0,_xPosSigma);
+    _gunPosition_y_function->SetParameters(1.0,0.0,_yPosSigma);
+    float xo=_gunPosition_x_function->GetRandom();
+    float yo=_gunPosition_y_function->GetRandom();
+    float zo=-0.7;
+    _primaryPos=G4ThreeVector(xo*CLHEP::mm,yo*CLHEP::mm,zo*CLHEP::m);
+  }
+  
+  particleGun->SetParticlePosition(_primaryPos);
   
   if( gunOptionPosition==std::string("cosmic") ){
     if( gunOptionMomentum!=std::string("cosmic_gaus") && gunOptionMomentum!=std::string("cosmic_uniform") ){
@@ -151,13 +171,13 @@ void LyonPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   particleGun->SetParticleMomentumDirection(v);
   particleGun->GeneratePrimaryVertex(anEvent);
   _primaryMom=v;
-  //PrintInfo();
   //G4cout << "Gun position = " << pos << G4endl;
   //G4cout << "Gun momentum = " << v << G4endl;
 }
 
 void LyonPrimaryGeneratorAction::PrintInfo()
 {
+  G4cout << "USED OPTION : " << G4endl;
   G4cout << "GUN POSITION OPTION = " << gunOptionPosition << G4endl;
   if(gunOptionPosition==std::string("random"))
     G4cout << "randMaxPos = " << randMaxPos << G4endl;

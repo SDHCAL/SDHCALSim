@@ -21,6 +21,7 @@ LyonTrackHit::LyonTrackHit(const G4Step* aStep,int replicaCountLevel)
   //add by rhan
   _trackid=aStep->GetTrack()->GetTrackID();
   _parentid=aStep->GetTrack()->GetParentID();
+  _trackStatus=aStep->GetTrack()->GetTrackStatus();
   _trueLength=(_exitPoint-_entrancePoint).mag();
   //  G4cout<<"A "<<aStep->GetTrack()->GetDynamicParticle()->GetDefinition()->GetParticleName()<<" enters gap "<<_replicaCopyNumber<<" at time "<<aStep->GetPreStepPoint()->GetGlobalTime()<<" and exits at "<<aStep->GetPostStepPoint()->GetGlobalTime()<<G4endl;
   _charge=(int) aStep->GetTrack()->GetDynamicParticle()->GetCharge();
@@ -50,4 +51,6 @@ void LyonTrackHit::UpdateWith(LyonTrackHit* hit)
 
   _deltaPosition=_exitPoint-_entrancePoint;
   _trueLength+=hit->trueLength();
+  if( _trackStatus<hit->_trackStatus ) 
+    _trackStatus=hit->_trackStatus;
 }
