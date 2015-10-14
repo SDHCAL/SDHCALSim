@@ -67,12 +67,47 @@ class SDHCAL_Simu_CollectionLoader
 
 //////////////////////////////////////////////////////////////////////////////
 //
-//  function to clusterize
+//  distance as a function of I and J for clusterization
+//
+//////////////////////////////////////////////////////////////////////////////
+template <class HIT>
+class SDHCAL_IJDistance
+{
+ public:
+  /** Required typedef for cluster algorithm */
+  typedef HIT hit_type ;
+
+  /** C'tor takes merge distance */
+  SDHCAL_IJDistance(float dCut) : _dCutSquared( dCut*dCut ) {}
+  
+  /** Merge condition: true if distance  is less than dCut given in the C'tor.*/ 
+  inline bool mergeHits( GenericHit<HIT>* h0, GenericHit<HIT>* h1)
+  {
+    SDHCAL::LCIO_hitVectorManipulation<HIT>::CalorimeterHit_lessCellID::m_decoder.setValue(h0->first->getCellID0(),h0->first->getCellID1());
+    int I0=SDHCAL::LCIO_hitVectorManipulation<HIT>::CalorimeterHit_lessCellID::m_decoder.BF()["I"];
+    int J0=SDHCAL::LCIO_hitVectorManipulation<HIT>::CalorimeterHit_lessCellID::m_decoder.BF()["J"];
+    int layer0=SDHCAL::LCIO_hitVectorManipulation<HIT>::CalorimeterHit_lessCellID::m_decoder.BF()["K-1"];
+    SDHCAL::LCIO_hitVectorManipulation<HIT>::CalorimeterHit_lessCellID::m_decoder.setValue(h1->first->getCellID0(),h1->first->getCellID1());
+    int I1=SDHCAL::LCIO_hitVectorManipulation<HIT>::CalorimeterHit_lessCellID::m_decoder.BF()["I"];
+    int J1=SDHCAL::LCIO_hitVectorManipulation<HIT>::CalorimeterHit_lessCellID::m_decoder.BF()["J"];
+    int layer1=SDHCAL::LCIO_hitVectorManipulation<HIT>::CalorimeterHit_lessCellID::m_decoder.BF()["K-1"];
+    if (layer0 != layer1) return false;
+    return (I1-I0)*(I1-I0) + (J1-J0)*(J1-J0) < _dCutSquared;
+  }
+  
+ private:
+  float _dCutSquared ;
+};
+
+
+//////////////////////////////////////////////////////////////////////////////
+//
+//  functions to clusterize
 //
 //////////////////////////////////////////////////////////////////////////////
 
-template <class HIT>
-GenericClusterVec<HIT>* SDHCALclusterize(typename SDHCAL::LCIO_hitVectorManipulation<HIT>::TCaloHitPairIterator p)
+template <class HIT,class PRED>
+  GenericClusterVec<HIT>* SDHCALclusterize(typename SDHCAL::LCIO_hitVectorManipulation<HIT>::TCaloHitPairIterator p, PRED* Pred)
 {
   std::vector< GenericHit<HIT>* > v;
   for (typename SDHCAL::LCIO_hitVectorManipulation<HIT>::TCaloHitIterator it=p.first; it!=p.second; ++it)
@@ -80,18 +115,32 @@ GenericClusterVec<HIT>* SDHCALclusterize(typename SDHCAL::LCIO_hitVectorManipula
   GenericClusterVec<HIT>* ptocl=new GenericClusterVec<HIT>();
   GenericClusterVec<HIT>& cl=*ptocl ;
 
-  if (v.size()==1)
-    {
-      GenericCluster<HIT>* acluster=new GenericCluster<HIT>(v[0]);
-      cl.push_back(acluster);
-    }
-  else
-    {
-      NNDistance< HIT, float> max_distance_for_adjacent_hits_mm( 16 )  ;
-      cluster( v.begin() , v.end() , std::back_inserter( cl )  , &max_distance_for_adjacent_hits_mm ) ;
-    }
+  cluster( v.begin() , v.end() , std::back_inserter( cl )  , Pred ) ;
+  //isolated hits don't make it into a cluster :
+  for (typename std::vector< GenericHit<HIT>* >::iterator ith=v.begin(); ith!= v.end(); ++ith)
+    if (NULL==(*ith)->second)
+      {
+	GenericCluster<HIT>* acluster=new GenericCluster<HIT>(*ith);
+	cl.push_back(acluster);
+      }
 
   return ptocl;
+}
+
+//clustering with cartesian distance : will work for CalorimeterHit and SimCalorimeterHit
+template <class HIT>
+  GenericClusterVec<HIT>* SDHCALclusterize_cartesian(typename SDHCAL::LCIO_hitVectorManipulation<HIT>::TCaloHitPairIterator p, float dcut)
+{
+  NNDistance< HIT, float> max_distance_for_adjacent_hits_mm(dcut);
+  return SDHCALclusterize<HIT,NNDistance< HIT, float> >(p,&max_distance_for_adjacent_hits_mm);
+}
+
+//clustering in units of cell size (uses I and J in CellID
+template <class HIT>
+  GenericClusterVec<HIT>* SDHCALclusterize_IJcartesian(typename SDHCAL::LCIO_hitVectorManipulation<HIT>::TCaloHitPairIterator p, float dcut)
+{
+  SDHCAL_IJDistance<HIT> max_distance_for_adjacent_hits_IJ(dcut);
+  return SDHCALclusterize<HIT,SDHCAL_IJDistance<HIT> >(p,&max_distance_for_adjacent_hits_IJ);
 }
 
 
@@ -110,6 +159,10 @@ class HitDataStatByPlan
  public:
   std::map<unsigned int,int> distributionNombreHit;
   std::map<float,int> hitDistanceIJ;
+  std::map<unsigned int,int> distributionNombreClusterSide;
+  std::map<unsigned int,int> distributionSizeClusterSide;
+  std::map<unsigned int,int> distributionNombreClusterSideCorner;
+  std::map<unsigned int,int> distributionSizeClusterSideCorner;
 
   HitDataStatByPlan() {}
   typedef typename SDHCAL::LCIO_hitVectorManipulation<HIT>::TCaloHitPairIterator LocalCaloHitPairIterator;
@@ -133,8 +186,17 @@ class HitDataStatByPlan
 	    hitDistanceIJ[sqrt(carre(posIJ[i1].first-posIJ[i2].first)+carre(posIJ[i1].second-posIJ[i2].second))]++;
 	  }
       }
+
     //clusterisation
-    SDHCALclusterize<HIT>(p);
+    GenericClusterVec<HIT>* ClusterSide=SDHCALclusterize_IJcartesian<HIT>(p,1.1);
+    distributionNombreClusterSide[ClusterSide->size()]++;
+    for (typename GenericClusterVec<HIT>::iterator itcl=ClusterSide->begin(); itcl != ClusterSide->end(); ++itcl)
+      distributionSizeClusterSide[(*itcl)->size()]++;
+
+    GenericClusterVec<HIT>* ClusterSideCorner=SDHCALclusterize_IJcartesian<HIT>(p,1.6);
+    distributionNombreClusterSideCorner[ClusterSideCorner->size()]++;
+    for (typename GenericClusterVec<HIT>::iterator itcl=ClusterSideCorner->begin(); itcl != ClusterSideCorner->end(); ++itcl)
+      distributionSizeClusterSideCorner[(*itcl)->size()]++;
   }
 };
 
@@ -194,8 +256,12 @@ class HitDataStat
     for (typename std::map<unsigned int, HitDataStatByPlan<HIT> >::iterator it=statByPlan.begin(); it != statByPlan.end(); ++it)
       {
 	std::cout << "Subreport for layer : " << it->first << " : " << std::endl;
-	std::cout << spaces << "Number of hit in plane distribution : "; showMap(it->second.distributionNombreHit);
+	std::cout << spaces << "Number of hits in plane distribution : "; showMap(it->second.distributionNombreHit);
 	std::cout << spaces << "Distance between hits in plane distribution : "; showMap(it->second.hitDistanceIJ);
+	std::cout << spaces << "Number of clusters in plane side clustering : "; showMap(it->second.distributionNombreClusterSide);
+	std::cout << spaces << "Number of clusters in plane side and corner clustering : "; showMap(it->second.distributionNombreClusterSideCorner);
+	std::cout << spaces << "Size of clusters in plane side clustering : "; showMap(it->second.distributionSizeClusterSide);
+	std::cout << spaces << "Size of clusters in plane side and corner clustering : "; showMap(it->second.distributionSizeClusterSideCorner);
       }
   }
 };
