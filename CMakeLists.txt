@@ -20,9 +20,9 @@ find_package(Geant4 REQUIRED)
 find_package( ROOT REQUIRED ) # minimum required Marlin version
 #find_package( CLHEP REQUIRED )
 find_package( LCIO REQUIRED )
+find_package( MarlinUtil REQUIRED )
 
-
-FOREACH( pkg LCIO ROOT Geant4 )
+FOREACH( pkg LCIO ROOT Geant4 MarlinUtil)
     IF( ${pkg}_FOUND )
         INCLUDE_DIRECTORIES( ${${pkg}_INCLUDE_DIRS} )
         LINK_LIBRARIES( ${${pkg}_LIBRARIES} )

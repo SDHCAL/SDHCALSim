@@ -15,8 +15,17 @@
 #include "EVENT/LCGenericObject.h"
 #include "EVENT/LCEvent.h"
 
+#include "NNClusters.h"  // in MarlinUtil
+
 using namespace lcio ; 
 
+
+//////////////////////////////////////////////////////////////////////////////
+//
+//  Class to load a LCIO collection 
+//  template parameter should be a LCIO object
+//
+//////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 class SDHCAL_Simu_CollectionLoader
@@ -56,6 +65,42 @@ class SDHCAL_Simu_CollectionLoader
   
 };
 
+//////////////////////////////////////////////////////////////////////////////
+//
+//  function to clusterize
+//
+//////////////////////////////////////////////////////////////////////////////
+
+template <class HIT>
+GenericClusterVec<HIT>* SDHCALclusterize(typename SDHCAL::LCIO_hitVectorManipulation<HIT>::TCaloHitPairIterator p)
+{
+  std::vector< GenericHit<HIT>* > v;
+  for (typename SDHCAL::LCIO_hitVectorManipulation<HIT>::TCaloHitIterator it=p.first; it!=p.second; ++it)
+    v.push_back( new GenericHit<HIT>(*it) );
+  GenericClusterVec<HIT>* ptocl=new GenericClusterVec<HIT>();
+  GenericClusterVec<HIT>& cl=*ptocl ;
+
+  if (v.size()==1)
+    {
+      GenericCluster<HIT>* acluster=new GenericCluster<HIT>(v[0]);
+      cl.push_back(acluster);
+    }
+  else
+    {
+      NNDistance< HIT, float> max_distance_for_adjacent_hits_mm( 16 )  ;
+      cluster( v.begin() , v.end() , std::back_inserter( cl )  , &max_distance_for_adjacent_hits_mm ) ;
+    }
+
+  return ptocl;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+//
+//  Class to compute hit distribution in a RPC plane
+//
+//////////////////////////////////////////////////////////////////////////////
+
 template <class HIT>
 class HitDataStatByPlan
 {
@@ -88,12 +133,19 @@ class HitDataStatByPlan
 	    hitDistanceIJ[sqrt(carre(posIJ[i1].first-posIJ[i2].first)+carre(posIJ[i1].second-posIJ[i2].second))]++;
 	  }
       }
+    //clusterisation
+    SDHCALclusterize<HIT>(p);
   }
 };
 
 
 
 
+//////////////////////////////////////////////////////////////////////////////
+//
+//  Class to compute hit distribution in many RPC planes
+//
+//////////////////////////////////////////////////////////////////////////////
 
 template <class HIT>
 class HitDataStat
@@ -121,6 +173,7 @@ class HitDataStat
 	  distributionNumeroPlan[layer]++;
 	  statByPlan[layer].FillNhit(*it);
 	  statByPlan[layer].FillDistanceInfo(*it);
+	  
 	}
     }
 
@@ -146,6 +199,12 @@ class HitDataStat
       }
   }
 };
+
+//////////////////////////////////////////////////////////////////////////////
+//
+//  Class to analyze simulated/reconstructed GRPC hits
+//
+//////////////////////////////////////////////////////////////////////////////
 
 class SDHCAL_Simu_EventAnalyser
 {
