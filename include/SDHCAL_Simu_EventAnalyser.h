@@ -6,6 +6,7 @@
 #include <string>
 #include <iostream>
 #include <map>
+#include <math.h>
 
 //lcio stuff
 #include "UTIL/LCTypedVector.h"
@@ -58,15 +59,33 @@ class SDHCAL_Simu_CollectionLoader
 template <class HIT>
 class HitDataStatByPlan
 {
+  float carre(float x) {return x*x;}
+  float somme3carres(const float *v1,const float *v2) {return carre(v1[0]-v2[0])+ carre(v1[1]-v2[1])+ carre(v1[2]-v2[2]);}
+  float round3decimal(float x) {return int(1000*x)/1000.0;}
  public:
   std::map<unsigned int,int> distributionNombreHit;
-  std::vector<double> hitDistance;
-  std::vector<double> hitDistanceMin;
+  std::map<float,int> hitDistance;
 
   HitDataStatByPlan() {}
   typedef typename SDHCAL::LCIO_hitVectorManipulation<HIT>::TCaloHitPairIterator LocalCaloHitPairIterator;
   void FillNhit(LocalCaloHitPairIterator& p) { distributionNombreHit[std::distance(p.first,p.second)]++; }
+  void FillDistanceInfo(LocalCaloHitPairIterator &p)  //works only for SimCalorimeterHit and CalorimeterHit
+  {
+    typedef typename SDHCAL::LCIO_hitVectorManipulation<HIT>::TCaloHitVector::iterator LocalCaloHitIterator;
+    std::vector<const float*> pos;
+    for (LocalCaloHitIterator it=p.first; it != p.second ; ++it) pos.push_back((*it)->getPosition());
+    for (unsigned int i1=0; i1<pos.size(); ++i1)
+      {
+	for (unsigned int i2=i1+1; i2 < pos.size(); ++i2)
+	  {
+	    hitDistance[round3decimal(sqrt(somme3carres(pos[i1],pos[i2])))]++;
+	  }
+      }
+  }
 };
+
+
+
 
 
 template <class HIT>
@@ -94,13 +113,14 @@ class HitDataStat
 	  int layer= SDHCAL::LCIO_hitVectorManipulation<HIT>::CalorimeterHit_lessCellID::m_decoder.BF()["K-1"];
 	  distributionNumeroPlan[layer]++;
 	  statByPlan[layer].FillNhit(*it);
+	  statByPlan[layer].FillDistanceInfo(*it);
 	}
     }
 
-
-  void showMap(std::map<unsigned int,int> &m, std::ostream& flux=std::cout, char ending='\n')
+  template <class T>
+  void showMap(std::map<T,int> &m, std::ostream& flux=std::cout, char ending='\n')
     {
-      for(std::map<unsigned int,int>::const_iterator it = m.begin(); it != m.end(); ++it)
+      for(typename std::map<T,int>::const_iterator it = m.begin(); it != m.end(); ++it)
 	flux << it->first << ":" << it->second << ",  ";
       flux << ending;
   }
@@ -115,6 +135,7 @@ class HitDataStat
       {
 	std::cout << "Subreport for layer : " << it->first << " : " << std::endl;
 	std::cout << spaces << "Number of hit in plane distribution : "; showMap(it->second.distributionNombreHit);
+	std::cout << spaces << "Distance between hits in plane distribution : "; showMap(it->second.hitDistance);
       }
   }
 };
