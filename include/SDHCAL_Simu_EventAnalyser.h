@@ -22,10 +22,12 @@ class SDHCAL_Simu_CollectionLoader
 {
   LCTypedVector<T> *_vector;
   const char *_colName;
+  unsigned int _maxWarning;
+  unsigned int _warningCount;
  public:
   LCTypedVector<T>& vector() {return *_vector;} 
- SDHCAL_Simu_CollectionLoader(const char* namecol=NULL)
-   : _vector(NULL), _colName(namecol) {}
+ SDHCAL_Simu_CollectionLoader(const char* namecol=NULL,unsigned int max=10)
+   : _vector(NULL), _colName(namecol), _maxWarning(max), _warningCount(0) {}
   ~SDHCAL_Simu_CollectionLoader() {delete _vector;} 
 
   bool load(LCEvent *event)
@@ -41,7 +43,11 @@ class SDHCAL_Simu_CollectionLoader
       }
     catch( lcio::DataNotAvailableException& e )
       {
-	std::cerr << e.what() << std::endl ;
+	if (_warningCount<_maxWarning)
+	  {
+	    ++_warningCount;
+	    std::cerr << e.what() << "  Warning " << _warningCount<<"/" << _maxWarning << std::endl ;
+	  }
 	return false;
       }
     return true;

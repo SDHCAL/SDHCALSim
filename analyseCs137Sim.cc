@@ -218,7 +218,7 @@ int main(int argc, char** argv ){
   LCEvent* event = NULL ;
   
   //The analyser
-  SDHCAL_Simu_EventAnalyser analyser("SDHCAL_Proto_EndCap",NULL,"particleGenericObject");
+  SDHCAL_Simu_EventAnalyser analyser("SDHCAL_Proto_EndCap","HCALEndcap","particleGenericObject");
   //----------- the event loop -----------
   try{
     while( (event = lcReader->readNextEvent()) != 0 )
