@@ -64,21 +64,28 @@ class HitDataStatByPlan
   float round3decimal(float x) {return int(1000*x)/1000.0;}
  public:
   std::map<unsigned int,int> distributionNombreHit;
-  std::map<float,int> hitDistance;
+  std::map<float,int> hitDistanceIJ;
 
   HitDataStatByPlan() {}
   typedef typename SDHCAL::LCIO_hitVectorManipulation<HIT>::TCaloHitPairIterator LocalCaloHitPairIterator;
   void FillNhit(LocalCaloHitPairIterator& p) { distributionNombreHit[std::distance(p.first,p.second)]++; }
-  void FillDistanceInfo(LocalCaloHitPairIterator &p)  //works only for SimCalorimeterHit and CalorimeterHit
+  void FillDistanceInfo(LocalCaloHitPairIterator &p)  
   {
     typedef typename SDHCAL::LCIO_hitVectorManipulation<HIT>::TCaloHitVector::iterator LocalCaloHitIterator;
-    std::vector<const float*> pos;
-    for (LocalCaloHitIterator it=p.first; it != p.second ; ++it) pos.push_back((*it)->getPosition());
-    for (unsigned int i1=0; i1<pos.size(); ++i1)
+    std::vector<std::pair<int,int> > posIJ;
+    
+    for (LocalCaloHitIterator it=p.first; it != p.second ; ++it) 
       {
-	for (unsigned int i2=i1+1; i2 < pos.size(); ++i2)
+	const HIT* h=*it;
+	SDHCAL::LCIO_hitVectorManipulation<HIT>::CalorimeterHit_lessCellID::m_decoder.setValue(h->getCellID0(),h->getCellID1());
+	posIJ.push_back(std::pair<int,int>(SDHCAL::LCIO_hitVectorManipulation<HIT>::CalorimeterHit_lessCellID::m_decoder.BF()["I"],
+					   SDHCAL::LCIO_hitVectorManipulation<HIT>::CalorimeterHit_lessCellID::m_decoder.BF()["J"]));
+      }
+    for (unsigned int i1=0; i1<posIJ.size(); ++i1)
+      {
+	for (unsigned int i2=i1+1; i2 < posIJ.size(); ++i2)
 	  {
-	    hitDistance[round3decimal(sqrt(somme3carres(pos[i1],pos[i2])))]++;
+	    hitDistanceIJ[sqrt(carre(posIJ[i1].first-posIJ[i2].first)+carre(posIJ[i1].second-posIJ[i2].second))]++;
 	  }
       }
   }
@@ -135,7 +142,7 @@ class HitDataStat
       {
 	std::cout << "Subreport for layer : " << it->first << " : " << std::endl;
 	std::cout << spaces << "Number of hit in plane distribution : "; showMap(it->second.distributionNombreHit);
-	std::cout << spaces << "Distance between hits in plane distribution : "; showMap(it->second.hitDistance);
+	std::cout << spaces << "Distance between hits in plane distribution : "; showMap(it->second.hitDistanceIJ);
       }
   }
 };
