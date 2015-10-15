@@ -238,6 +238,9 @@ int main(int argc, char** argv ){
   myEventStuff::count.printDistributions();
 
   analyser.printStat();
+  std::string outputROOT=inputFilesVec[0];
+  outputROOT+=".root";
+  analyser.writeROOTfile(outputROOT.c_str());
 
     // free lcReader
     lcReader->close();

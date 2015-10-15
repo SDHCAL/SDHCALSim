@@ -17,7 +17,19 @@
 
 #include "NNClusters.h"  // in MarlinUtil
 
+//ROOT stuff
+#include "TDirectory.h"
+#include "TString.h"
+
 using namespace lcio ; 
+
+//////////////////////////////////////////////////////////////////////////////
+//
+//  Helper function to make ROOT histos
+//
+//////////////////////////////////////////////////////////////////////////////
+void SDHCALmakeHisto(const char *name, const char* title,std::map<unsigned int,int>& data,unsigned int minNumberOfBin=0,unsigned int maxNumberOfBin=0);
+void SDHCALmakeHisto(const char *name, const char* title,std::map<float,int>& data,unsigned int NBin=300,float maxValue=0);
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -198,6 +210,16 @@ class HitDataStatByPlan
     for (typename GenericClusterVec<HIT>::iterator itcl=ClusterSideCorner->begin(); itcl != ClusterSideCorner->end(); ++itcl)
       distributionSizeClusterSideCorner[(*itcl)->size()]++;
   }
+
+  void saveInHisto()
+  {
+    SDHCALmakeHisto("Nhit","Number of hits",distributionNombreHit);
+    SDHCALmakeHisto("hitDistance","Distance between hits in plane in cell size units",hitDistanceIJ);
+    SDHCALmakeHisto("NClusterSide","Number of NN clusters : distance cut at 1.1 cell size",distributionNombreClusterSide);
+    SDHCALmakeHisto("SizeClusterSide","NN clusters size : distance cut at 1.1 cell size",distributionSizeClusterSide);
+    SDHCALmakeHisto("NClusterSideCorner","Number of NN clusters : distance cut at 1.1 cell size",distributionNombreClusterSideCorner);
+    SDHCALmakeHisto("SizeClusterSideCorner","NN clusters size : distance cut at 1.6 cell size",distributionSizeClusterSideCorner);    
+  }
 };
 
 
@@ -264,6 +286,21 @@ class HitDataStat
 	std::cout << spaces << "Size of clusters in plane side and corner clustering : "; showMap(it->second.distributionSizeClusterSideCorner);
       }
   }
+
+  void saveInHisto()
+  {
+    SDHCALmakeHisto("Nhit","Total number of hits",distributionNombreHit);
+    SDHCALmakeHisto("NPlan","Number of layers with hits",distributionNombrePlan);
+    SDHCALmakeHisto("NumeroPlan","Layer with hits",distributionNumeroPlan);
+    TDirectory *dir=gDirectory;
+    for (typename std::map<unsigned int, HitDataStatByPlan<HIT> >::iterator it=statByPlan.begin(); it != statByPlan.end(); ++it)
+      {
+	TString a("Plan"); a+=it->first;
+	dir->mkdir(a);
+	dir->cd(a);
+	it->second.saveInHisto();
+      }
+  }
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -279,7 +316,7 @@ class SDHCAL_Simu_EventAnalyser
   
   void newEvent(LCEvent *event);
   void printStat();
-    
+  void writeROOTfile(const char* filename);
  private:
   
   SDHCAL_Simu_CollectionLoader<CalorimeterHit> _recoHits;
