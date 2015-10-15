@@ -31,6 +31,12 @@ using namespace lcio ;
 void SDHCALmakeHisto(const char *name, const char* title,std::map<unsigned int,int>& data,unsigned int minNumberOfBin=0,unsigned int maxNumberOfBin=0);
 void SDHCALmakeHisto(const char *name, const char* title,std::map<float,int>& data,unsigned int NBin=300,float maxValue=0);
 
+template <class KEY,class VALUE>
+  void merge(std::map<KEY,VALUE>& m1,std::map<KEY,VALUE>& m2)
+{
+  for (typename std::map<KEY,VALUE>::iterator it=m2.begin(); it!=m2.end(); ++it)
+    m1[it->first]+=it->second;
+}
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -220,6 +226,16 @@ class HitDataStatByPlan
     SDHCALmakeHisto("NClusterSideCorner","Number of NN clusters : distance cut at 1.1 cell size",distributionNombreClusterSideCorner);
     SDHCALmakeHisto("SizeClusterSideCorner","NN clusters size : distance cut at 1.6 cell size",distributionSizeClusterSideCorner);    
   }
+
+  void Add(HitDataStatByPlan<HIT> &h)
+  {
+    merge(distributionNombreHit,h.distributionNombreHit);
+    merge(hitDistanceIJ,h.hitDistanceIJ);
+    merge(distributionNombreClusterSide,h.distributionNombreClusterSide);
+    merge(distributionSizeClusterSide,h.distributionSizeClusterSide);
+    merge(distributionNombreClusterSideCorner,h.distributionNombreClusterSideCorner);
+    merge(distributionSizeClusterSideCorner,h.distributionSizeClusterSideCorner);
+  }
 };
 
 
@@ -293,13 +309,18 @@ class HitDataStat
     SDHCALmakeHisto("NPlan","Number of layers with hits",distributionNombrePlan);
     SDHCALmakeHisto("NumeroPlan","Layer with hits",distributionNumeroPlan);
     TDirectory *dir=gDirectory;
+    HitDataStatByPlan<HIT> statAllPlan;
     for (typename std::map<unsigned int, HitDataStatByPlan<HIT> >::iterator it=statByPlan.begin(); it != statByPlan.end(); ++it)
       {
+	statAllPlan.Add(it->second);
 	TString a("Plan"); a+=it->first;
 	dir->mkdir(a);
 	dir->cd(a);
 	it->second.saveInHisto();
       }
+    dir->mkdir("AllPlans");
+    dir->cd("AllPlans");
+    statAllPlan.saveInHisto();
   }
 };
 
