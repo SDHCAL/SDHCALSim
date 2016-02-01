@@ -33,7 +33,7 @@ CMS_lumi( TPad* pad, int iPeriod, int iPosX )
   TString lumiText;
   if( iPeriod==1 )
     {
-      lumiText += "E_{#mu} = 150 GeV";
+      lumiText += "E_{#gamma} = 661.7 keV";
     }
   else if ( iPeriod==2 )
     {
