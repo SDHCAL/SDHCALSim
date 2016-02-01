@@ -82,7 +82,7 @@ G4VPhysicalVolume* LyonDetectorConstruction::Construct()
   Steel->AddMaterial(Ni,fractionMassNi);
   //G4Material *Steel=Fer;
 
- 
+  G4Material *PVDF    =man->FindOrBuildMaterial("G4_POLYVINYLIDENE_FLUORIDE");
   G4Material *glass   =man->FindOrBuildMaterial("G4_Pyrex_Glass");
   G4Material *mylar   =man->FindOrBuildMaterial("G4_MYLAR");
   G4Material *graphite=man->FindOrBuildMaterial("G4_GRAPHITE");
@@ -572,7 +572,7 @@ G4VPhysicalVolume* LyonDetectorConstruction::Construct()
   
   
   G4LogicalVolume *logicRPCElectronics = new G4LogicalVolume(solidRPCElectronics,    //its solid
-							     defaultMaterial , //its material
+							     g10 , //its material
 							     "logicRPC"); //name
   
   new G4PVPlacement(0,		   //no rotation
@@ -592,7 +592,7 @@ G4VPhysicalVolume* LyonDetectorConstruction::Construct()
 
   
   G4LogicalVolume *logicRPCPCB = new G4LogicalVolume(solidRPCPCB,    //its solid
-						     defaultMaterial , //its material
+						     g10 , //its material
 						     "logicRPCPCB"); //name
  
   new G4PVPlacement(0,		   //no rotation
@@ -689,6 +689,7 @@ G4VPhysicalVolume* LyonDetectorConstruction::Construct()
   
   G4LogicalVolume *logicRPCThinGlass = new G4LogicalVolume(solidRPCThinGlass,    //its solid
 							   glass, //its material
+							   /*PVDF, //its material*/
 							   "logicRPCThinGlass"); //name
  
   new G4PVPlacement(0,		   //no rotation
@@ -707,6 +708,7 @@ G4VPhysicalVolume* LyonDetectorConstruction::Construct()
   
   G4LogicalVolume *logicRPCThickGlass = new G4LogicalVolume(solidRPCThickGlass,    //its solid
 							    glass, //its material
+							    /*PVDF, //its material*/
 							    "logicRPCThickGlass"); //name
  
   new G4PVPlacement(0,		   //no rotation
