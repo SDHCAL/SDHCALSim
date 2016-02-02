@@ -8,6 +8,8 @@
 #include "G4VisExecutive.hh"
 #endif
 
+#include "G4ScoringManager.hh"
+
 #include "LyonDetectorConstruction.hh"
 //#include "LyonPhysicsList.hh" deprecated from geant 4.9.4
 #include "LyonPrimaryGeneratorAction.hh"
@@ -35,6 +37,9 @@ int main(int argc,char** argv)
   // Construct the default run manager
   //
   G4RunManager* runManager = new G4RunManager;
+  //Activate command-based scorer 
+  //should be called right afetr G4RunManager instantition
+  G4ScoringManager::GetScoringManager();
 
   // set mandatory initialization classes
   //
