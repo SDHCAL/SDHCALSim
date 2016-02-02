@@ -45,6 +45,12 @@ void ggMacro(TString fileName)
     }
   hScale->GetXaxis()->SetTitle("CMS GRPC Chamber");
   hScale->GetYaxis()->SetTitle("Fraction of source gammas giving a hit");
+
+
+  //add extraText
+  writeExtraText = true;       // if extra text
+  extraText  = "Simulation";  // default extra text is "Preliminary"
+
   Int_t iPos=22; Int_t iPeriod=1;
   TCanvas *can=makeCanva(iPos,iPeriod,true);
   myDrawHist(hScale);
@@ -81,7 +87,7 @@ TCanvas* makeCanva(int iPos, int iPeriod, bool writeExtraText)
   canvName += H;
   canvName += "_";  
   canvName += iPeriod;
-  if( writeExtraText ) canvName += "-prelim";
+  if( writeExtraText ) {canvName += "-"; canvName+=extraText;}
   if( iPos%10==0 ) canvName += "-out";
   else if( iPos%10==1 ) canvName += "-left";
   else if( iPos%10==2 )  canvName += "-center";
