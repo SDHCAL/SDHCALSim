@@ -15,6 +15,33 @@
 
 /geometry/test/grid_test true
 
+
+# define scoring mesh
+#/score/create/boxMesh boxMesh_1
+#Make a box containing the calorimeter
+#/score/mesh/boxSize 50. 50. 46.2917 cm
+#/score/mesh/nBin 1 1 7
+
+#/score/quantity/flatSurfaceFlux allparticulesFlux 1  
+#/score/filter/particle gammaFilter gamma
+#/score/quantity/flatSurfaceFlux gammaFlux 1
+#/score/filter/charged chargedFilter
+#/score/quantity/flatSurfaceFlux chargedFlux 1
+#/score/close
+
+#/score/create/boxMesh boxMesh_2
+#/score/mesh/boxSize 500. 500. 0.1 mm
+#/score/mesh/nBin 1 1 1
+#/score/mesh/translate/xyz 0. 0. -46.2917 cm
+#/score/quantity/flatSurfaceFlux allparticulesFlux 1
+#/score/close
+
+
 /gun/particle gamma
 /gun/energy 661.7 keV
-/run/beamOn 10000
+#/run/beamOn 1000000
+/run/beamOn 100
+
+
+#/score/dumpAllQuantitiesToFile  boxMesh_1 testScore.txt
+#/score/dumpAllQuantitiesToFile  boxMesh_2 testScore2.txt
