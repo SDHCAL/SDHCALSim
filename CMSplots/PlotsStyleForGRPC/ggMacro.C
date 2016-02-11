@@ -50,6 +50,7 @@ void ggMacro(TString fileName)
   //add extraText
   writeExtraText = true;       // if extra text
   extraText  = "Simulation";  // default extra text is "Preliminary"
+  cmsText = "GRPC-GIF++";
 
   Int_t iPos=22; Int_t iPeriod=1;
   TCanvas *can=makeCanva(iPos,iPeriod,true);
