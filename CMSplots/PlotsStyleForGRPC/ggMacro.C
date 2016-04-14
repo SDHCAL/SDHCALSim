@@ -27,14 +27,13 @@ void ggMacro()
 }
 
 
-void ggMacro(TString fileName)
+TH1F* createScaledHisto(TString fileName)
 {
-  setTDRStyle();
   TFile *f=TFile::Open(fileName);
   f->cd("SimHits");
   TH1I *hist=(TH1I*) gDirectory->GetObjectChecked("NumeroPlan","TH1I");
-  hist->GetXaxis()->SetTitle("CMS GRPC Chamber");
-  hist->GetYaxis()->SetTitle("Number of hits");
+  //hist->GetXaxis()->SetTitle("CMS GRPC Chamber");
+  //hist->GetYaxis()->SetTitle("Number of hits");
   //hist->Draw();
  
   TH1F *hScale=new TH1F("NumeroPlanScale","Fraction of source gamma giving hit", 7, 0, 7);
@@ -46,6 +45,15 @@ void ggMacro(TString fileName)
   hScale->GetXaxis()->SetTitle("CMS GRPC Chamber");
   hScale->GetYaxis()->SetTitle("Fraction of source gammas giving a hit");
 
+  //f->Close();
+  return hScale;
+}
+
+void ggMacro(TString fileName)
+{
+  setTDRStyle();
+  
+  TH1F* hScale=createScaledHisto(fileName);
 
   //add extraText
   writeExtraText = true;       // if extra text
