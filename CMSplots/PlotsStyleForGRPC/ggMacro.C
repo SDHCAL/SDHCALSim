@@ -23,8 +23,14 @@ void myDrawHist(TH1* h);
 
 void ggMacro()
 {
-  ggMacro("../../test.000_1M_7layers_0deg_g10PCB.slcio.root");
+  //ggMacro("../../test.000_1M_7layers_0deg_g10PCB.slcio.root");
+  ggMultiPlot();
 }
+
+Double_t legend_x1=0.55;
+Double_t legend_y1=0.55;
+Double_t legend_x2=0.70;
+Double_t legend_y2=0.70;
 
 
 TH1F* createScaledHisto(TString fileName)
@@ -81,8 +87,80 @@ void ggMultiPlot()
   setTDRStyle();
   TH1F* hScaleNormalPCB=createScaledHisto("../../test.000_1M_7layers_0deg_g10PCB.slcio.root");
   TH1F* hScaleNormalAir=createScaledHisto("../../digitised_test.000_1M_7layers.slcio.root");
-}
+  
+  //add extraText
+  writeExtraText = true;       // if extra text
+  extraText  = "Simulation_material";  // default extra text is "Preliminary"
+  cmsText = "GRPC-GIF++, normal incidence";
 
+
+  Int_t iPos=22; Int_t iPeriod=1;
+
+  //plot air versus PCB
+
+  TCanvas *can=makeCanva(iPos,iPeriod,true);
+
+  legend_y1=0.15;
+  legend_x1=0.15;
+  legend_y2=0.3;
+  legend_x2=0.3;
+  TLegend* leg=myDrawHist(hScaleNormalPCB,"#0000ff",21,0,"GIF++ CMS-GRPC setup");
+  myDrawHist(hScaleNormalAir,"#00ff00",21,leg,"GIF++ CMS-GRPC setup, PCB=air");
+  leg->Draw();
+  
+   // writing the lumi information and the CMS "logo"
+  CMS_lumi( can, iPeriod, iPos );
+
+  can->Update();
+  can->RedrawAxis();
+  can->GetFrame()->Draw();
+
+  can->Print(TString(can->GetName())+".pdf",".pdf");
+  can->Print(TString(can->GetName())+".png",".png"); 
+
+  //plot incidence changeante
+  TH1F* hScale10degAir=createScaledHisto("../../digitised_test.000_1M_7layers_10deg.slcio.root");
+
+  extraText  = "Simulation_incidence";  // default extra text is "Preliminary"
+  cmsText = "GRPC-GIF++, PCB=air";
+  can=makeCanva(iPos,iPeriod,true);
+  leg= myDrawHist(hScaleNormalAir,"#00ff00",21,0,"GIF++ CMS-GRPC setup, normal incidence");
+  myDrawHist(hScale10degAir,"#0000ff",21,leg,"GIF++ CMS-GRPC setup, 10 degrees incidence");
+  leg->Draw();
+  
+   // writing the lumi information and the CMS "logo"
+  CMS_lumi( can, iPeriod, iPos );
+
+  can->Update();
+  can->RedrawAxis();
+  can->GetFrame()->Draw();
+
+  can->Print(TString(can->GetName())+".pdf",".pdf");
+  can->Print(TString(can->GetName())+".png",".png"); 
+
+  //plot EM physics_list
+  TH1F* hScaleNormalAirLivermore=createScaledHisto("../../digitised_test.000_1M_7layers_Livermore.slcio.root");
+  TH1F* hScaleNormalAirPenelope=createScaledHisto("../../digitised_test.000_1M_7layers_Penelope.slcio.root");
+  
+  extraText  = "Simulation_lowEM";  // default extra text is "Preliminary"
+  cmsText = "GRPC-GIF++, PCB=air, normal incidence"; 
+  can=makeCanva(iPos,iPeriod,true);
+  leg= myDrawHist(hScaleNormalAir,"#00ff00",21,0,"GIF++ CMS-GRPC setup, standard low E for EM");
+  myDrawHist(hScaleNormalAirLivermore,"#0000ff",21,leg,"GIF++ CMS-GRPC setup, Livermore");
+  myDrawHist(hScaleNormalAirPenelope,"#ff0000",21,leg,"GIF++ CMS-GRPC setup, Penelope");
+  leg->Draw();
+  
+   // writing the lumi information and the CMS "logo"
+  CMS_lumi( can, iPeriod, iPos );
+
+  can->Update();
+  can->RedrawAxis();
+  can->GetFrame()->Draw();
+
+  can->Print(TString(can->GetName())+".pdf",".pdf");
+  can->Print(TString(can->GetName())+".png",".png");  
+  
+}
 
 
 TCanvas* makeCanva(int iPos, int iPeriod, bool writeExtraText)
@@ -163,9 +241,12 @@ TLegend* myDrawHist(TH1* h,TString markercol,Int_t markerstyle,TLegend *leg,TStr
   h->GetZaxis()->SetTitleSize(0.035);
   h->GetZaxis()->SetTitleFont(42);
   
-  h->Draw();
+  if (leg==0)
+    h->Draw();
+  else
+    h->Draw("SAME");
 
-  if (leg==0) leg = new TLegend(0.55,0.55,0.70,0.70);
+  if (leg==0) leg = new TLegend(legend_x1,legend_y1,legend_x2,legend_y2);
   leg->SetTextSize(0.035);
   leg->SetLineColor(1);
   leg->SetLineStyle(1);
