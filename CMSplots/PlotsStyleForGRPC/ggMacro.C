@@ -62,7 +62,7 @@ void ggMacro(TString fileName)
 
   Int_t iPos=22; Int_t iPeriod=1;
   TCanvas *can=makeCanva(iPos,iPeriod,true);
-  myDrawHist(hScale);
+  myDrawHist(hScale,"#0000ff",21);
 
   // writing the lumi information and the CMS "logo"
   CMS_lumi( can, iPeriod, iPos );
@@ -76,6 +76,15 @@ void ggMacro(TString fileName)
 
 }
     
+void ggMultiPlot()
+{
+  setTDRStyle();
+  TH1F* hScaleNormalPCB=createScaledHisto("../../test.000_1M_7layers_0deg_g10PCB.slcio.root");
+  TH1F* hScaleNormalAir=createScaledHisto("../../digitised_test.000_1M_7layers.slcio.root");
+}
+
+
+
 TCanvas* makeCanva(int iPos, int iPeriod, bool writeExtraText)
 {
   int W = 800;
@@ -117,14 +126,15 @@ TCanvas* makeCanva(int iPos, int iPeriod, bool writeExtraText)
   return canv;
 }
 
-void myDrawHist(TH1* h)
+void myDrawHist(TH1* h,TString markercol,Int_t markerstyle)
 {
   Int_t ci;      // for color index setting
   TColor *color; // for color definition with alpha
-  ci = TColor::GetColor("#0000ff");
+  //ci = TColor::GetColor("#0000ff");
+  ci = TColor::GetColor(markercol);
   h->SetMarkerColor(ci);
-  h->SetMarkerStyle(21);
-  
+  //h->SetMarkerStyle(21);
+  h->SetMarkerStyle(markerstyle);
   
   //h->SetDirectory(0);
   h->SetStats(0);
