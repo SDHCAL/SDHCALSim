@@ -62,7 +62,7 @@ void ggMacro(TString fileName)
 
   Int_t iPos=22; Int_t iPeriod=1;
   TCanvas *can=makeCanva(iPos,iPeriod,true);
-  myDrawHist(hScale,"#0000ff",21);
+  myDrawHist(hScale,"#0000ff",21,0,"GIF++ CMS-GRPC setup")->Draw();
 
   // writing the lumi information and the CMS "logo"
   CMS_lumi( can, iPeriod, iPos );
@@ -126,7 +126,7 @@ TCanvas* makeCanva(int iPos, int iPeriod, bool writeExtraText)
   return canv;
 }
 
-void myDrawHist(TH1* h,TString markercol,Int_t markerstyle)
+TLegend* myDrawHist(TH1* h,TString markercol,Int_t markerstyle,TLegend *leg,TString legend)
 {
   Int_t ci;      // for color index setting
   TColor *color; // for color definition with alpha
@@ -165,7 +165,7 @@ void myDrawHist(TH1* h,TString markercol,Int_t markerstyle)
   
   h->Draw();
 
-  TLegend *leg = new TLegend(0.55,0.55,0.70,0.70);
+  if (leg==0) leg = new TLegend(0.55,0.55,0.70,0.70);
   leg->SetTextSize(0.035);
   leg->SetLineColor(1);
   leg->SetLineStyle(1);
@@ -173,9 +173,9 @@ void myDrawHist(TH1* h,TString markercol,Int_t markerstyle)
   leg->SetFillColor(0);
   leg->SetBorderSize(0);
   leg->SetHeader("GEANT4 simulation");
-  leg->AddEntry(h, "GIF++ CMS-GRPC setup", "p");
-  leg->Draw();
-
+  leg->AddEntry(h, legend, "p");
+  //leg->Draw();
+  return leg;
 }
 
 
