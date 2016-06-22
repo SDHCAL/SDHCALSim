@@ -376,10 +376,10 @@ struct measurements
   inline unsigned int I(unsigned int chamber,unsigned int measure) {return NCHAMBERS*chamber+measure;}
   int  measure_markerstyle[NMEASURES];
   Int_t chamber_ColorIndex[NCHAMBERS];
-  TGraph* allGraphes[NCHAMBERS*NMEASURES];
-  TGraph* graph(unsigned int chamber,unsigned int measure) {return allGraphes[I(chamber,measure)];}
+  TGraphErrors* allGraphes[NCHAMBERS*NMEASURES];
+  TGraphErrors* graph(unsigned int chamber,unsigned int measure) {return allGraphes[I(chamber,measure)];}
   
-  TGraph* createGraph(const char *name, unsigned int chamber, unsigned int measure, int N, float *Ipoint, float *HVpoint);
+  TGraphErrors* createGraph(const char *name, unsigned int chamber, unsigned int measure, int N, float *Ipoint, float *HVpoint);
 
 
   measurements(); 
@@ -388,15 +388,16 @@ struct measurements
 TGraph* deriveGraph(const TGraph *gr);
 
 
-TGraph*  measurements::createGraph(const char *name, unsigned int chamber, unsigned int measure, int N, float *Ipoint, float *HVpoint)
+TGraphErrors*  measurements::createGraph(const char *name, unsigned int chamber, unsigned int measure, int N, float *Ipoint, float *HVpoint)
 {
-  TGraph *gr = allGraphes[I(chamber,measure)] = new TGraph(N);
+  TGraphErrors *gr = allGraphes[I(chamber,measure)] = new TGraphErrors(N);
   gr->SetName(name);
   gr->SetTitle("");
   gr->SetLineColor(chamber_ColorIndex[chamber]);
   gr->SetMarkerColor(chamber_ColorIndex[chamber]);
   gr->SetMarkerStyle(measure_markerstyle[measure]);
   for (int i=0; i<N; ++i) gr->SetPoint(i,HVpoint[i],Ipoint[i]);
+  for (int i=0; i<N; ++i) gr->SetPointError(i,10,0.2); //ERROR proposed by Maxime
   return gr;
 }
 
