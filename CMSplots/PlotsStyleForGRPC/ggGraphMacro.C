@@ -27,13 +27,13 @@ class DrawSomething
   void setCanvName(const char *text);
   void makeCanva();
   void makeLegend(const char *header);
-  void setGraphAxis(TGraph* gr);
+  void setGraphAxis(TGraph* gr, const char* yaxis);
 
 public:
   DrawSomething();
   void setLegendCoord(float xmin,float ymin, float xmax, float ymax) {leg_xmin=xmin; leg_ymin=ymin; leg_xmax=xmax; leg_ymax=ymax;}
   void beginCanva(const char* text, const char* legendHeader, int Width=800, int Height=600);
-  void drawFake(float xmax, float ymax);
+  void drawFake(float xmax, float ymax, const char* yaxis="Current (#muA)");
   void addGraph(TGraph* gre,const char *legEntry, bool drawAxes=false); //works also for TGraphError
   void finalizeCanva();
 };
@@ -118,7 +118,7 @@ void DrawSomething::makeCanva()
   canv->SetTicky(0);
 }
 
-void DrawSomething::setGraphAxis(TGraph* gr)
+void DrawSomething::setGraphAxis(TGraph* gr, const char* yaxis)
 {
    gr->GetXaxis()->SetTitle("High Voltage (V)");
    gr->GetXaxis()->CenterTitle(true);
@@ -127,7 +127,7 @@ void DrawSomething::setGraphAxis(TGraph* gr)
    gr->GetXaxis()->SetTitleSize(0.05);
    gr->GetXaxis()->SetTitleFont(42);
    gr->GetXaxis()->SetTitleOffset(1.0);
-   gr->GetYaxis()->SetTitle("Current (#muA)");
+   gr->GetYaxis()->SetTitle(yaxis);
    gr->GetYaxis()->SetTitleOffset(1.0);
    gr->GetYaxis()->CenterTitle(true);
    gr->GetYaxis()->SetLabelFont(42);
@@ -137,7 +137,7 @@ void DrawSomething::setGraphAxis(TGraph* gr)
 }
 
 
-void DrawSomething::drawFake(float xmax, float ymax)
+void DrawSomething::drawFake(float xmax, float ymax, const char* yaxis)
 {
   TGraph*  gr_fake=new TGraph(2);
   gr_fake->SetMarkerStyle(1);
@@ -145,7 +145,7 @@ void DrawSomething::drawFake(float xmax, float ymax)
   gr_fake->SetMarkerColor(0);
   gr_fake->SetPoint(0,0,0);
   gr_fake->SetPoint(1,xmax,ymax);
-  setGraphAxis(gr_fake);
+  setGraphAxis(gr_fake,yaxis);
   gr_fake->Draw("ap");
 }
 
@@ -381,8 +381,12 @@ struct measurements
   
   TGraph* createGraph(const char *name, unsigned int chamber, unsigned int measure, int N, float *Ipoint, float *HVpoint);
 
+
   measurements(); 
 };
+
+TGraph* deriveGraph(const TGraph *gr);
+
 
 TGraph*  measurements::createGraph(const char *name, unsigned int chamber, unsigned int measure, int N, float *Ipoint, float *HVpoint)
 {
@@ -394,6 +398,29 @@ TGraph*  measurements::createGraph(const char *name, unsigned int chamber, unsig
   gr->SetMarkerStyle(measure_markerstyle[measure]);
   for (int i=0; i<N; ++i) gr->SetPoint(i,HVpoint[i],Ipoint[i]);
   return gr;
+}
+
+TGraph* deriveGraph(const TGraph *gr)
+{
+  int N=gr->GetN();
+  TGraph *grd = new TGraph(N-2);
+  TString s=gr->GetName(); 
+  s+="_derive"; 
+  grd->SetName(s);
+  grd->SetTitle("");
+  grd->SetLineColor(gr->GetLineColor());
+  grd->SetMarkerColor(gr->GetMarkerColor());
+  grd->SetMarkerStyle(gr->GetMarkerStyle());
+  double *HV=gr->GetX();
+  double *current=gr->GetY();
+  for (int i=1; i<N-1; ++i)
+    {
+      double devgauche=(current[i]-current[i-1])/(HV[i]-HV[i-1]);
+      double devdroite=(current[i+1]-current[i])/(HV[i+1]-HV[i]);
+      double dev=(devgauche+devdroite)/2;
+      grd->SetPoint(i-1,HV[i],dev);
+    }
+  return grd;
 }
 
 measurements::measurements()
@@ -481,6 +508,28 @@ void myMacro()
   D.addGraph(A.graph(measurements::CH5,measurements::June16down),"June 16 11 am, HV going down");
   D.finalizeCanva();
 
+  D.beginCanva("Argon_inverse_resistance","Inverse resistance as a funcion of HV");
+  D.drawFake(5300,0.04,"Conductance (M#Omega)^{-1}");
+  D.addGraph(deriveGraph(A.graph(measurements::CH1,measurements::June15gg)),"chamber 1");
+  D.addGraph(deriveGraph(A.graph(measurements::CH1,measurements::June15max)),NULL);
+  D.addGraph(deriveGraph(A.graph(measurements::CH1,measurements::June16up)),NULL);
+  D.addGraph(deriveGraph(A.graph(measurements::CH1,measurements::June16down)),NULL);
+
+  D.addGraph(deriveGraph(A.graph(measurements::CH2,measurements::June15gg)),"chamber 2");
+  D.addGraph(deriveGraph(A.graph(measurements::CH2,measurements::June15max)),NULL);
+  D.addGraph(deriveGraph(A.graph(measurements::CH2,measurements::June16up)),NULL);
+  D.addGraph(deriveGraph(A.graph(measurements::CH2,measurements::June16down)),NULL);
+
+  D.addGraph(deriveGraph(A.graph(measurements::CH4,measurements::June15gg)),"chamber 4");
+  D.addGraph(deriveGraph(A.graph(measurements::CH4,measurements::June15max)),NULL);
+  D.addGraph(deriveGraph(A.graph(measurements::CH4,measurements::June16up)),NULL);
+  D.addGraph(deriveGraph(A.graph(measurements::CH4,measurements::June16down)),NULL);
+
+  D.addGraph(deriveGraph(A.graph(measurements::CH5,measurements::June15gg)),"chamber 5");
+  D.addGraph(deriveGraph(A.graph(measurements::CH5,measurements::June15max)),NULL);
+  D.addGraph(deriveGraph(A.graph(measurements::CH5,measurements::June16up)),NULL);
+  D.addGraph(deriveGraph(A.graph(measurements::CH5,measurements::June16down)),NULL);
+  D.finalizeCanva();
 
 }
 
