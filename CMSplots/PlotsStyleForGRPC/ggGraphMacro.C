@@ -6,7 +6,8 @@
 #include "TFrame.h"
 #include "TLegend.h"
 #include "TGraphErrors.h"
-#include <map>
+#include <vector>
+
 
 class DrawSomething
 {
@@ -386,6 +387,7 @@ struct measurements
 };
 
 TGraph* deriveGraph(const TGraph *gr);
+TGraph* inverseGraph(const TGraph *gr);
 
 
 TGraphErrors*  measurements::createGraph(const char *name, unsigned int chamber, unsigned int measure, int N, float *Ipoint, float *HVpoint)
@@ -423,6 +425,29 @@ TGraph* deriveGraph(const TGraph *gr)
     }
   return grd;
 }
+
+TGraph* inverseGraph(const TGraph *gr)
+{
+  int N=gr->GetN();
+  double *HV=gr->GetX();
+  double *conductance=gr->GetY();
+  std::vector<int> keptPoint;
+  for (int i=0; i<N; ++i) if (conductance[i]>0) keptPoint.push_back(i);
+  TGraph *grd = new TGraph(keptPoint.size());
+  TString s=gr->GetName(); 
+  s+="_inverse"; 
+  grd->SetName(s);
+  grd->SetTitle("");
+  grd->SetLineColor(gr->GetLineColor());
+  grd->SetMarkerColor(gr->GetMarkerColor());
+  grd->SetMarkerStyle(gr->GetMarkerStyle());
+  for (unsigned int i=0; i<keptPoint.size(); ++i)
+    {
+      grd->SetPoint(i,HV[keptPoint[i]],1/conductance[keptPoint[i]]);
+    }
+  return grd;
+}
+
 
 measurements::measurements()
 {
@@ -531,6 +556,22 @@ void myMacro()
   D.addGraph(deriveGraph(A.graph(measurements::CH5,measurements::June16up)),NULL);
   D.addGraph(deriveGraph(A.graph(measurements::CH5,measurements::June16down)),NULL);
   D.finalizeCanva();
+
+  
+  D.beginCanva("Argon_resistance","Resistance as a funcion of HV");
+  D.drawFake(5300,1000,"Resistance (M#Omega)");
+  D.addGraph(inverseGraph(deriveGraph(A.graph(measurements::CH1,measurements::June15gg))),"chamber 1, June 15 7 pm");
+  D.addGraph(inverseGraph(deriveGraph(A.graph(measurements::CH1,measurements::June15max))),"chamber 1, June 15 11 pm");
+  D.addGraph(inverseGraph(deriveGraph(A.graph(measurements::CH2,measurements::June15gg))),"chamber 2, June 15 7 pm");
+  D.addGraph(inverseGraph(deriveGraph(A.graph(measurements::CH2,measurements::June15max))),"chamber 2, June 15 11 pm");
+  D.addGraph(inverseGraph(deriveGraph(A.graph(measurements::CH4,measurements::June15gg))),"chamber 4, June 15 7 pm");
+  D.addGraph(inverseGraph(deriveGraph(A.graph(measurements::CH4,measurements::June15max))),"chamber 4, June 15 11 pm");
+  D.addGraph(inverseGraph(deriveGraph(A.graph(measurements::CH5,measurements::June15gg))),"chamber 5, June 15 7 pm");
+  D.addGraph(inverseGraph(deriveGraph(A.graph(measurements::CH5,measurements::June15max))),"chamber 5, June 15 11 pm");
+  D.finalizeCanva();
+
+
+
 
 }
 
