@@ -370,179 +370,65 @@ float Ich5ggJune16down[32]=
 
 struct measurements
 {
-  int june15_markerStyle;
-  int june15max_markerStyle;
-  int june16ggup_markerStyle;
-  int june16ggdown_markerStyle;
-  Int_t chamber1_ColorIndex;
-  Int_t chamber2_ColorIndex;
-  Int_t chamber4_ColorIndex;
-  Int_t chamber5_ColorIndex;
+  enum CHAMBER {CH1,CH2,CH4,CH5, NCHAMBERS};
+  enum MEASURE {June15gg, June15max, June16up, June16down, NMEASURES};
 
+  inline unsigned int I(unsigned int chamber,unsigned int measure) {return NCHAMBERS*chamber+measure;}
+  int  measure_markerstyle[NMEASURES];
+  Int_t chamber_ColorIndex[NCHAMBERS];
+  TGraph* allGraphes[NCHAMBERS*NMEASURES];
+  TGraph* graph(unsigned int chamber,unsigned int measure) {return allGraphes[I(chamber,measure)];}
+  
+  TGraph* createGraph(const char *name, unsigned int chamber, unsigned int measure, int N, float *Ipoint, float *HVpoint);
 
-  TGraph* gr_Ich1ggJune15;
-  TGraph* gr_Ich2ggJune15;
-  TGraph* gr_Ich4ggJune15;
-  TGraph* gr_Ich5ggJune15;
-
-  TGraph* gr_Ich1maxJune15;
-  TGraph* gr_Ich2maxJune15;
-  TGraph* gr_Ich4maxJune15;
-  TGraph* gr_Ich5maxJune15;
-
-  TGraph* gr_Ich1ggJune16up;
-  TGraph* gr_Ich1ggJune16down;
-  TGraph* gr_Ich2ggJune16up;
-  TGraph* gr_Ich2ggJune16down;
-  TGraph* gr_Ich4ggJune16up;
-  TGraph* gr_Ich4ggJune16down;
-  TGraph* gr_Ich5ggJune16up;
-  TGraph* gr_Ich5ggJune16down;
   measurements(); 
 };
 
+TGraph*  measurements::createGraph(const char *name, unsigned int chamber, unsigned int measure, int N, float *Ipoint, float *HVpoint)
+{
+  TGraph *gr = allGraphes[I(chamber,measure)] = new TGraph(N);
+  gr->SetName(name);
+  gr->SetTitle("");
+  gr->SetLineColor(chamber_ColorIndex[chamber]);
+  gr->SetMarkerColor(chamber_ColorIndex[chamber]);
+  gr->SetMarkerStyle(measure_markerstyle[measure]);
+  for (int i=0; i<N; ++i) gr->SetPoint(i,HVpoint[i],Ipoint[i]);
+  return gr;
+}
+
 measurements::measurements()
 {
-  june15_markerStyle=25; // open square
-  june15max_markerStyle=24; // open circle
-  june16ggup_markerStyle=26; // open triangle up
-  june16ggdown_markerStyle=28; // open cross
-  chamber1_ColorIndex=TColor::GetColor("#0000ff");
-  chamber2_ColorIndex=TColor::GetColor("#00ff00");
-  chamber4_ColorIndex=TColor::GetColor("#ff0000");
-  chamber5_ColorIndex=TColor::GetColor("#00ffff");
+  measure_markerstyle[June15gg]=25;   // open square
+  measure_markerstyle[June15max]=24;  // open circle
+  measure_markerstyle[June16up]=26;   // open triangle up
+  measure_markerstyle[June16down]=28; // open cross
+  chamber_ColorIndex[CH1]=TColor::GetColor("#0000ff");
+  chamber_ColorIndex[CH2]=TColor::GetColor("#00ff00");
+  chamber_ColorIndex[CH4]=TColor::GetColor("#ff0000");
+  chamber_ColorIndex[CH5]=TColor::GetColor("#00ffff");
 
 
 
-  gr_Ich1ggJune15=new TGraph(22);
-  gr_Ich1ggJune15->SetName("Graph1ggJune15");
-  gr_Ich1ggJune15->SetTitle("");
-  gr_Ich1ggJune15->SetLineColor(chamber1_ColorIndex);
-  gr_Ich1ggJune15->SetMarkerColor(chamber1_ColorIndex);
-  gr_Ich1ggJune15->SetMarkerStyle(june15_markerStyle);
-  for (int i=0; i<22; ++i) gr_Ich1ggJune15->SetPoint(i,HVgg[i],Ich1ggJune15[i]);
+  createGraph("Graph1ggJune15",CH1,June15gg,22,Ich1ggJune15,HVgg);
+  createGraph("Graph1ggJune16up",CH1,June16up,22,Ich1ggJune16up,HVgg);
+  createGraph("Graph1ggJune16down",CH1,June16down,22,Ich1ggJune16down,HVgg);
 
-  gr_Ich1ggJune16up=new TGraph(22);
-  gr_Ich1ggJune16up->SetName("Graph1ggJune16up");
-  gr_Ich1ggJune16up->SetTitle("");
-  gr_Ich1ggJune16up->SetLineColor(chamber1_ColorIndex);
-  gr_Ich1ggJune16up->SetMarkerColor(chamber1_ColorIndex);
-  gr_Ich1ggJune16up->SetMarkerStyle(june16ggup_markerStyle);
-  for (int i=0; i<22; ++i) gr_Ich1ggJune16up->SetPoint(i,HVgg[i],Ich1ggJune16up[i]);
+  createGraph("Graph2ggJune15",CH2,June15gg,43,Ich2ggJune15,HVgg);
+  createGraph("Graph2ggJune16up",CH2,June16up,44,Ich2ggJune16up,HVgg);
+  createGraph("Graph2ggJune16down",CH2,June16down,44,Ich2ggJune16down,HVgg);
 
-  gr_Ich1ggJune16down=new TGraph(22);
-  gr_Ich1ggJune16down->SetName("Graph1ggJune16down");
-  gr_Ich1ggJune16down->SetTitle("");
-  gr_Ich1ggJune16down->SetLineColor(chamber1_ColorIndex);
-  gr_Ich1ggJune16down->SetMarkerColor(chamber1_ColorIndex);
-  gr_Ich1ggJune16down->SetMarkerStyle(june16ggdown_markerStyle);
-  for (int i=0; i<22; ++i) gr_Ich1ggJune16down->SetPoint(i,HVgg[i],Ich1ggJune16down[i]);
+  createGraph("Graph4ggJune15",CH4,June15gg,38,Ich4ggJune15,HVgg);
+  createGraph("Graph4ggJune16up",CH4,June16up,38,Ich4ggJune16up,HVgg);
+  createGraph("Graph4ggJune16down",CH4,June16down,38,Ich4ggJune16down,HVgg);
 
+  createGraph("Graph5ggJune15",CH5,June15gg,32,Ich5ggJune15,HVgg);
+  createGraph("Graph5ggJune16up",CH5,June16up,32,Ich5ggJune16up,HVgg);
+  createGraph("Graph5ggJune16down",CH5,June16down,32,Ich5ggJune16down,HVgg);
 
-  gr_Ich2ggJune15=new TGraph(43);
-  gr_Ich2ggJune15->SetName("Graph2ggJune15");
-  gr_Ich2ggJune15->SetTitle("");
-  gr_Ich2ggJune15->SetLineColor(chamber2_ColorIndex);
-  gr_Ich2ggJune15->SetMarkerColor(chamber2_ColorIndex);
-  gr_Ich2ggJune15->SetMarkerStyle(june15_markerStyle);
-  for (int i=0; i<43; ++i) gr_Ich2ggJune15->SetPoint(i,HVgg[i],Ich2ggJune15[i]);
-
-  gr_Ich2ggJune16up=new TGraph(44);
-  gr_Ich2ggJune16up->SetName("Graph2ggJune16up");
-  gr_Ich2ggJune16up->SetTitle("");
-  gr_Ich2ggJune16up->SetLineColor(chamber2_ColorIndex);
-  gr_Ich2ggJune16up->SetMarkerColor(chamber2_ColorIndex);
-  gr_Ich2ggJune16up->SetMarkerStyle(june16ggup_markerStyle);
-  for (int i=0; i<44; ++i) gr_Ich2ggJune16up->SetPoint(i,HVgg[i],Ich2ggJune16up[i]);
-
-  gr_Ich2ggJune16down=new TGraph(44);
-  gr_Ich2ggJune16down->SetName("Graph2ggJune16down");
-  gr_Ich2ggJune16down->SetTitle("");
-  gr_Ich2ggJune16down->SetLineColor(chamber2_ColorIndex);
-  gr_Ich2ggJune16down->SetMarkerColor(chamber2_ColorIndex);
-  gr_Ich2ggJune16down->SetMarkerStyle(june16ggdown_markerStyle);
-  for (int i=0; i<44; ++i) gr_Ich2ggJune16down->SetPoint(i,HVgg[i],Ich2ggJune16down[i]);
-
-  gr_Ich4ggJune15=new TGraph(38);
-  gr_Ich4ggJune15->SetName("Graph4ggJune15");
-  gr_Ich4ggJune15->SetTitle("");
-  gr_Ich4ggJune15->SetLineColor(chamber4_ColorIndex);
-  gr_Ich4ggJune15->SetMarkerColor(chamber4_ColorIndex);
-  gr_Ich4ggJune15->SetMarkerStyle(june15_markerStyle);
-  for (int i=0; i<38; ++i) gr_Ich4ggJune15->SetPoint(i,HVgg[i],Ich4ggJune15[i]);
-
-  gr_Ich4ggJune16up=new TGraph(38);
-  gr_Ich4ggJune16up->SetName("Graph4ggJune16up");
-  gr_Ich4ggJune16up->SetTitle("");
-  gr_Ich4ggJune16up->SetLineColor(chamber4_ColorIndex);
-  gr_Ich4ggJune16up->SetMarkerColor(chamber4_ColorIndex);
-  gr_Ich4ggJune16up->SetMarkerStyle(june16ggup_markerStyle);
-  for (int i=0; i<38; ++i) gr_Ich4ggJune16up->SetPoint(i,HVgg[i],Ich4ggJune16up[i]);
-
-  gr_Ich4ggJune16down=new TGraph(38);
-  gr_Ich4ggJune16down->SetName("Graph4ggJune16down");
-  gr_Ich4ggJune16down->SetTitle("");
-  gr_Ich4ggJune16down->SetLineColor(chamber4_ColorIndex);
-  gr_Ich4ggJune16down->SetMarkerColor(chamber4_ColorIndex);
-  gr_Ich4ggJune16down->SetMarkerStyle(june16ggdown_markerStyle);
-  for (int i=0; i<38; ++i) gr_Ich4ggJune16down->SetPoint(i,HVgg[i],Ich4ggJune16down[i]);
-
-  gr_Ich5ggJune15=new TGraph(32);
-  gr_Ich5ggJune15->SetName("Graph5ggJune15");
-  gr_Ich5ggJune15->SetTitle("");
-  gr_Ich5ggJune15->SetLineColor(chamber5_ColorIndex);
-  gr_Ich5ggJune15->SetMarkerColor(chamber5_ColorIndex);
-  gr_Ich5ggJune15->SetMarkerStyle(june15_markerStyle);
-  for (int i=0; i<32; ++i) gr_Ich5ggJune15->SetPoint(i,HVgg[i],Ich5ggJune15[i]);
-
-  gr_Ich5ggJune16up=new TGraph(32);
-  gr_Ich5ggJune16up->SetName("Graph5ggJune16up");
-  gr_Ich5ggJune16up->SetTitle("");
-  gr_Ich5ggJune16up->SetLineColor(chamber5_ColorIndex);
-  gr_Ich5ggJune16up->SetMarkerColor(chamber5_ColorIndex);
-  gr_Ich5ggJune16up->SetMarkerStyle(june16ggup_markerStyle);
-  for (int i=0; i<32; ++i) gr_Ich5ggJune16up->SetPoint(i,HVgg[i],Ich5ggJune16up[i]);
-
-  gr_Ich5ggJune16down=new TGraph(32);
-  gr_Ich5ggJune16down->SetName("Graph5ggJune16down");
-  gr_Ich5ggJune16down->SetTitle("");
-  gr_Ich5ggJune16down->SetLineColor(chamber5_ColorIndex);
-  gr_Ich5ggJune16down->SetMarkerColor(chamber5_ColorIndex);
-  gr_Ich5ggJune16down->SetMarkerStyle(june16ggdown_markerStyle);
-  for (int i=0; i<32; ++i) gr_Ich5ggJune16down->SetPoint(i,HVgg[i],Ich5ggJune16down[i]);
-
-  gr_Ich1maxJune15=new TGraph(15);
-  gr_Ich1maxJune15->SetName("Graph1maxJune15");
-  gr_Ich1maxJune15->SetTitle("");
-  gr_Ich1maxJune15->SetLineColor(chamber1_ColorIndex);
-  gr_Ich1maxJune15->SetMarkerColor(chamber1_ColorIndex);
-  gr_Ich1maxJune15->SetMarkerStyle(june15max_markerStyle);
-  for (int i=0; i<15; ++i) gr_Ich1maxJune15->SetPoint(i,HVmax[i],Ich1maxJune15[i]);
-
-  gr_Ich2maxJune15=new TGraph(30);
-  gr_Ich2maxJune15->SetName("Graph2maxJune15");
-  gr_Ich2maxJune15->SetTitle("");
-  gr_Ich2maxJune15->SetLineColor(chamber2_ColorIndex);
-  gr_Ich2maxJune15->SetMarkerColor(chamber2_ColorIndex);
-  gr_Ich2maxJune15->SetMarkerStyle(june15max_markerStyle);
-  for (int i=0; i<30; ++i) gr_Ich2maxJune15->SetPoint(i,HVmax[i],Ich2maxJune15[i]);
-
-  gr_Ich4maxJune15=new TGraph(29);
-  gr_Ich4maxJune15->SetName("Graph4maxJune15");
-  gr_Ich4maxJune15->SetTitle("");
-  gr_Ich4maxJune15->SetLineColor(chamber4_ColorIndex);
-  gr_Ich4maxJune15->SetMarkerColor(chamber4_ColorIndex);
-  gr_Ich4maxJune15->SetMarkerStyle(june15max_markerStyle);
-  for (int i=0; i<29; ++i) gr_Ich4maxJune15->SetPoint(i,HVmax[i],Ich4maxJune15[i]);
-
-  gr_Ich5maxJune15=new TGraph(27);
-  gr_Ich5maxJune15->SetName("Graph5maxJune15");
-  gr_Ich5maxJune15->SetTitle("");
-  gr_Ich5maxJune15->SetLineColor(chamber5_ColorIndex);
-  gr_Ich5maxJune15->SetMarkerColor(chamber5_ColorIndex);
-  gr_Ich5maxJune15->SetMarkerStyle(june15max_markerStyle);
-  for (int i=0; i<27; ++i) gr_Ich5maxJune15->SetPoint(i,HVmax[i],Ich5maxJune15[i]);
-
+  createGraph("Graph1maxJune15",CH1,June15max,15,Ich1maxJune15,HVmax);
+  createGraph("Graph2maxJune15",CH2,June15max,30,Ich2maxJune15,HVmax);
+  createGraph("Graph4maxJune15",CH4,June15max,29,Ich4maxJune15,HVmax);
+  createGraph("Graph5maxJune15",CH5,June15max,27,Ich5maxJune15,HVmax);
  }
 
 
@@ -557,42 +443,42 @@ void myMacro()
   DrawSomething D;
   D.beginCanva("Argon_current_june15","Argon current june 15");
   D.drawFake(5300,26);
-  D.addGraph(A.gr_Ich1ggJune15,"chamber 1, June 15 7 pm");
-  D.addGraph(A.gr_Ich1maxJune15,"chamber 1, June 15 11 pm");
-  D.addGraph(A.gr_Ich2ggJune15,"chamber 2, June 15 7 pm");
-  D.addGraph(A.gr_Ich2maxJune15,"chamber 2, June 15 11 pm");
-  D.addGraph(A.gr_Ich4ggJune15,"chamber 4, June 15 7 pm");
-  D.addGraph(A.gr_Ich4maxJune15,"chamber 4, June 15 11 pm");
-  D.addGraph(A.gr_Ich5ggJune15,"chamber 5, June 15 7 pm");
-  D.addGraph(A.gr_Ich5maxJune15,"chamber 5, June 15 11 pm");
+  D.addGraph(A.graph(measurements::CH1,measurements::June15gg),"chamber 1, June 15 7 pm");
+  D.addGraph(A.graph(measurements::CH1,measurements::June15max),"chamber 1, June 15 11 pm");
+  D.addGraph(A.graph(measurements::CH2,measurements::June15gg),"chamber 2, June 15 7 pm");
+  D.addGraph(A.graph(measurements::CH2,measurements::June15max),"chamber 2, June 15 11 pm");
+  D.addGraph(A.graph(measurements::CH4,measurements::June15gg),"chamber 4, June 15 7 pm");
+  D.addGraph(A.graph(measurements::CH4,measurements::June15max),"chamber 4, June 15 11 pm");
+  D.addGraph(A.graph(measurements::CH5,measurements::June15gg),"chamber 5, June 15 7 pm");
+  D.addGraph(A.graph(measurements::CH5,measurements::June15max),"chamber 5, June 15 11 pm");
   D.finalizeCanva();
 
   D.beginCanva("Argon_current_chamber_1","Argon current chamber 1");
   D.drawFake(2500,6);
-  D.addGraph(A.gr_Ich1ggJune15,"June 15 7 pm, HV going up");
-  D.addGraph(A.gr_Ich1ggJune16up,"June 16 11 am, HV going up");
-  D.addGraph(A.gr_Ich1ggJune16down,"June 16 11 am, HV going down");
+  D.addGraph(A.graph(measurements::CH1,measurements::June15gg),"June 15 7 pm, HV going up");
+  D.addGraph(A.graph(measurements::CH1,measurements::June16up),"June 16 11 am, HV going up");
+  D.addGraph(A.graph(measurements::CH1,measurements::June16down),"June 16 11 am, HV going down");
   D.finalizeCanva();
 
   D.beginCanva("Argon_current_chamber_2","Argon current chamber 2");
   D.drawFake(4600,6);
-  D.addGraph(A.gr_Ich2ggJune15,"June 15 7 pm, HV going up");
-  D.addGraph(A.gr_Ich2ggJune16up,"June 16 11 am, HV going up");
-  D.addGraph(A.gr_Ich2ggJune16down,"June 16 11 am, HV going down");
+  D.addGraph(A.graph(measurements::CH2,measurements::June15gg),"June 15 7 pm, HV going up");
+  D.addGraph(A.graph(measurements::CH2,measurements::June16up),"June 16 11 am, HV going up");
+  D.addGraph(A.graph(measurements::CH2,measurements::June16down),"June 16 11 am, HV going down");
   D.finalizeCanva();
 
   D.beginCanva("Argon_current_chamber_4","Argon current chamber 4");
   D.drawFake(4000,6);
-  D.addGraph(A.gr_Ich4ggJune15,"June 15 7 pm, HV going up");
-  D.addGraph(A.gr_Ich4ggJune16up,"June 16 11 am, HV going up");
-  D.addGraph(A.gr_Ich4ggJune16down,"June 16 11 am, HV going down");
+  D.addGraph(A.graph(measurements::CH4,measurements::June15gg),"June 15 7 pm, HV going up");
+  D.addGraph(A.graph(measurements::CH4,measurements::June16up),"June 16 11 am, HV going up");
+  D.addGraph(A.graph(measurements::CH4,measurements::June16down),"June 16 11 am, HV going down");
   D.finalizeCanva();
 
   D.beginCanva("Argon_current_chamber_5","Argon current chamber 5");
   D.drawFake(3400,6);
-  D.addGraph(A.gr_Ich5ggJune15,"June 15 7 pm, HV going up");
-  D.addGraph(A.gr_Ich5ggJune16up,"June 16 11 am, HV going up");
-  D.addGraph(A.gr_Ich5ggJune16down,"June 16 11 am, HV going down");
+  D.addGraph(A.graph(measurements::CH5,measurements::June15gg),"June 15 7 pm, HV going up");
+  D.addGraph(A.graph(measurements::CH5,measurements::June16up),"June 16 11 am, HV going up");
+  D.addGraph(A.graph(measurements::CH5,measurements::June16down),"June 16 11 am, HV going down");
   D.finalizeCanva();
 
 
