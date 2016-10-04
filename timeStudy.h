@@ -29,6 +29,40 @@ const static int EffiSize = 10000;
 
 
 
+float carre(float x) {return x*x;}
+
+struct HitPhase
+{
+  float HitTime;
+  float HitPosition[3];
+  int HitID;
+  float distanceXY(HitPhase &other)
+  { return sqrt( carre(HitPosition[0]-other.HitPosition[0]) + carre(HitPosition[1]-other.HitPosition[1]) );}
+};
+
+
+struct HitPhaseSpace
+{
+  vector<HitPhase*> HitPhaseCollection;
+  vector<int> MuonID;
+  ~HitPhaseSpace()
+  {
+    int n = HitPhaseCollection.size();
+    for(int i = 0; i<n; i++) delete HitPhaseCollection[i];
+  };            
+};
+
+
+struct HitDataRecords
+{
+  float nMissedHit[EffiSize];
+  float nTotalMuonHit;
+  vector<float> minTimeVec;
+
+  HitDataRecords():nTotalMuonHit(0){ for(int i=0; i<EffiSize; i++) nMissedHit[i] = 0; };
+};
+
+
 class timeStudy {
 public :
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
@@ -58,6 +92,8 @@ public :
      TimeStep=500.0; //500 ns
      RadiusAvalancheBlindness=4; //4 mm
    }
+
+   void MissedHitIdentifier(vector<HitPhaseSpace*>& HPS, vector<HitDataRecords*>& HDRs, int& MultiContriCounter2);
 
    //   TH1I *nMuonHitHisto;
    //  TH1F *muonHitTimeHisto;

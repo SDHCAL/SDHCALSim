@@ -7,41 +7,11 @@
 
 //#include "UTIL/CellIDDecoder.h"
 
-float carre(float x) {return x*x;}
-
-struct HitPhase
-{
-  float HitTime;
-  float HitPosition[3];
-  int HitID;
-  float distanceXY(HitPhase &other)
-  { return sqrt( carre(HitPosition[0]-other.HitPosition[0]) + carre(HitPosition[1]-other.HitPosition[1]) );}
-};
 
 
-struct HitPhaseSpace
-{
-  vector<HitPhase*> HitPhaseCollection;
-  vector<int> MuonID;
-  ~HitPhaseSpace()
-  {
-    int n = HitPhaseCollection.size();
-    for(int i = 0; i<n; i++) delete HitPhaseCollection[i];
-  };            
-};
 
 
-struct HitDataRecords
-{
-  float nMissedHit[EffiSize];
-  float nTotalMuonHit;
-  vector<float> minTimeVec;
-
-  HitDataRecords():nTotalMuonHit(0){ for(int i=0; i<EffiSize; i++) nMissedHit[i] = 0; };
-};
-
-
-void MissedHitIdentifier(vector<HitPhaseSpace*>& HPS, vector<HitDataRecords*>& HDRs, int& MultiContriCounter2, timeStudy* tstud)
+void timeStudy::MissedHitIdentifier(vector<HitPhaseSpace*>& HPS, vector<HitDataRecords*>& HDRs, int& MultiContriCounter2)
 {
   for(int iChambre=0; iChambre < 7; iChambre++)
     {      
@@ -60,7 +30,7 @@ void MissedHitIdentifier(vector<HitPhaseSpace*>& HPS, vector<HitDataRecords*>& H
 		      MultiContriCounter2++;
 		      // cout<<"delta t ="<< (MuonPhase->HitTime)-(AnotherPhase->HitTime)<<";  Dis = "<<AnotherPhase->distanceXY(*MuonPhase)<<endl;  
 		    }
-		  if (AnotherPhase->distanceXY(*MuonPhase) < tstud->RadiusAvalancheBlindness ) //in mm
+		  if (AnotherPhase->distanceXY(*MuonPhase) < RadiusAvalancheBlindness ) //in mm
 		    {		     
 		      float t = (MuonPhase->HitTime)-(AnotherPhase->HitTime);
 		      
@@ -74,7 +44,7 @@ void MissedHitIdentifier(vector<HitPhaseSpace*>& HPS, vector<HitDataRecords*>& H
 	  // cout << "min T = " << minT << endl;
 	  for(int it = 0; it<EffiSize; it++)
 	    {
-	      float Dtime = it*tstud->TimeStep;
+	      float Dtime = it*TimeStep;
 	      if(minT<Dtime)
 		{
 		  HDRs[iChambre]->nMissedHit[it]++;
@@ -192,7 +162,7 @@ void timeStudy::Loop()
 	  //cout << endl;
 	    
 	}
-      MissedHitIdentifier(HPS,  HDRs, MultiContriCounter2,this);
+      MissedHitIdentifier(HPS,  HDRs, MultiContriCounter2);
 
       for(int i =0; i<7 ; i++) 	delete HPS[i];
 
