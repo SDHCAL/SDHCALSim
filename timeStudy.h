@@ -56,7 +56,7 @@ public :
    void setDefaultParameters() 
    {
      TimeStep=500.0; //500 ns
-     RadiusAvalancheBlindness=2; //2 mm
+     RadiusAvalancheBlindness=4; //4 mm
    }
 
    //   TH1I *nMuonHitHisto;
