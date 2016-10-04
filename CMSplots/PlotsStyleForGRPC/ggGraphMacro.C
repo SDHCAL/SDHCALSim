@@ -6,7 +6,9 @@
 #include "TFrame.h"
 #include "TLegend.h"
 #include "TGraphErrors.h"
+#include "TString.h"
 #include <vector>
+#include <map>
 
 
 class DrawSomething
@@ -369,6 +371,9 @@ float Ich5ggJune16down[32]=
   };
 
 
+
+
+
 struct measurements
 {
   enum CHAMBER {CH1,CH2,CH4,CH5, NCHAMBERS};
@@ -379,9 +384,13 @@ struct measurements
   Int_t chamber_ColorIndex[NCHAMBERS];
   TGraphErrors* allGraphes[NCHAMBERS*NMEASURES];
   TGraphErrors* graph(unsigned int chamber,unsigned int measure) {return allGraphes[I(chamber,measure)];}
-  
-  TGraphErrors* createGraph(const char *name, unsigned int chamber, unsigned int measure, int N, float *Ipoint, float *HVpoint);
 
+  TGraphErrors* createGraph(const char *name, unsigned int chamber, unsigned int measure, int N, float *Ipoint, float *HVpoint);
+  
+  TGraphErrors* mergedGraph[NCHAMBERS];
+  void createMergedGraphs();
+  void addData(unsigned int measure, int N, float *Ipoint, float *HVpoint,std::map<float,float>& data);
+  TGraphErrors* convertFrom(std::map<float,float>& data, unsigned int chamber);
 
   measurements(); 
 };
@@ -389,6 +398,71 @@ struct measurements
 TGraph* deriveGraph(const TGraph *gr);
 TGraph* inverseGraph(const TGraph *gr);
 
+
+void measurements::createMergedGraphs()
+{
+  std::map<float,float> VMandI;
+  //chambre 1
+  addData(June15gg   ,22, Ich1ggJune15    , HVgg , VMandI);
+  addData(June15max  ,15, Ich1maxJune15   , HVmax, VMandI);
+  addData(June16up   ,22, Ich1ggJune16up  , HVgg , VMandI);
+  addData(June16down ,22, Ich1ggJune16down, HVgg , VMandI);
+  mergedGraph[CH1]=convertFrom(VMandI,CH1);
+  mergedGraph[CH1]->SetName("Chamber1");
+  VMandI.clear();
+
+ //chambre 2
+  addData(June15gg   ,43, Ich2ggJune15    , HVgg , VMandI);
+  addData(June15max  ,30, Ich2maxJune15   , HVmax, VMandI);
+  addData(June16up   ,44, Ich2ggJune16up  , HVgg , VMandI);
+  addData(June16down ,44, Ich2ggJune16down, HVgg , VMandI);
+  mergedGraph[CH2]=convertFrom(VMandI,CH2);
+  mergedGraph[CH2]->SetName("Chamber2");
+  VMandI.clear();
+
+ //chambre 4
+  addData(June15gg   ,38, Ich4ggJune15    , HVgg , VMandI);
+  addData(June15max  ,29, Ich4maxJune15   , HVmax, VMandI);
+  addData(June16up   ,38, Ich4ggJune16up  , HVgg , VMandI);
+  addData(June16down ,38, Ich4ggJune16down, HVgg , VMandI);
+  mergedGraph[CH4]=convertFrom(VMandI,CH4);
+  mergedGraph[CH4]->SetName("Chamber4");
+  VMandI.clear();
+
+ //chambre 5
+  addData(June15gg   ,32, Ich5ggJune15    , HVgg , VMandI);
+  addData(June15max  ,27, Ich5maxJune15   , HVmax, VMandI);
+  addData(June16up   ,32, Ich5ggJune16up  , HVgg , VMandI);
+  addData(June16down ,32, Ich5ggJune16down, HVgg , VMandI);
+  mergedGraph[CH5]=convertFrom(VMandI,CH5);
+  mergedGraph[CH5]->SetName("Chamber5");
+  VMandI.clear();
+}
+
+void measurements::addData(unsigned int measure, int N, float *Ipoint, float *HVpoint,std::map<float,float>& data)
+{
+  float measureTag=float(measure)/10;  // to sort
+  for (int i=0; i<N; ++i)
+    if (Ipoint[i]>0)
+      data[measureTag+HVpoint[i] ]=Ipoint[i];
+}
+
+TGraphErrors* measurements::convertFrom(std::map<float,float>& data, unsigned int chamber)
+{
+  TGraphErrors *gr = new TGraphErrors(data.size());
+  gr->SetTitle("");
+  gr->SetLineColor(chamber_ColorIndex[chamber]);
+  gr->SetMarkerColor(chamber_ColorIndex[chamber]);
+  gr->SetMarkerStyle(20);
+  int i=0;
+  for (std::map<float,float>::iterator it=data.begin(); it != data.end(); ++it)
+    {
+      gr->SetPoint(i,floor(it->first),it->second); //fllor to remove the measureTag
+      gr->SetPointError(i,10,0.2);
+      ++i;
+    }
+  return gr;
+}
 
 TGraphErrors*  measurements::createGraph(const char *name, unsigned int chamber, unsigned int measure, int N, float *Ipoint, float *HVpoint)
 {
@@ -402,6 +476,8 @@ TGraphErrors*  measurements::createGraph(const char *name, unsigned int chamber,
   for (int i=0; i<N; ++i) gr->SetPointError(i,10,0.2); //ERROR proposed by Maxime
   return gr;
 }
+
+
 
 TGraph* deriveGraph(const TGraph *gr)
 {
@@ -461,7 +537,6 @@ measurements::measurements()
   chamber_ColorIndex[CH5]=TColor::GetColor("#00ffff");
 
 
-
   createGraph("Graph1ggJune15",CH1,June15gg,22,Ich1ggJune15,HVgg);
   createGraph("Graph1ggJune16up",CH1,June16up,22,Ich1ggJune16up,HVgg);
   createGraph("Graph1ggJune16down",CH1,June16down,22,Ich1ggJune16down,HVgg);
@@ -482,6 +557,8 @@ measurements::measurements()
   createGraph("Graph2maxJune15",CH2,June15max,30,Ich2maxJune15,HVmax);
   createGraph("Graph4maxJune15",CH4,June15max,29,Ich4maxJune15,HVmax);
   createGraph("Graph5maxJune15",CH5,June15max,27,Ich5maxJune15,HVmax);
+
+  createMergedGraphs();
  }
 
 
