@@ -1,0 +1,17 @@
+In ROOT, do :
+
+For generating the tree out of the lcio file :
+.L writeTree.C
+writeTree("test.000.slcio")
+.q
+
+To compile and run timeStudy:
+
+gSystem->AddIncludePath(" -I${LCIO}/include/");
+gSystem->Load("${LCIO}/lib/liblcio.so"); 
+gSystem->Load("${LCIO}/lib/liblcioDict.so");
+.L timeStudy.C+
+
+timeStudy t
+t.Loop()
+
