@@ -35,9 +35,12 @@
 #include "LyonPrimaryGeneratorActionMessenger.hh"
 #include "LyonPrimaryGeneratorAction.hh"
 #include "G4UIdirectory.hh"
+//#include "G4UIcmdWithADouble.hh"
+//#include "G4UIcmdWithAString.hh"
+#include "G4UIcmdWithAnInteger.hh"
 #include "G4UIcmdWithADouble.hh"
-#include "G4UIcmdWithAString.hh"
 #include "globals.hh"
+
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //double _Seuil,_Distance,_ChardisWidth,padsize;
@@ -48,8 +51,24 @@ LyonPrimaryGeneratorActionMessenger::LyonPrimaryGeneratorActionMessenger(LyonPri
 {
   runDir = new G4UIdirectory("/GunParameter/");
   //  runDir->SetGuidance("event control");
+  SetGammaNumbercmd = new G4UIcmdWithAnInteger("/GunParameter/gammanum", this);
+  SetGammaNumbercmd->SetGuidance("Set the number of primary gamma particles per event");
+  SetGammaNumbercmd->SetParameterName("gammanum",false);
+  SetGammaNumbercmd->SetRange("gammanum>=0");
 
-  gunOptionPositionCmd =  new G4UIcmdWithAString("/GunParameter/gunOptionPosition",this);
+  SetMuonNumbercmd = new G4UIcmdWithAnInteger("/GunParameter/muonnum", this);
+  SetMuonNumbercmd->SetGuidance("Set the number of primary mu+ particles per event");
+  SetMuonNumbercmd->SetParameterName("muonnum",false);
+  SetMuonNumbercmd->SetRange("muonnum>=0");
+
+  SetTimeScalecmd = new G4UIcmdWithADouble("/GunParameter/timescale", this);
+  SetTimeScalecmd->SetGuidance("Set the time scale of the simulation");
+  SetTimeScalecmd->SetParameterName("timescale",false);
+  SetTimeScalecmd->SetRange("timescale>=0");
+
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+  /*  gunOptionPositionCmd =  new G4UIcmdWithAString("/GunParameter/gunOptionPosition",this);
   gunOptionPositionCmd->SetGuidance("Set primary gun option position");
   gunOptionPositionCmd->SetParameterName("gunOptionPosition",true);
   gunOptionPositionCmd->SetCandidates("default random cosmic");					
@@ -88,21 +107,25 @@ LyonPrimaryGeneratorActionMessenger::LyonPrimaryGeneratorActionMessenger(LyonPri
   uniformParameterCmd = new G4UIcmdWithADouble("/GunParameter/uniformParameter",this);
   uniformParameterCmd->SetGuidance("Set uniform paramter value for uniform gun momentum");
   uniformParameterCmd->SetParameterName("uniformParameter",true);
-  uniformParameterCmd->SetDefaultValue(0.1);
+  uniformParameterCmd->SetDefaultValue(0.1); */
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 LyonPrimaryGeneratorActionMessenger::~LyonPrimaryGeneratorActionMessenger()
 {
-  delete gunOptionPositionCmd;
+  /*  delete gunOptionPositionCmd;
   delete gunOptionMomentumCmd;
   
   delete randPosMaxCmd;
   delete solidAngleX0Cmd;
   delete solidAngleRadCmd;
   delete gaussianMeanCmd;
-  delete gaussianSigmaCmd;
+  delete gaussianSigmaCmd; */
+
+  delete SetGammaNumbercmd;
+  delete SetMuonNumbercmd;
+  delete SetTimeScalecmd;
   
   delete runDir;   
 }
@@ -112,7 +135,9 @@ LyonPrimaryGeneratorActionMessenger::~LyonPrimaryGeneratorActionMessenger()
 
 void LyonPrimaryGeneratorActionMessenger::SetNewValue(G4UIcommand* command, G4String newValue)
 { 
-  if( command == gunOptionPositionCmd )
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+  /*  if( command == gunOptionPositionCmd )
     primaryGenerator->setGunOptionPosition(newValue);
   if( command == gunOptionMomentumCmd )
     primaryGenerator->setGunOptionMomentum(newValue);
@@ -132,7 +157,16 @@ void LyonPrimaryGeneratorActionMessenger::SetNewValue(G4UIcommand* command, G4St
   
 
   if(command == uniformParameterCmd)
-    primaryGenerator->setUniformParameter(randPosMaxCmd->GetNewDoubleValue(newValue));
+  primaryGenerator->setUniformParameter(randPosMaxCmd->GetNewDoubleValue(newValue)); */
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+
+  if(command == SetGammaNumbercmd)
+    primaryGenerator->SetGammaNumber(SetGammaNumbercmd->GetNewIntValue(newValue));
+  if(command == SetMuonNumbercmd)
+    primaryGenerator->SetMuonNumber(SetMuonNumbercmd->GetNewIntValue(newValue));
+  if(command == SetTimeScalecmd)
+    primaryGenerator->SetTimeScale(SetTimeScalecmd->GetNewDoubleValue(newValue));
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

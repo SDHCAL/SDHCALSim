@@ -41,8 +41,10 @@
 
 class LyonPrimaryGeneratorAction;
 class G4UIdirectory;
+//class G4UIcmdWithADouble;
+//class G4UIcmdWithAString;
+class G4UIcmdWithAnInteger;
 class G4UIcmdWithADouble;
-class G4UIcmdWithAString;
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 class LyonPrimaryGeneratorActionMessenger: public G4UImessenger
@@ -56,15 +58,18 @@ public:
 
 private:
   LyonPrimaryGeneratorAction*     primaryGenerator;
-  G4UIdirectory*        runDir;   
-  G4UIcmdWithAString* gunOptionPositionCmd;
+  G4UIdirectory*        runDir;
+  G4UIcmdWithAnInteger*    SetGammaNumbercmd;
+  G4UIcmdWithAnInteger*    SetMuonNumbercmd;
+  G4UIcmdWithADouble* SetTimeScalecmd;
+  /* G4UIcmdWithAString* gunOptionPositionCmd;
   G4UIcmdWithAString* gunOptionMomentumCmd;
   G4UIcmdWithADouble* randPosMaxCmd; 
   G4UIcmdWithADouble* solidAngleX0Cmd; 
   G4UIcmdWithADouble* solidAngleRadCmd;
   G4UIcmdWithADouble* gaussianMeanCmd;
   G4UIcmdWithADouble* gaussianSigmaCmd;
-  G4UIcmdWithADouble* uniformParameterCmd;
+  G4UIcmdWithADouble* uniformParameterCmd; */
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

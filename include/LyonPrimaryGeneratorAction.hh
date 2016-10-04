@@ -9,8 +9,9 @@
 #include "G4ThreeVector.hh"
 #include "LyonPrimaryGeneratorActionMessenger.hh"
 
-class G4ParticleGun;//genere un faisceau de particules dont on determine le nombre
+class G4GeneralParticleSource;//genere un faisceau de particules dont on determine le nombre
 class G4Event; //
+class G4SingleParticleSource;
 
 class LyonPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
@@ -18,41 +19,21 @@ public:
   LyonPrimaryGeneratorAction();
   ~LyonPrimaryGeneratorAction();
 
-  inline void setGunOptionPosition(std::string option){gunOptionPosition=option;}
-  inline void setGunOptionMomentum(std::string option){gunOptionMomentum=option;}
-
-  inline void setRandomPosMax(double max){randMaxPos=max;}
-
-  inline void setSolidAngleX0(double val){solidAngleX0=val;}
-  inline void setSolidAngleRad(double val){solidAngleRad=val;}
-
-  inline void setGaussianMean(double val){gaussianMean=val;}
-  inline void setGaussianSigma(double val){gaussianSigma=val;}
-
-  inline void setUniformParameter(double val){uniformParameter=val;}
-
-  void PrintInfo();
-  G4ThreeVector GetPrimaryGeneratorMomentum()const{return _primaryMom;}
-  public:
-  void GeneratePrimaries(G4Event* anEvent); //methode de G4VUserPrimaryGeneratorAction
+public:
+  void GeneratePrimaries(G4Event* anEvent); //methode de G4VUserPrimaryGeneratorAction  
+  G4ThreeVector GetPrimaryGeneratorMomentum() const;
+  void SetGammaNumber(G4int N){NumberOfGamma = N;};
+  void SetMuonNumber(G4int N){NumberOfMuon = N;};
+  void SetTimeScale(G4double t){TimeScale = t;};
 private:
-  G4ThreeVector  _primaryMom;
-  G4ParticleGun* particleGun;
-  LyonPrimaryGeneratorActionMessenger* _thePrimaryGeneratorMessenger;
-
-  std::string gunOptionPosition;
-  std::string gunOptionMomentum;
-  
-  double randMaxPos;//max position parameter for random gun position option
-  double solidAngleX0;//X0 parameter for solid angle gun momentum option
-  double solidAngleRad;//diameter for solid angle gun momentum option
-
-  double gaussianMean;//gaussian mean value for gaussian gun momentum option
-  double gaussianSigma;//gaussian sigma value for gaussian gun momentum option
-  
-  double uniformParameter;//uniform parameter value for uniform gun momentum option
+  G4GeneralParticleSource* particleGun;
+  LyonPrimaryGeneratorActionMessenger* _thePrimaryGeneratorActionMessenger;
+  G4int NumberOfMuon;
+  G4int NumberOfGamma;
+  G4int GPCounter;
+  G4double TimeScale;
+  // G4SingleParticleSource* GammaModel;
+  //  G4SingleParticleSource* MuonModel;
 };
 
 #endif
-
-

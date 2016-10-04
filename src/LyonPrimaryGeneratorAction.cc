@@ -2,7 +2,7 @@
 #include "LyonPrimaryGeneratorActionMessenger.hh"
 
 #include "G4Event.hh"
-#include "G4ParticleGun.hh"
+#include "G4GeneralParticleSource.hh"
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
 #include "globals.hh"
@@ -14,173 +14,158 @@
 #include <time.h>  
 #include <iostream>
 
-#define RANDOM_GUN
+//#define RANDOM_GUN
 //#define SOLID_ANGLE
-#define GAUSSIAN_GUN
+//#define GAUSSIAN_GUN
 
 #include "LyonDetectorConstruction.hh"
 
+class G4SingleParticleSource;
+
 LyonPrimaryGeneratorAction::LyonPrimaryGeneratorAction()
-{
-  G4int n_particle = 1;// on genere une particlue
-  particleGun = new G4ParticleGun(n_particle);
-  G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
-  G4String particleName;
-  particleGun->SetParticleDefinition(particleTable->FindParticle(particleName="mu+"));
-  particleGun->SetParticleEnergy(1.0*CLHEP::GeV); 
-  
-  _thePrimaryGeneratorMessenger = new LyonPrimaryGeneratorActionMessenger(this);
-  gunOptionPosition = std::string("default");// could be with primary_gun_action_messenger class
-  gunOptionMomentum = std::string("normal"); // could be with primary_gun_action_messenger class
-  randMaxPos=0.4;
-  solidAngleX0 = 2.0*CLHEP::m; 
-  solidAngleRad = 0.5*CLHEP::m; 
-  gaussianMean = 0.0*CLHEP::m;
-  gaussianSigma = 0.1*CLHEP::m;
-  uniformParameter = 0.5;  
+{  
+  particleGun = new G4GeneralParticleSource();
+  _thePrimaryGeneratorActionMessenger = new LyonPrimaryGeneratorActionMessenger(this);
+  NumberOfMuon=1;
+  NumberOfGamma=1;
+  TimeScale=1e6;
+  GPCounter=0;
+  //GammaModel = new G4SingleParticleSource();
+  // MuonModel = new G4SingleParticleSource();
 }
 
 LyonPrimaryGeneratorAction::~LyonPrimaryGeneratorAction()
 {
   delete particleGun;
-  delete _thePrimaryGeneratorMessenger;
+  delete _thePrimaryGeneratorActionMessenger;
+  // delete GammaModel;
+  //delete MuonModel;
 }
 
 void LyonPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
-  //G4ThreeVector pos(0.0*CLHEP::m, 0.0*CLHEP::m,-0.700*CLHEP::m);//default could be modified with primary_gun_action_messenger class
-  //Change to shoot from GIF Cesium source
-  G4ThreeVector pos(0/*.5*/*CLHEP::cm, 0/*.5*/*CLHEP::cm,LyonDetectorConstruction::m_GeometryDataForLCIO.calorthickness/2+207*CLHEP::cm-LyonDetectorConstruction::m_GeometryDataForLCIO.airThickness);//default could be modified with primary_gun_action_messenger class
-  G4ThreeVector v(0.0,0.0,1.0); // par default could be modified with primary_gun_action_messenger class
-  if(gunOptionPosition==std::string("random")){
-    float xo=2*randMaxPos*G4UniformRand()-randMaxPos;
-    float yo=2*randMaxPos*G4UniformRand()-randMaxPos;
-    pos=G4ThreeVector(xo*CLHEP::m, yo*CLHEP::m,-.700*CLHEP::m);
-  }
-  if(gunOptionPosition==std::string("cosmic")){
-    float xo=2*randMaxPos*G4UniformRand()-randMaxPos;
-    float zo=2*randMaxPos*G4UniformRand()-randMaxPos;
-    pos=G4ThreeVector(xo*CLHEP::m,-.503*CLHEP::m,zo*CLHEP::m);
-  }
-  particleGun->SetParticlePosition(pos);
+  particleGun->SetCurrentSourceto(0);
   
-  if( gunOptionPosition==std::string("cosmic") ){
-    if( gunOptionMomentum!=std::string("cosmic_gaus") && gunOptionMomentum!=std::string("cosmic_uniform") ){
-      G4cout << " ERROR : wrong option : GunOptionPosition=cosmic should be used together with cosmic_gaus or cosmic_uniform as GunOptionMomentum" << G4endl;
-      G4cout << " I PREFER KILL THE RUN" << G4endl;
-      throw;
+  for(G4int i=0; i<NumberOfGamma; i++)
+    {
+      // G4cout<< "Sending "<<particleGun->GetParticleDefinition()->GetParticleName()<<" to vertex"<<G4endl;
+      particleGun->SetParticleTime(G4UniformRand()*TimeScale);
+      particleGun->GetCurrentSource()->GeneratePrimaryVertex(anEvent);
     }
-  }
+
+  particleGun->SetCurrentSourceto(1);
+
+  for(G4int i=0; i<NumberOfMuon; i++)
+    {
+      // G4cout<< "Sending "<<particleGun->GetParticleDefinition()->GetParticleName()<<" to vertex"<<G4endl;
+      particleGun->SetParticleTime((G4UniformRand()+1.)*0.5*TimeScale);
+      particleGun->GetCurrentSource()->GeneratePrimaryVertex(anEvent);
+    }
+
+
   
-  if( gunOptionMomentum==std::string("cosmic_gaus") || gunOptionMomentum==std::string("cosmic_uniform") ){
-    if( gunOptionPosition!=std::string("cosmic") ){
-      G4cout << " ERROR : wrong option : GunOptionMomentum=cosmic_gaus or cosmic_uniform should be used together with cosmic GunOptionPosition" << G4endl;
-      G4cout << " I PREFER KILL THE RUN" << G4endl;
-      throw;
+  /* G4int NBS = particleGun->GetNumberofSource();
+  if(NBS == 2)
+    {
+      particleGun->SetCurrentSourceto(0);
+      
+      }*/
+  
+
+  
+  /* if(GPCounter==0)
+    {
+      NBS = particleGun->GetNumberofSource();
+      G4cout<<"NBS = "<<NBS<<G4endl;
+      for(G4int i = 0; i<NBS; i++)
+	{
+	  particleGun->SetCurrentSourceto(i);
+	  G4cout<< "I'm "<<particleGun->GetParticleDefinition()->GetParticleName()<<G4endl;
+	}
+      G4cout<<"******************************************************************"<<G4endl;
+      particleGun->SetCurrentSourceto(0);    
+      *GammaModel = *(particleGun->GetCurrentSource());
+
+      particleGun->SetCurrentSourceto(1);
+      G4cout<< "I'm "<<particleGun->GetParticleDefinition()->GetParticleName()<<G4endl;
+      *MuonModel = *(particleGun->GetCurrentSource());
+
+      particleGun->ClearAll();
+
+      for(G4int i=0; i<NumberOfGamma; i++)
+	{
+	  particleGun->AddaSource(1.);
+	  *(particleGun->GetCurrentSource())= *GammaModel;
+	  // particleGun->SetParticleTime(G4UniformRand()*1000000.);
+	}
+ 
+      for(G4int i=0; i<NumberOfMuon; i++)
+	{
+	  particleGun->AddaSource(1.);
+	  *(particleGun->GetCurrentSource())= *MuonModel;
+	  //      particleGun->SetParticleTime(G4UniformRand()*1000000.);
+	}
+      G4cout<< "I'm "<<particleGun->GetParticleDefinition()->GetParticleName()<<G4endl;
+
+      NBS = particleGun->GetNumberofSource();
+      G4cout<<"NBS = "<<NBS<<G4endl;
+      if (NBS != (NumberOfGamma+NumberOfMuon))
+	{
+	  G4cout<<"*************************** Something is wrong with the number ************************************"<<G4endl;
+	  return;
+	}
+      else
+	{
+	  for( G4int i = 0; i < NumberOfGamma; i++)
+	    {
+	      particleGun->SetCurrentSourceto(i);
+	      if( particleGun->GetParticleDefinition()->GetParticleName() != "gamma")
+		{
+		  G4cout<<"*************************** Something is wrong with gamma number ************************************"<<G4endl;
+		  return;
+		}
+	    }
+	  for( G4int i = NumberOfGamma; i < NBS; i++)
+	    {
+	      particleGun->SetCurrentSourceto(i);
+	      G4cout<< "I'm "<<particleGun->GetParticleDefinition()->GetParticleName()<<G4endl;
+	      if( particleGun->GetParticleDefinition()->GetParticleName() != "mu+")
+		{
+		  G4cout<<"*************************** Something is wrong with primary muon number ************************************"<<G4endl;
+		  return;
+		}
+	    }
+	}
     }
-  }
+ 
+  GPCounter++;
+  G4cout<<"***********The GeneratePrimaries methode is called for "<<GPCounter<<" times*******"<<G4endl;
+   
 
-  if(gunOptionMomentum==std::string("solidAngle")){
-    G4double R0 = std::sqrt(solidAngleRad*solidAngleRad/4+solidAngleRad*solidAngleRad/4);  
-    G4double rndm1, rndm2;  
-    G4double px, py, pz, projx, projy; 
-    G4double MinTheta, MaxTheta, MinPhi, MaxPhi; 
-    G4double Phi;
-    
-    MinTheta = 0.; 
-    MaxTheta = std::atan(R0/solidAngleX0);   
-    MinPhi = 0.; 
-    MaxPhi = CLHEP::twopi; 		
-    G4double sintheta, sinphi, costheta, cosphi, tantheta; 
-    do{
-      rndm1 = G4UniformRand();  
-      costheta = std::cos(MinTheta) - rndm1 * (std::cos(MinTheta) - std::cos(MaxTheta));
-      sintheta = std::sqrt(1. - costheta*costheta);  
-      tantheta = sintheta/costheta;  
-      rndm2 = G4UniformRand();    
-      Phi = MinPhi + (MaxPhi - MinPhi) * rndm2;  
-      sinphi = std::sin(Phi); 
-      cosphi = std::cos(Phi); 
-      px = sintheta * cosphi;  
-      py = sintheta * sinphi;   
-      pz = costheta; 
-      projx = solidAngleX0*tantheta*cosphi;  
-      projy = solidAngleX0*tantheta*sinphi;   
-    }while(sqrt(projx*projx)>500*CLHEP::cm||sqrt(projy*projy)>500*CLHEP::cm);
-    v=G4ThreeVector(px,py,pz);
-  }
-  else if(gunOptionMomentum==std::string("gaus")){
-    TF1 *func=new TF1("func","gaus",-1,1);
-    func->SetParameters(1,gaussianMean,gaussianSigma);
-    G4double px=func->GetRandom();
-    G4double py=func->GetRandom();
-    G4double pz=1.0;
-    v=G4ThreeVector(px,py,pz);
-    v/=v.mag();
-    delete func;
-  }
-  else if(gunOptionMomentum==std::string("uniform")){
-    G4double px;
-    G4double py;
-    if(G4UniformRand()>uniformParameter)px=G4UniformRand();
-    else px=-G4UniformRand();
-    if(G4UniformRand()>uniformParameter) py=G4UniformRand();
-    else py=-G4UniformRand();
-    G4double pz=1.0;
-    v=G4ThreeVector(px,py,pz);
-    v/=v.mag();
-  }
-  else if(gunOptionMomentum==std::string("fix")){
-    //G4double angle=10*CLHEP::degree;
-    G4double angle=0;
-    G4double px=1.0*std::sin(angle);
-    G4double py=0.0;
-    G4double pz=-1.0*std::cos(angle); //GIF source is in direction at z bigger htan Zof GRPCs
-    v=G4ThreeVector(px,py,pz);
-    v/=v.mag();
-  }
-  else if(gunOptionMomentum==std::string("cosmic_gaus")){
-    TF1 *func=new TF1("func","gaus",-1,1);
-    func->SetParameters(1,gaussianMean,gaussianSigma);
-    G4double px=func->GetRandom();
-    G4double py=1.0;
-    G4double pz=func->GetRandom();
-    v=G4ThreeVector(px,py,pz);
-    v/=v.mag();
-    delete func;
-  }
-  else if(gunOptionMomentum==std::string("cosmic_uniform")){
-    G4double px;
-    G4double py=1.0;
-    G4double pz;
-    if(G4UniformRand()>uniformParameter)px=G4UniformRand();
-    else px=-G4UniformRand();
-    if(G4UniformRand()>uniformParameter) pz=G4UniformRand();
-    else pz=-G4UniformRand();
-    v=G4ThreeVector(px,py,pz);
-    v/=v.mag();
-  }
+  for( G4int i=0; i<NumberOfGamma; i++)
+    {
+      particleGun->SetCurrentSourceto(i);
+      particleGun->SetParticleTime(G4UniformRand()*TimeScale);
+    }
+  NBS=NumberOfGamma+NumberOfMuon;
+  for( G4int i=NumberOfGamma; i<NBS; i++)
+    {
+      particleGun->SetCurrentSourceto(i);
+      G4cout<< "I'm "<<particleGun->GetParticleDefinition()->GetParticleName()<<G4endl;
+      G4double t = ((G4UniformRand()+1.)*0.5*TimeScale);
+      G4cout<<" My time is :"<< t<<G4endl;
+      particleGun->SetParticleTime(t);
+    }
+  //if(particleGun->GetNumberofSource()==0)  particleGun->AddaSource(1.);
 
-  particleGun->SetParticleMomentumDirection(v);
-  particleGun->GeneratePrimaryVertex(anEvent);
-  _primaryMom=v;
-  //PrintInfo();
-  //G4cout << "Gun position = " << pos << G4endl;
-  //G4cout << "Gun momentum = " << v << G4endl;
+  particleGun->GeneratePrimaryVertex(anEvent); */
+
+  
+  
 }
 
-void LyonPrimaryGeneratorAction::PrintInfo()
+G4ThreeVector LyonPrimaryGeneratorAction::GetPrimaryGeneratorMomentum() const
 {
-  G4cout << "GUN POSITION OPTION = " << gunOptionPosition << G4endl;
-  if(gunOptionPosition==std::string("random"))
-    G4cout << "randMaxPos = " << randMaxPos << G4endl;
-  G4cout << "GUN MOMENTUM OPTION = " << gunOptionMomentum << G4endl;
-  if(gunOptionMomentum==std::string("solidAngle"))
-    G4cout << "SOLID ANGLE X0 = " << solidAngleX0 << "\t"
-	  << "SOLID ANGLE RAD = " << solidAngleRad << G4endl;
-  else if(gunOptionMomentum==std::string("gaus"))
-    G4cout << "GAUSSIAN GUN MEAN = " << gaussianMean << "\t" 
-	   << "GAUSSIAN GUN SIGMA = " << gaussianSigma << G4endl;
-  else if(gunOptionMomentum==std::string("uniform"))
-    G4cout << "UNIFORM GUN PARAMETER = " << uniformParameter<< G4endl;
+	return particleGun->GetParticleMomentumDirection();
 }
+
