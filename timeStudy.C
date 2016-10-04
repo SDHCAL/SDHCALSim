@@ -41,7 +41,7 @@ struct HitDataRecords
 };
 
 
-void MissedHitIdentifier(vector<HitPhaseSpace*>& HPS, vector<HitDataRecords*>& HDRs, int& MultiContriCounter2)
+void MissedHitIdentifier(vector<HitPhaseSpace*>& HPS, vector<HitDataRecords*>& HDRs, int& MultiContriCounter2, timeStudy* tstud)
 {
   for(int iChambre=0; iChambre < 7; iChambre++)
     {      
@@ -60,7 +60,7 @@ void MissedHitIdentifier(vector<HitPhaseSpace*>& HPS, vector<HitDataRecords*>& H
 		      MultiContriCounter2++;
 		      // cout<<"delta t ="<< (MuonPhase->HitTime)-(AnotherPhase->HitTime)<<";  Dis = "<<AnotherPhase->distanceXY(*MuonPhase)<<endl;  
 		    }
-		  if (AnotherPhase->distanceXY(*MuonPhase) < 25 )
+		  if (AnotherPhase->distanceXY(*MuonPhase) < tstud->RadiusAvalancheBlindness ) //in mm
 		    {		     
 		      float t = (MuonPhase->HitTime)-(AnotherPhase->HitTime);
 		      
@@ -74,7 +74,7 @@ void MissedHitIdentifier(vector<HitPhaseSpace*>& HPS, vector<HitDataRecords*>& H
 	  // cout << "min T = " << minT << endl;
 	  for(int it = 0; it<EffiSize; it++)
 	    {
-	      float Dtime = it*TimeStep;
+	      float Dtime = it*tstud->TimeStep;
 	      if(minT<Dtime)
 		{
 		  HDRs[iChambre]->nMissedHit[it]++;
@@ -192,7 +192,7 @@ void timeStudy::Loop()
 	  //cout << endl;
 	    
 	}
-      MissedHitIdentifier(HPS,  HDRs, MultiContriCounter2);
+      MissedHitIdentifier(HPS,  HDRs, MultiContriCounter2,this);
 
       for(int i =0; i<7 ; i++) 	delete HPS[i];
 
@@ -230,3 +230,4 @@ void timeStudy::Loop()
   delete HDRs_P;
     
 }
+

@@ -11,18 +11,19 @@
 #include <TROOT.h>
 #include <TChain.h>
 #include <TFile.h>
+#include <TGraph.h>
 #include <TH1I.h>
 
 // Header file for the classes stored in the TTree if any.
 #include <vector>
 #include <string>
 
-//LCIO heqder file
+//LCIO header file
 #include "IMPL/SimCalorimeterHitImpl.h"
 
 
-const static int EffiSize = 1000;
-const static float TimeStep = 2.5;
+const static int EffiSize = 10000;
+//const static float TimeStep = 500.0;
 //const static float TempsMort = 5;
 // Fixed size dimensions of array or collections stored in the TTree if any.
 
@@ -49,12 +50,26 @@ public :
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
 
+
+   float TimeStep;
+   float RadiusAvalancheBlindness;
+   void setDefaultParameters() 
+   {
+     TimeStep=500.0; //500 ns
+     RadiusAvalancheBlindness=2; //2 mm
+   }
+
    //   TH1I *nMuonHitHisto;
    //  TH1F *muonHitTimeHisto;
    TH1F* minTimeHisto[7];
    // , minTimeHisto(7, (new TH1F("minTime","Minimum time between a hit and a muon hit(ns)", 1000, 0, 1e6)))
    float* EffiByTime[7];
    float  DeadTime[EffiSize];
+   TGraph *generateTGraph(int chamberNumber) 
+   {
+     return new TGraph(EffiSize,DeadTime,EffiByTime[chamberNumber]);
+   }
+
    //   float  eff;
 };
 
@@ -75,6 +90,7 @@ timeStudy::timeStudy(TTree *tree) : fChain(0)
    }
    Init(tree);
 
+   setDefaultParameters();
    
    for(Int_t i=0; i<7; i++)
      {

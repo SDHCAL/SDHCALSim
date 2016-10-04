@@ -15,3 +15,11 @@ gSystem->Load("${LCIO}/lib/liblcioDict.so");
 timeStudy t
 t.Loop()
 
+ou
+
+TFile *f=TFile::Open("GIF_simu_5000_gammas_10ms_5mm.root");
+TTree *t=NULL; f->GetObject("LCIO",t);
+timeStudy ts(t);
+ts.Loop();
+ts.generateTGraph(0)->Draw("APL");
+
