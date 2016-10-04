@@ -68,6 +68,7 @@ public :
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
    Int_t           fCurrent; //!current Tree number in a TChain
 
+   enum {Nchambers=7};
    // Declaration of leaf types
    vector<IMPL::SimCalorimeterHitImpl*> *SDHCAL_Proto_EndCap;
 
@@ -97,9 +98,8 @@ public :
 
    //   TH1I *nMuonHitHisto;
    //  TH1F *muonHitTimeHisto;
-   TH1F* minTimeHisto[7];
-   // , minTimeHisto(7, (new TH1F("minTime","Minimum time between a hit and a muon hit(ns)", 1000, 0, 1e6)))
-   float* EffiByTime[7];
+   TH1F* minTimeHisto[Nchambers];
+   float* EffiByTime[Nchambers];
    float  DeadTime[EffiSize];
    TGraph *generateTGraph(int chamberNumber) 
    {
@@ -128,7 +128,7 @@ timeStudy::timeStudy(TTree *tree) : fChain(0)
 
    setDefaultParameters();
    
-   for(Int_t i=0; i<7; i++)
+   for(Int_t i=0; i<Nchambers; i++)
      {
        TString HisName;
        HisName.Form("%d",i);
@@ -136,7 +136,7 @@ timeStudy::timeStudy(TTree *tree) : fChain(0)
        minTimeHisto[i] = new TH1F(HisName,"Minimum time between a hit and a muon hit(ns)", 1000, 0, 1e6);
      }
    for(int i=0; i<EffiSize; i++) DeadTime[i] = TimeStep*((float)i);
-   for(int i=0; i<7; i++) EffiByTime[i] = new float[EffiSize];
+   for(int i=0; i<Nchambers; i++) EffiByTime[i] = new float[EffiSize];
    //   eff = 0;  
 }
 
@@ -144,7 +144,7 @@ timeStudy::~timeStudy()
 {
    if (!fChain) return;
    delete fChain->GetCurrentFile();
-   for(int j=0; j<7; j++){ delete[] EffiByTime[j];}
+   for(int j=0; j<Nchambers; j++){ delete[] EffiByTime[j];}
 }
 
 Int_t timeStudy::GetEntry(Long64_t entry)

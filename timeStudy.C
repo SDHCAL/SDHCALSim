@@ -13,7 +13,7 @@
 
 void timeStudy::MissedHitIdentifier(vector<HitPhaseSpace*>& HPS, vector<HitDataRecords*>& HDRs, int& MultiContriCounter2)
 {
-  for(int iChambre=0; iChambre < 7; iChambre++)
+  for(int iChambre=0; iChambre < Nchambers; iChambre++)
     {      
       int nHits = HPS[iChambre]->HitPhaseCollection.size();
       for(vector<int> ::iterator iter = HPS[iChambre]->MuonID.begin(); iter != HPS[iChambre]->MuonID.end(); ++iter)
@@ -101,17 +101,17 @@ void timeStudy::Loop()
  
 
   vector<HitDataRecords*>* HDRs_P = new vector<HitDataRecords*>;
-  //(7, new HitDataRecords);
+  //(Nchambers=7, new HitDataRecords);
   vector<HitDataRecords*> & HDRs = *HDRs_P;
-   for(int i=0; i<7; i++) HDRs.push_back(new HitDataRecords);
+   for(int i=0; i<Nchambers; i++) HDRs.push_back(new HitDataRecords);
      
   
   for (Long64_t jentry=0; jentry<nentries;jentry++)
     {
       vector<HitPhaseSpace*>* HPS_P = new vector<HitPhaseSpace*>;
-      //(7, new HitPhaseSpace);
+      //(Nchambers=7, new HitPhaseSpace);
       vector<HitPhaseSpace*>& HPS = *HPS_P;
-      for(int i=0; i<7; i++) HPS.push_back(new HitPhaseSpace);
+      for(int i=0; i<Nchambers; i++) HPS.push_back(new HitPhaseSpace);
       
       
        
@@ -164,7 +164,7 @@ void timeStudy::Loop()
 	}
       MissedHitIdentifier(HPS,  HDRs, MultiContriCounter2);
 
-      for(int i =0; i<7 ; i++) 	delete HPS[i];
+      for(int i =0; i<Nchambers ; i++) 	delete HPS[i];
 
       delete HPS_P;
       
@@ -172,7 +172,7 @@ void timeStudy::Loop()
       //nMuonHitHisto->Fill(nMuonHit);
       //cout << " nombre de hits muons " << nMuonHit << endl;
     }
-  for(int iChambre = 0; iChambre<7; iChambre++)     
+  for(int iChambre = 0; iChambre<Nchambers; iChambre++)     
     {
       cout<<"Number of total muon hits(including those missed) for Chambre "<<iChambre<<" is: "<<HDRs[iChambre]->nTotalMuonHit<<endl;
       //cout<<"Number of missed hits for Chambre "<<iChambre<<" is: "<<HDRs[iChambre]->nMissedHit<<endl;
@@ -196,7 +196,7 @@ void timeStudy::Loop()
     }
   cout<<"multi-contributors number 1(excluded muons) "<<MultiContriCounter<<endl;
   cout<<"multi-contributors number 2(excluded muons) "<<MultiContriCounter2<<endl;
-  for(int i =0; i<7 ; i++) delete HDRs[i];
+  for(int i =0; i<Nchambers ; i++) delete HDRs[i];
   delete HDRs_P;
     
 }
