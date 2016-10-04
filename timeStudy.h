@@ -22,7 +22,7 @@
 #include "IMPL/SimCalorimeterHitImpl.h"
 
 
-const static int EffiSize = 10000;
+const static int maxEffiSize = 10000;
 //const static float TimeStep = 500.0;
 //const static float TempsMort = 5;
 // Fixed size dimensions of array or collections stored in the TTree if any.
@@ -55,11 +55,11 @@ struct HitPhaseSpace
 
 struct HitDataRecords
 {
-  float nMissedHit[EffiSize];
+  float nMissedHit[maxEffiSize];
   float nTotalMuonHit;
   vector<float> minTimeVec;
 
-  HitDataRecords():nTotalMuonHit(0){ for(int i=0; i<EffiSize; i++) nMissedHit[i] = 0; };
+  HitDataRecords():nTotalMuonHit(0){ for(int i=0; i<maxEffiSize; i++) nMissedHit[i] = 0; };
 };
 
 
@@ -92,6 +92,7 @@ public :
    {
      TimeStep=500.0; //500 ns
      RadiusAvalancheBlindness=4; //4 mm
+     EffiSize=maxEffiSize;
    }
 
    void MissedHitIdentifier(vector<HitPhaseSpace*>& HPS, vector<HitDataRecords*>& HDRs, int& MultiContriCounter2);
@@ -100,13 +101,17 @@ public :
    //  TH1F *muonHitTimeHisto;
    TH1F* minTimeHisto[Nchambers];
    float* EffiByTime[Nchambers];
-   float  DeadTime[EffiSize];
+   float  DeadTime[maxEffiSize];
    TGraph *generateTGraph(int chamberNumber) 
    {
      return new TGraph(EffiSize,DeadTime,EffiByTime[chamberNumber]);
    }
 
    //   float  eff;
+   int getEffiSize() {return EffiSize;}
+   void setEffiSize(int eff) {if (eff>0 && eff<=maxEffiSize) EffiSize=eff; else cout << "ERROR IN EFF" << endl;} 
+ private:
+      int EffiSize;
 };
 
 #endif
