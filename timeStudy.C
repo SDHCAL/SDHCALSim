@@ -8,6 +8,30 @@
 //#include "UTIL/CellIDDecoder.h"
 
 
+//Make some graph
+TGraph* createAgraph(timeStudy& ts,float radius)
+{
+  ts.RadiusAvalancheBlindness=radius;
+  ts.Loop();
+  return ts.generateTGraph(0);
+}
+
+TCanvas* drawVsBlindnessSize(timeStudy& ts,float TimeInterval)
+{
+  ts.TimeStep=TimeInterval;
+  TCanvas* c=new TCanvas;
+  TGraph* gr5=createAgraph(ts,5); gr5->SetLineColor(kBlack); gr5->SetMarkerColor(kBlack);
+  TGraph* gr4=createAgraph(ts,4); gr4->SetLineColor(kBlue);  gr4->SetMarkerColor(kBlue);
+  TGraph* gr3=createAgraph(ts,3); gr3->SetLineColor(kRed);   gr3->SetMarkerColor(kRed);
+  TGraph* gr2=createAgraph(ts,2); gr2->SetLineColor(kCyan);  gr2->SetMarkerColor(kCyan);
+  TGraph* gr1=createAgraph(ts,1); gr1->SetLineColor(kGreen); gr1->SetMarkerColor(kGreen);
+  gr5->Draw("APL");
+  gr4->Draw("PL");
+  gr3->Draw("PL");
+  gr2->Draw("PL");
+  gr1->Draw("PL");
+  return c;
+}
 
 
 
