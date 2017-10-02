@@ -10,8 +10,11 @@
 #include "G4RunManager.hh"
 #include "G4UImanager.hh"
 
+
+
 #ifdef G4VIS_USE
 #include "G4VisExecutive.hh"
+#include "G4TrajectoryDrawByParticleID.hh"
 #endif
 
 #ifdef G4UI_USE
@@ -25,7 +28,8 @@
 
 int main(int argc , char** argv)
 {
-	std::string physList = "FTFP_BERT" ;
+//	std::string physList = "FTFP_BERT" ;
+	std::string physList = "QGSP_BERT" ;
 	G4int seed = 0 ;
 
 	if ( argc >= 4 )
@@ -74,6 +78,29 @@ int main(int argc , char** argv)
 	// G4VisExecutive can take a verbosity argument - see /vis/verbose guidance.
 	// G4VisManager* visManager = new G4VisExecutive("Quiet");
 	visManager->Initialize() ;
+
+	G4TrajectoryDrawByParticleID* model = new G4TrajectoryDrawByParticleID ;
+
+	 model->SetDefault( G4Colour(1 , 1 , 1 , 0) ) ;
+	 model->Set("e+", "red") ;
+	 model->Set("e-", "red") ;
+	 model->Set("pi0", "red") ;
+	 model->Set("gamma", G4Colour(1 , 0 , 0 , 0.05) ) ;
+
+	 model->Set("pi-", "green" ) ;
+	 model->Set("pi+", "green" ) ;
+	 model->Set("proton", "green" ) ;
+	 model->Set("kaon+", "green" ) ;
+	 model->Set("kaon-", "green" ) ;
+	 model->Set("neutron", G4Colour(0 , 1 , 0 , 0.05) ) ;
+
+	 model->Set("mu+", "blue" ) ;
+	 model->Set("mu-", "blue" ) ;
+
+	 visManager->RegisterModel(model) ;
+
+	 visManager->SelectTrajectoryModel( model->Name() ) ;
+
 #endif
 
 	// Get the pointer to the User Interface manager
