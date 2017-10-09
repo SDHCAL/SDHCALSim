@@ -22,7 +22,6 @@ void SDHCALRootWriter::createRootFile( std::string fileName )
 
 	tree->Branch("eventNumber" , &eventNumber) ;
 	tree->Branch("nHit" , &nHit) ;
-	tree->Branch("nOldHit" , &nOldHit) ;
 	tree->Branch("primaryID" , &primaryID) ;
 	tree->Branch("primaryEnergy" , &primaryEnergy) ;
 	tree->Branch("primaryPos" , &primaryPos , "primaryPos[3]/D") ;

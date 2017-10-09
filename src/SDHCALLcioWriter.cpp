@@ -54,7 +54,7 @@ void SDHCALLcioWriter::createPrimaryParticle(const G4Event* event)
 {
 	primaryParticle = new IMPL::MCParticleImpl() ;
 
-	G4PrimaryParticle* g4part = NULL ;
+	G4PrimaryParticle* g4part = nullptr ;
 	if ( event->GetPrimaryVertex() )
 		g4part = event->GetPrimaryVertex()->GetPrimary() ;
 	if (g4part)
@@ -133,7 +133,8 @@ void SDHCALLcioWriter::createSimCalorimeterHits(std::vector<SDHCALHit*> hits)
 		step->StepPosition[1] = static_cast<float>( cheatPos.y() ) ;
 		step->StepPosition[2] = static_cast<float>( cheatPos.z() ) ;
 
-		int key = 100*100*K + 100*J + I ;
+//		int key = 100*100*K + 100*J + I ;
+		int key = (I<<15) + (J<<6) + K ;
 
 		if ( !hitMap.count(key) )
 		{
@@ -148,6 +149,7 @@ void SDHCALLcioWriter::createSimCalorimeterHits(std::vector<SDHCALHit*> hits)
 			hitMap[key]->setPosition(cellPos) ;
 		}
 
+//		G4cout << "pdg : " << step->Particle->getPDG() << G4endl ;
 		hitMap[key]->addMCParticleContribution( step->Particle , step->Energy , step->Time , step->PDG , step->StepPosition ) ;
 
 //		G4ThreeVector globalBeginPos = (*it)->getBeginPos() ;
@@ -185,16 +187,6 @@ void SDHCALLcioWriter::createSimCalorimeterHits(std::vector<SDHCALHit*> hits)
 	for (std::map<int,IMPL::SimCalorimeterHitImpl*>::iterator itmap = hitMap.begin() ; itmap != hitMap.end() ; itmap++)
 		simVec->addElement(itmap->second) ;
 
-}
-
-void SDHCALLcioWriter::createSimCalorimeterHits(std::vector<OldSDHCALHit*> oldHits)
-{
-	std::vector<SDHCALHit*> hits ;
-
-	for (std::vector<OldSDHCALHit*>::iterator it = oldHits.begin() ; it != oldHits.end() ; ++it )
-		hits.push_back( dynamic_cast<SDHCALHit*>( *it ) ) ;
-
-	createSimCalorimeterHits(hits) ;
 }
 
 void SDHCALLcioWriter::setValue(std::string key , int value)

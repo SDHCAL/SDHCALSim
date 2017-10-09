@@ -28,8 +28,6 @@ class SDHCALRPCSensitiveDetector : public G4VSensitiveDetector
 
 		void finalizeLastHit() ;
 
-		inline const std::vector<OldSDHCALHit*>& getOldHitsCollection() const { return oldHitsCollection ; }
-
 		static inline const std::set<SDHCALRPCSensitiveDetector*>& getSensitiveDetectorVec() { return sensitiveDetectorVec ; }
 
 
@@ -37,7 +35,6 @@ class SDHCALRPCSensitiveDetector : public G4VSensitiveDetector
 		static std::set<SDHCALRPCSensitiveDetector*> sensitiveDetectorVec ;
 
 		SDHCALHitCollection* hitsCollection ;
-		std::vector<OldSDHCALHit*> oldHitsCollection ;
 		G4int ID ;
 
 		SDHCALRPC* rpc ;

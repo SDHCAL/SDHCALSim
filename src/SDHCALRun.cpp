@@ -5,7 +5,6 @@
 #include <globals.hh>
 #include <CLHEP/Units/SystemOfUnits.h>
 
-#include "StepLinkingAlgo.h"
 #include "SDHCALHit.h"
 #include "SDHCALRPC.h"
 

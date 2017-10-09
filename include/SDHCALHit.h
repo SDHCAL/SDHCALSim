@@ -4,7 +4,7 @@
 #include <G4VHit.hh>
 #include <G4ThreeVector.hh>
 #include <G4THitsCollection.hh>
-
+#include <G4PrimaryParticle.hh>
 #include "SDHCALRPC.h"
 
 class G4Step ;
@@ -39,6 +39,8 @@ class SDHCALHit : public G4VHit
 		inline G4double getCharge() const { return charge ; }
 		inline const G4ThreeVector& getCoordInPad() const { return coordInPad ; }
 		inline G4int getTrackStatus() const { return trackStatus ; }
+//		inline G4PrimaryParticle* getPrimaryParticle() const { return primaryParticle ; }
+		inline G4int getPrimaryID() const { return primaryID ; }
 
 		virtual void Print() ;
 
@@ -62,35 +64,12 @@ class SDHCALHit : public G4VHit
 		G4double charge ;
 		G4ThreeVector coordInPad ;
 
+//		G4PrimaryParticle* primaryParticle ;
+		G4int primaryID = 0 ;
+
 		G4int trackStatus ;
 } ;
 
 typedef G4THitsCollection<SDHCALHit> SDHCALHitCollection ;
-
-class OldSDHCALHit : public SDHCALHit
-{
-	public :
-		OldSDHCALHit(const G4Step* step, SDHCALRPC* _rpc) ;
-		virtual ~OldSDHCALHit() { ; }
-
-		G4int getParentID() const { return parentID ; }
-		const G4ThreeVector& getMomentum() const { return momentum ; }
-		G4String getTrackVertexVolumeName() const { return trackVertexVolumeName ; }
-
-//		virtual void computePosition() ;
-		bool shouldBeLinkedTo(OldSDHCALHit* hit) const ;
-		void updateWith(OldSDHCALHit* hit) ;
-
-
-	protected :
-
-		G4String processName ;
-		G4int parentID ;
-		G4ThreeVector momentum ;
-		G4String trackVertexVolumeName ;
-
-} ;
-
-typedef G4THitsCollection<OldSDHCALHit> OldSDHCALHitCollection ;
 
 #endif //SDHCALHit_h

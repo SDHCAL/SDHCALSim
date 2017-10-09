@@ -44,7 +44,6 @@ class SDHCALRootWriter
 
 		inline void setEventNumber(int value) { eventNumber = value ; }
 		inline void setNHit(int value) { nHit = value ; }
-		inline void setNOldHit(int value) { nOldHit = value ; }
 		inline void setPrimaryID(int value) { primaryID = value ; }
 		inline void setPrimaryEnergy(double value) { primaryEnergy = value ; }
 		void setPrimaryPos(G4ThreeVector value) { primaryPos[0] = value.x() ; primaryPos[1] = value.y() ; primaryPos[2] = value.z() ; }
@@ -64,7 +63,6 @@ class SDHCALRootWriter
 
 		int eventNumber ;
 		int nHit ;
-		int nOldHit ;
 		int primaryID ;
 		double primaryEnergy ;
 		double primaryPos[3] ;

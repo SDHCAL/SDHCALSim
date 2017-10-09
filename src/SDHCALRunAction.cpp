@@ -7,8 +7,7 @@
 SDHCALRunAction::SDHCALRunAction()
 	: G4UserRunAction()
 {
-	writer = NULL ;
-	oldWriter = NULL ;
+	writer = nullptr ;
 
 	lcioFileName = "test.slcio" ;
 	rootFileName = "test.root" ;
@@ -28,9 +27,6 @@ void SDHCALRunAction::BeginOfRunAction(const G4Run*)
 {
 	writer = new SDHCALLcioWriter( lcioFileName ) ;
 
-	std::stringstream toto ; toto << "Old" << lcioFileName ;
-	oldWriter = new SDHCALLcioWriter( toto.str() ) ;
-
 	SDHCALRootWriter* rootWriter = SDHCALRootWriter::Instance() ;
 	rootWriter->createRootFile( rootFileName ) ;
 }
@@ -45,10 +41,6 @@ void SDHCALRunAction::EndOfRunAction(const G4Run*)
 	if (writer)
 		delete writer ;
 
-	if (oldWriter)
-		delete oldWriter ;
-
-	writer = NULL ;
-	oldWriter = NULL ;
+	writer = nullptr ;
 }
 

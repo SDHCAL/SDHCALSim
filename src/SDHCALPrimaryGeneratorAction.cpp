@@ -26,7 +26,6 @@ SDHCALPrimaryGeneratorAction::SDHCALPrimaryGeneratorAction()
 	G4int nParticle = 1 ;
 	particleGun = new G4ParticleGun(nParticle) ;
 
-
 	G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable() ;
 	G4String particleName = "pi-" ;
 	particleDefinition = particleTable->FindParticle(particleName) ;
@@ -82,7 +81,6 @@ void SDHCALPrimaryGeneratorAction::GeneratePrimaries(G4Event* event)
 	particleGun->GeneratePrimaryVertex(event) ;
 
 	//	std::cout << "mom : " << gunOptionMomentum << std::endl ;
-
 }
 
 void SDHCALPrimaryGeneratorAction::shootPosition()

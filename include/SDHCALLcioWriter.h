@@ -37,7 +37,6 @@ class SDHCALLcioWriter
 
 		void createPrimaryParticle(const G4Event* event) ;
 		void createSimCalorimeterHits(std::vector<SDHCALHit*> hits) ;
-		void createSimCalorimeterHits(std::vector<OldSDHCALHit*> oldHits) ;
 
 		void setValue(std::string key , int value) ;
 		void setValue(std::string key , float value) ;

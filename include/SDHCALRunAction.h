@@ -24,18 +24,15 @@ class SDHCALRunAction : public G4UserRunAction
 		virtual void EndOfRunAction(const G4Run*) ;
 
 		inline SDHCALLcioWriter* getWriter() const { return writer ; }
-		inline SDHCALLcioWriter* getOldWriter() const { return oldWriter ; }
 
 		inline void setLcioFileName(G4String name) { lcioFileName = name ; }
 		inline void setRootFileName(G4String name) { rootFileName = name ; }
 
 	protected :
 		SDHCALLcioWriter* writer ;
-		SDHCALLcioWriter* oldWriter ;
 
 		G4String lcioFileName ;
 		G4String rootFileName ;
-
 } ;
 
 #endif //SDHCALRunAction_h

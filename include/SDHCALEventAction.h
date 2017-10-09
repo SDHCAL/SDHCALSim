@@ -4,7 +4,6 @@
 #include <G4UserEventAction.hh>
 #include <G4SDManager.hh>
 
-#include "StepLinkingAlgo.h"
 #include "SDHCALRunAction.h"
 #include "SDHCALSteppingAction.h"
 #include "SDHCALPrimaryGeneratorAction.h"
@@ -24,7 +23,6 @@ class SDHCALEventAction : public G4UserEventAction
 		virtual void EndOfEventAction(const G4Event* event) ;
 
 	private :
-		std::vector<OldSDHCALHit*> linkSteps(const G4Event* event) ;
 
 		clock_t beginClock ;
 		double averageTime ;

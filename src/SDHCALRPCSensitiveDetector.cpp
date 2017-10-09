@@ -37,20 +37,12 @@ void SDHCALRPCSensitiveDetector::Initialize(G4HCofThisEvent* HCE)
 
 	hitsCollection = new SDHCALHitCollection(SensitiveDetectorName , collectionName.at(0) ) ;
 	HCE->AddHitsCollection(ID , hitsCollection) ;
-
-	for (std::vector<OldSDHCALHit*>::iterator it = oldHitsCollection.begin() ; it != oldHitsCollection.end() ; ++it )
-		delete *it ;
-
-	oldHitsCollection.clear() ;
 }
 
 G4bool SDHCALRPCSensitiveDetector::ProcessHits(G4Step* step , G4TouchableHistory*)
 {
 	if ( !Interested(step) )
 		return true ;
-
-	OldSDHCALHit* hit = new OldSDHCALHit(step , rpc) ;
-	oldHitsCollection.push_back(hit) ;
 
 	if (currentHit)
 	{

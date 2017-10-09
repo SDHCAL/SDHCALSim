@@ -8,7 +8,6 @@ import math
 
 
 
-
 if __name__ == '__main__' :
 
 	os.environ["SIMEXE"] = '/home/garillot/SDHCALSim2/bin/SDHCALSim'
@@ -20,10 +19,10 @@ if __name__ == '__main__' :
 
 	#params.energy = sys.argv[1]
 	params.energyDistribution = "uniform"
-	params.minEnergy = 1
+	params.minEnergy = 19.9
 	params.maxEnergy = 20
 
-	params.nEvent = 1000
+	params.nEvent = 10
 	params.seed = 0
 
 	params.momentumOption = "gaus"
@@ -37,9 +36,11 @@ if __name__ == '__main__' :
 
 	SDHCALSim.launch( params )
 
-	os.system('rm Oldtest.slcio')
+	#os.system('rm Oldtest.slcio')
 
 	outputFile = 'single_' + params.particle + '_' + str(params.energy) + 'GeV' + '_I' + str(params.seed) 
+
+	os.system('mv test.slcio ' + outputFile + '.slcio')
 
 	#os.system('mv test.slcio /home/garillot/files/local/SimCalorimeterHit/Geant4.10.01/' + params.physicsList + '/' + outputFile + '.slcio')
 	#os.system('mv test.root /home/garillot/files/local/SimCalorimeterHit/Geant4.10.01/' + params.physicsList + '/ControlFiles/' + outputFile + '.root')

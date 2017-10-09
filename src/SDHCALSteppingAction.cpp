@@ -21,6 +21,8 @@ SDHCALSteppingAction::SDHCALSteppingAction()
 	if (instance)
 		throw std::logic_error("LyonSteppingAction already exists") ;
 
+	G4cout << "Create SDHCALSteppingAction" << G4endl ;
+
 	instance = this ;
 	depositedEnergy = 0.0 ;
 	leakEnergy = 0.0 ;
@@ -70,7 +72,6 @@ void SDHCALSteppingAction::processSteps()
 		leakedEnergyPerParticleType[it->particleID] += it->leakingEnergy ;
 	}
 }
-
 G4double SDHCALSteppingAction::getEMFraction() const
 {
 	G4double emDeposited = 0.0 ;
