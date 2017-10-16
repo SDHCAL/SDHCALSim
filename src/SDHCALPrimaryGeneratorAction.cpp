@@ -24,7 +24,9 @@ SDHCALPrimaryGeneratorAction::SDHCALPrimaryGeneratorAction()
 	messenger = new SDHCALPrimaryGeneratorActionMessenger(this) ;
 
 	G4int nParticle = 1 ;
-	particleGun = new G4ParticleGun(nParticle) ;
+
+	particleGunVec.push_back( new G4ParticleGun(nParticle) ) ;
+	particleGun = particleGunVec.at(0) ;
 
 	G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable() ;
 	G4String particleName = "pi-" ;
@@ -52,7 +54,6 @@ SDHCALPrimaryGeneratorAction::SDHCALPrimaryGeneratorAction()
 	primaryPos = G4ThreeVector(0 , 0 , -20*CLHEP::mm) ;
 	primaryMom = G4ThreeVector(0 , 0 , 1) ;
 	primaryEnergy = particleEnergy ;
-
 }
 
 
@@ -79,8 +80,6 @@ void SDHCALPrimaryGeneratorAction::GeneratePrimaries(G4Event* event)
 	particleGun->SetParticleEnergy( primaryEnergy ) ;
 
 	particleGun->GeneratePrimaryVertex(event) ;
-
-	//	std::cout << "mom : " << gunOptionMomentum << std::endl ;
 }
 
 void SDHCALPrimaryGeneratorAction::shootPosition()
@@ -223,11 +222,15 @@ void SDHCALPrimaryGeneratorAction::shootEnergy()
 
 void SDHCALPrimaryGeneratorAction::print() const
 {
-	G4cout << "Primary particle : " << G4endl ;
-	G4cout << "    pdgID : " << particleDefinition->GetParticleName() << std::endl ;
-	G4cout << "      Pos : " << primaryPos << G4endl ;
-	G4cout << "      Mom : " << primaryMom << G4endl ;
-	G4cout << "   Energy : " << primaryEnergy/CLHEP::GeV << " GeV" << G4endl ;
+	G4cout << "Primary particles : " << G4endl ;
+	for ( const auto& gun : particleGunVec )
+	{
+		G4cout << G4endl ;
+		G4cout << "    pdgID : " << gun->GetParticleDefinition()->GetParticleName() << G4endl ;
+		G4cout << "      Pos : " << gun->GetParticlePosition() << G4endl ;
+		G4cout << "      Mom : " << gun->GetParticleMomentumDirection() << G4endl ;
+		G4cout << "   Energy : " << gun->GetParticleEnergy()/CLHEP::GeV << " GeV" << G4endl ;
+	}
 }
 
 

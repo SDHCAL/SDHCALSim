@@ -60,6 +60,7 @@ class SDHCALPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 	protected :
 		SDHCALPrimaryGeneratorActionMessenger* messenger ;
 
+		std::vector<G4ParticleGun*> particleGunVec = {} ;
 		G4ParticleGun* particleGun ;
 
 		G4ParticleDefinition* particleDefinition ;

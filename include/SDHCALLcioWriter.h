@@ -35,7 +35,7 @@ class SDHCALLcioWriter
 		void createLCEvent(const G4Event* event) ;
 		void writeLCEvent() ;
 
-		void createPrimaryParticle(const G4Event* event) ;
+		void createPrimaryParticles(const G4Event* event) ;
 		void createSimCalorimeterHits(std::vector<SDHCALHit*> hits) ;
 
 		void setValue(std::string key , int value) ;
@@ -50,12 +50,13 @@ class SDHCALLcioWriter
 
 
 	protected :
-		lcio::LCWriter* writer ;
+		lcio::LCWriter* writer = nullptr ;
 
-		IMPL::LCEventImpl* lcEvent ;
-		IMPL::LCCollectionVec* simVec ;
-		IMPL::LCCollectionVec* mcVec ;
-		IMPL::MCParticleImpl* primaryParticle ;
+		IMPL::LCEventImpl* lcEvent = nullptr ;
+		IMPL::LCCollectionVec* particleCol = nullptr ;
+		IMPL::LCCollectionVec* simVec = nullptr ;
+		IMPL::LCCollectionVec* mcVec = nullptr ;
+		std::map<G4int,IMPL::MCParticleImpl*> primaryParticleMap = {} ;
 
 		std::string detectorName ;
 

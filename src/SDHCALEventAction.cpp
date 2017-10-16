@@ -46,7 +46,7 @@ void SDHCALEventAction::EndOfEventAction(const G4Event* event)
 		hits.insert(hits.end() , hitVec.begin() , hitVec.end() ) ;
 	}
 
-	lcioWriter->createPrimaryParticle(event) ;
+	lcioWriter->createPrimaryParticles(event) ;
 
 	lcioWriter->createSimCalorimeterHits(hits) ;
 
