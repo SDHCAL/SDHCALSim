@@ -52,8 +52,6 @@ SDHCALPrimaryGeneratorAction::SDHCALPrimaryGeneratorAction( std::string xmlFileN
 		throw ;
 	}
 
-	std::vector<SDHCALGunOptions> optVec ;
-
 	XMLHandle handle(&doc) ;
 	XMLElement* root = handle.FirstChild().ToElement() ;
 
@@ -71,119 +69,13 @@ SDHCALPrimaryGeneratorAction::SDHCALPrimaryGeneratorAction( std::string xmlFileN
 		while ( type )
 		{
 			if ( type->Value() == std::string("particle") )
-			{
-				SDHCALGunOptions option ;
-				XMLElement* param = type->FirstChildElement() ;
-
-				while( param )
-				{
-					if ( param->Value() == std::string("pdgID") )
-						option.particleName = param->GetText() ;
-
-					if ( param->Value() == std::string("time") )
-						option.time = std::atof( param->GetText() ) ;
-
-					if ( param->Value() == std::string("position") )
-					{
-						std::string positionType = param->Attribute("type") ;
-
-						if ( positionType == std::string("cosmic") )
-						{
-							option.gunOptionPosition = "cosmic" ;
-						}
-						else
-						{
-							std::istringstream iss( param->GetText() ) ;
-							std::vector<std::string> result{ std::istream_iterator<std::string>(iss) , {} } ;
-
-							option.meanPositionX = std::atof(result.at(0).c_str()) ;
-							option.meanPositionY = std::atof(result.at(1).c_str()) ;
-							option.meanPositionZ = std::atof(result.at(2).c_str()) ;
-
-							if ( positionType == std::string("fixed") )
-							{
-								option.gunOptionPosition = "fixed" ;
-							}
-							if ( positionType == std::string("uniform") )
-							{
-								option.gunOptionPosition = "uniform" ;
-								option.uniformMaxPosition = param->FloatAttribute("delta") ;
-							}
-							if ( positionType == std::string("gaus") )
-							{
-								option.gunOptionPosition = "gaus" ;
-								option.sigmaPosition = param->FloatAttribute("sigma") ;
-							}
-						}
-					}
-
-					if ( param->Value() == std::string("momentum") )
-					{
-						std::string momentumType = param->Attribute("type") ;
-
-						std::istringstream iss( param->GetText() ) ;
-						std::vector<std::string> result{ std::istream_iterator<std::string>(iss) , {} } ;
-
-						option.momentumPhi = std::atof(result.at(0).c_str()) ;
-						option.momentumTheta = std::atof(result.at(1).c_str()) ;
-
-						if ( momentumType == std::string("fixed") )
-						{
-							option.gunOptionMomentum = "fixed" ;
-						}
-						if ( momentumType == std::string("gaus") )
-						{
-							option.gunOptionMomentum = "gaus" ;
-							option.gaussianMomentumSigma = param->FloatAttribute("sigma") ;
-						}
-					}
-
-
-					if ( param->Value() == std::string("energy") )
-					{
-						std::string energyType = param->Attribute("type") ;
-
-						if ( energyType == std::string("fixed") )
-						{
-							option.gunOptionEnergyDistribution = std::string("fixed") ;
-							option.particleEnergy = std::atof( param->GetText() ) * CLHEP::GeV ;
-						}
-						if ( energyType == std::string("gaus") )
-						{
-							option.gunOptionEnergyDistribution = std::string("gaus") ;
-							option.particleEnergy = std::atof( param->GetText() ) * CLHEP::GeV ;
-							option.sigmaEnergy = param->FloatAttribute("sigma") * CLHEP::GeV ;
-						}
-
-						if ( energyType == std::string("uniform") || energyType == std::string("forNN") )
-						{
-							option.gunOptionEnergyDistribution = energyType ;
-
-							G4double min = param->FloatAttribute("min") ;
-							G4double max = param->FloatAttribute("max") ;
-
-							assert ( min>0 && max>0 ) ;
-							assert ( min < max ) ;
-
-							option.minEnergy = min * CLHEP::GeV ;
-							option.maxEnergy = max * CLHEP::GeV ;
-						}
-					}
-
-					param = param->NextSiblingElement() ;
-				}
-
-				optVec.push_back(option) ;
-			}
+				gunVec.push_back( new SDHCALGun(type) ) ;
 
 			type = type->NextSiblingElement() ;
 		}
 
 		break ;
 	}
-
-	for ( const auto& option : optVec )
-		gunVec.push_back( new SDHCALGun(option) ) ;
 }
 
 

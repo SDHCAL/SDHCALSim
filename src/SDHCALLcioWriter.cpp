@@ -38,8 +38,6 @@ void SDHCALLcioWriter::writeLCEvent()
 	lcEvent->addCollection(mcVec , "particleGenericObject") ;
 	lcEvent->addCollection(particleCol , "primaryParticles") ;
 
-	//	UTIL::LCTOOLS::dumpEvent(lcEvent) ;
-	//LCTOOLS::printLCGenericObjects(mcVec); //for DEBUG
 	writer->writeEvent(lcEvent) ;
 }
 
@@ -86,7 +84,6 @@ void SDHCALLcioWriter::createSimCalorimeterHits(std::vector<SDHCALHit*> hits)
 	IMPL::LCFlagImpl chFlag(0) ;
 	EVENT::LCIO bitinfo ;
 	chFlag.setBit( bitinfo.CHBIT_LONG ) ;   // sim calorimeter hit position
-	//chFlag.setBit( bitinfo.CHBIT_BARREL ) ; // barrel
 	chFlag.setBit( bitinfo.CHBIT_ID1 ) ;    // cell ID
 	chFlag.setBit( bitinfo.CHBIT_STEP ) ;   // step info
 	simVec->setFlag( chFlag.getFlag() ) ;
@@ -137,9 +134,6 @@ void SDHCALLcioWriter::createSimCalorimeterHits(std::vector<SDHCALHit*> hits)
 		step->StepPosition[1] = static_cast<float>( cheatPos.y() ) ;
 		step->StepPosition[2] = static_cast<float>( cheatPos.z() ) ;
 
-		//		int key = 100*100*K + 100*J + I ;
-
-		//		int key = (I<<15) + (J<<6) + K ;
 		int key = (K<<18) + (I<<9) + J ;
 
 		if ( !hitMap.count(key) )

@@ -59,7 +59,6 @@ class SDHCALLcioWriter
 		std::map<G4int,IMPL::MCParticleImpl*> primaryParticleMap = {} ;
 
 		std::string detectorName ;
-
 } ;
 
 #endif //SDHCALLcioWriter_h

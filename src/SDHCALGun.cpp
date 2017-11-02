@@ -4,7 +4,8 @@
 
 #include "SDHCALDetectorConstruction.h"
 
-#include <random>
+#include <iterator>
+
 #include "MyRandom.h"
 
 SDHCALGun::SDHCALGun()
@@ -19,8 +20,110 @@ SDHCALGun::SDHCALGun(const SDHCALGunOptions& opt)
 {
 }
 
-SDHCALGun::~SDHCALGun()
+SDHCALGun::SDHCALGun(tinyxml2::XMLNode* node)
+	: G4ParticleGun(1) ,
+	  options()
 {
+	using namespace tinyxml2 ;
+	XMLElement* param = node->FirstChildElement() ;
+
+	while( param )
+	{
+		if ( param->Value() == std::string("pdgID") )
+			options.particleName = param->GetText() ;
+
+		if ( param->Value() == std::string("time") )
+			options.time = std::atof( param->GetText() ) ;
+
+		if ( param->Value() == std::string("position") )
+		{
+			std::string positionType = param->Attribute("type") ;
+
+			if ( positionType == std::string("cosmic") )
+			{
+				options.gunOptionPosition = "cosmic" ;
+			}
+			else
+			{
+				std::istringstream iss( param->GetText() ) ;
+				std::vector<std::string> result{ std::istream_iterator<std::string>(iss) , {} } ;
+
+				options.meanPositionX = std::atof(result.at(0).c_str()) ;
+				options.meanPositionY = std::atof(result.at(1).c_str()) ;
+				options.meanPositionZ = std::atof(result.at(2).c_str()) ;
+
+				if ( positionType == std::string("fixed") )
+				{
+					options.gunOptionPosition = "fixed" ;
+				}
+				if ( positionType == std::string("uniform") )
+				{
+					options.gunOptionPosition = "uniform" ;
+					options.uniformMaxPosition = param->FloatAttribute("delta") ;
+				}
+				if ( positionType == std::string("gaus") )
+				{
+					options.gunOptionPosition = "gaus" ;
+					options.sigmaPosition = param->FloatAttribute("sigma") ;
+				}
+			}
+		}
+
+		if ( param->Value() == std::string("momentum") )
+		{
+			std::string momentumType = param->Attribute("type") ;
+
+			std::istringstream iss( param->GetText() ) ;
+			std::vector<std::string> result{ std::istream_iterator<std::string>(iss) , {} } ;
+
+			options.momentumPhi = std::atof(result.at(0).c_str()) ;
+			options.momentumTheta = std::atof(result.at(1).c_str()) ;
+
+			if ( momentumType == std::string("fixed") )
+			{
+				options.gunOptionMomentum = "fixed" ;
+			}
+			if ( momentumType == std::string("gaus") )
+			{
+				options.gunOptionMomentum = "gaus" ;
+				options.gaussianMomentumSigma = param->FloatAttribute("sigma") ;
+			}
+		}
+
+
+		if ( param->Value() == std::string("energy") )
+		{
+			std::string energyType = param->Attribute("type") ;
+
+			if ( energyType == std::string("fixed") )
+			{
+				options.gunOptionEnergyDistribution = std::string("fixed") ;
+				options.particleEnergy = std::atof( param->GetText() ) * CLHEP::GeV ;
+			}
+			if ( energyType == std::string("gaus") )
+			{
+				options.gunOptionEnergyDistribution = std::string("gaus") ;
+				options.particleEnergy = std::atof( param->GetText() ) * CLHEP::GeV ;
+				options.sigmaEnergy = param->FloatAttribute("sigma") * CLHEP::GeV ;
+			}
+
+			if ( energyType == std::string("uniform") || energyType == std::string("forNN") )
+			{
+				options.gunOptionEnergyDistribution = energyType ;
+
+				G4double min = param->FloatAttribute("min") ;
+				G4double max = param->FloatAttribute("max") ;
+
+				assert ( min>0 && max>0 ) ;
+				assert ( min < max ) ;
+
+				options.minEnergy = min * CLHEP::GeV ;
+				options.maxEnergy = max * CLHEP::GeV ;
+			}
+		}
+
+		param = param->NextSiblingElement() ;
+	}
 }
 
 void SDHCALGun::generatePrimary(G4Event* event)

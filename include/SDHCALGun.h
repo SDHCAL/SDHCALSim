@@ -3,6 +3,7 @@
 
 #include <G4ParticleGun.hh>
 
+#include "tinyxml2.h"
 
 struct SDHCALGunOptions
 {
@@ -39,7 +40,8 @@ class SDHCALGun : public G4ParticleGun
 	public :
 		SDHCALGun() ;
 		SDHCALGun(const SDHCALGunOptions& opt) ;
-		~SDHCALGun() ;
+		SDHCALGun(tinyxml2::XMLNode* node) ;
+		~SDHCALGun() = default ;
 
 
 		void generatePrimary(G4Event* event) ;
@@ -57,13 +59,3 @@ class SDHCALGun : public G4ParticleGun
 
 
 #endif //SDHCALGun_h
-
-
-//G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable() ;
-//G4String particleName = "pi-" ;
-//particleDefinition = particleTable->FindParticle(particleName) ;
-
-
-//primaryPos = G4ThreeVector(0 , 0 , -20*CLHEP::mm) ;
-//primaryMom = G4ThreeVector(0 , 0 , 1) ;
-//primaryEnergy = particleEnergy ;

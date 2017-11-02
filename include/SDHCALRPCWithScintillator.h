@@ -18,8 +18,6 @@ class SDHCALRPCWithScintillator : public SDHCALRPC
 		virtual void build() ;
 
 		G4Material* scintillatorMaterial ;
-
-
 } ;
 
 

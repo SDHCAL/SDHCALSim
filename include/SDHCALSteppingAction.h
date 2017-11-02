@@ -19,15 +19,14 @@ class LyonDetectorConstruction ;
 
 struct StepInfo
 {
-	G4int particleID ;
-	G4bool isLeaving ;
 	G4double energyDeposited ;
 	G4double time ;
 	G4ThreeVector preStepPoint ;
 	G4ThreeVector postStepPoint ;
 	G4double leakingEnergy ;
 	G4StepStatus stepStatus ;
-
+	G4int particleID ;
+	G4bool isLeaving ;
 } ;
 
 class SDHCALSteppingAction : public G4UserSteppingAction
@@ -37,7 +36,7 @@ class SDHCALSteppingAction : public G4UserSteppingAction
 	protected :
 		SDHCALSteppingAction() ;
 		static void initInstance() { new SDHCALSteppingAction ; }
-		virtual ~SDHCALSteppingAction() { instance = NULL ; }
+		virtual ~SDHCALSteppingAction() { instance = nullptr ; }
 	public :
 		static SDHCALSteppingAction* Instance()
 		{

@@ -2,7 +2,7 @@
 
 import os
 import sys
-import SDHCALSim2 as s
+import SDHCALSim2 as sim
 
 import math
 
@@ -11,7 +11,7 @@ if __name__ == '__main__' :
 
 	os.environ["SIMEXE"] = '/home/garillot/SDHCALSim2/bin/SDHCALSim'
 
-	params = s.Params()
+	params = sim.Params()
 
 	params.physicsList = 'FTF_BIC'
 	params.nEvent = 200
@@ -19,7 +19,7 @@ if __name__ == '__main__' :
 	params.outputFileName = 'dual'
 
 
-	charged = s.Particle()
+	charged = sim.Particle()
 	charged.particleName = 'pi+'
 	charged.energy = 30
 
@@ -32,7 +32,7 @@ if __name__ == '__main__' :
 	charged.sigmaMomentum = 0.05 
 
 
-	neutral = s.Particle()
+	neutral = sim.Particle()
 	neutral.particleName = 'kaon0'
 	neutral.energy = 10
 
@@ -46,8 +46,8 @@ if __name__ == '__main__' :
 	neutral.momentumOption = 'gaus'
 	neutral.sigmaMomentum = 0.05 
 
+
 	params.particleList.append(charged)
 	params.particleList.append(neutral)
 
-
-	s.launch( params )
+	sim.launch( params )

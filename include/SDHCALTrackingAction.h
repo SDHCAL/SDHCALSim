@@ -9,7 +9,7 @@
 
 class SDHCALTrackingAction : public G4UserTrackingAction
 {
-	//singleton stuff
+		//singleton stuff
 		static SDHCALTrackingAction* instance ;
 	protected :
 		SDHCALTrackingAction() ;
@@ -28,9 +28,9 @@ class SDHCALTrackingAction : public G4UserTrackingAction
 
 		struct PrimaryParticleInfo
 		{
-			G4int id = 0 ;
-			G4ThreeVector momentum ;
-			G4int pdg = 0 ;
+				G4int id = 0 ;
+				G4int pdg = 0 ;
+				G4ThreeVector momentum ;
 		} ;
 
 		virtual void PreUserTrackingAction(const G4Track* track) ;
