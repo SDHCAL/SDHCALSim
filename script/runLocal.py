@@ -2,48 +2,52 @@
 
 import os
 import sys
-import SDHCALSim
+import SDHCALSim2 as s
 
 import math
-
 
 
 if __name__ == '__main__' :
 
 	os.environ["SIMEXE"] = '/home/garillot/SDHCALSim2/bin/SDHCALSim'
 
-	params = SDHCALSim.Params()
+	params = s.Params()
 
-	params.particle = "pi-"
-	params.physicsList = "FTF_BIC"
-
-	#params.energy = sys.argv[1]
-	params.energyDistribution = "uniform"
-	params.minEnergy = 19.9
-	params.maxEnergy = 20
-
-	params.nEvent = 10
+	params.physicsList = 'FTF_BIC'
+	params.nEvent = 200
 	params.seed = 0
+	params.outputFileName = 'dual'
 
-	params.momentumOption = "gaus"
-	params.sigmaMomentum = 0.20
 
-	params.positionOption = "uniform"
-	params.positionX = 0
-	params.positionY = 0
-	#params.uniformDeltaPos = 500
-	params.sigmaPos = 100 
+	charged = s.Particle()
+	charged.particleName = 'pi+'
+	charged.energy = 30
 
-	SDHCALSim.launch( params )
+	charged.positionOption = 'gaus'
+	charged.positionX = 30
+	charged.positionY = 30
+	charged.sigmaPos = 2 
 
-	#os.system('rm Oldtest.slcio')
+	charged.momentumOption = 'gaus'
+	charged.sigmaMomentum = 0.05 
 
-	outputFile = 'single_' + params.particle + '_' + str(params.energy) + 'GeV' + '_I' + str(params.seed) 
 
-	os.system('mv test.slcio ' + outputFile + '.slcio')
+	neutral = s.Particle()
+	neutral.particleName = 'kaon0'
+	neutral.energy = 10
 
-	#os.system('mv test.slcio /home/garillot/files/local/SimCalorimeterHit/Geant4.10.01/' + params.physicsList + '/' + outputFile + '.slcio')
-	#os.system('mv test.root /home/garillot/files/local/SimCalorimeterHit/Geant4.10.01/' + params.physicsList + '/ControlFiles/' + outputFile + '.root')
+	neutral.time = 50
 
-	#os.system('mv test.slcio /home/garillot/files/muonsForBing/' + outputFile + '.slcio')
-	#os.system('mv test.root /home/garillot/files/muonsForBing/ControlFiles/' + outputFile + '.root')
+	neutral.positionOption = 'gaus'
+	neutral.positionX = -30
+	neutral.positionY = -30
+	neutral.sigmaPos = 2
+
+	neutral.momentumOption = 'gaus'
+	neutral.sigmaMomentum = 0.05 
+
+	params.particleList.append(charged)
+	params.particleList.append(neutral)
+
+
+	s.launch( params )

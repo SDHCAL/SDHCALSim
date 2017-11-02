@@ -3,6 +3,7 @@
 #include "SDHCALLcioWriter.h"
 
 #include <globals.hh>
+#include <ctime>
 
 SDHCALRunAction::SDHCALRunAction()
 	: G4UserRunAction()

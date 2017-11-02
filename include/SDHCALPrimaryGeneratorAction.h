@@ -7,11 +7,13 @@
 #include <G4ParticleTable.hh>
 
 #include "SDHCALPrimaryGeneratorActionMessenger.h"
+#include "SDHCALGun.h"
 
 class SDHCALPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
 	public :
 		SDHCALPrimaryGeneratorAction() ;
+		SDHCALPrimaryGeneratorAction( std::string xmlFileName ) ;
 		virtual ~SDHCALPrimaryGeneratorAction() ;
 
 		void setParticleDefinition(std::string particleName)
@@ -40,11 +42,7 @@ class SDHCALPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 		inline void setMaxEnergy(G4double energy) { maxEnergy = energy * CLHEP::GeV ; }
 
 
-		void shootPosition() ;
-		void shootMomentum() ;
-		void shootForCosmic() ;
 
-		void shootEnergy() ;
 
 
 		inline const G4ThreeVector& getPrimaryPos() const { return primaryPos ; }
@@ -57,11 +55,17 @@ class SDHCALPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 
 		virtual void GeneratePrimaries(G4Event* event) ;
 
+		const std::vector<SDHCALGun*>& getGunVec() const { return gunVec ; }
+
 	protected :
 		SDHCALPrimaryGeneratorActionMessenger* messenger ;
 
+		std::vector<SDHCALGun*> gunVec = {} ;
+
+		SDHCALGunOptions opt ;
+
 		std::vector<G4ParticleGun*> particleGunVec = {} ;
-		G4ParticleGun* particleGun ;
+
 
 		G4ParticleDefinition* particleDefinition ;
 		G4ThreeVector primaryMom ;

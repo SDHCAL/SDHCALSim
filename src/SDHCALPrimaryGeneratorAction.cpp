@@ -14,6 +14,10 @@
 #include <G4String.hh>
 
 #include <cmath>
+#include <cstdlib>
+#include <cstring>
+
+#include "tinyxml2.h"
 
 #include "MyRandom.h"
 
@@ -23,210 +27,189 @@ SDHCALPrimaryGeneratorAction::SDHCALPrimaryGeneratorAction()
 {
 	messenger = new SDHCALPrimaryGeneratorActionMessenger(this) ;
 
-	G4int nParticle = 1 ;
+	SDHCALGunOptions opt ;
+	opt.particleName = "proton" ;
+	gunVec.push_back(new SDHCALGun(opt)) ;
+}
 
-	particleGunVec.push_back( new G4ParticleGun(nParticle) ) ;
-	particleGun = particleGunVec.at(0) ;
+SDHCALPrimaryGeneratorAction::SDHCALPrimaryGeneratorAction( std::string xmlFileName )
+{
+	messenger = new SDHCALPrimaryGeneratorActionMessenger(this) ;
 
-	G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable() ;
-	G4String particleName = "pi-" ;
-	particleDefinition = particleTable->FindParticle(particleName) ;
+	G4cout << "SDHCALPrimaryGeneratorAction::SDHCALPrimaryGeneratorAction( '" << xmlFileName << "' )" << G4endl ;
+	using namespace tinyxml2 ;
+	XMLDocument doc ;
+
+	XMLError status = doc.LoadFile( xmlFileName.c_str() ) ;
+
+	if ( status != XML_SUCCESS )
+	{
+		if ( status == 2 )
+			std::cout << "No recover XML file provided or file not existing" << std::endl ;
+		else
+			std::cerr << "Erreur lors du chargement" << std::endl ;
+		throw ;
+	}
+
+	std::vector<SDHCALGunOptions> optVec ;
+
+	XMLHandle handle(&doc) ;
+	XMLElement* root = handle.FirstChild().ToElement() ;
+
+	XMLNode* node = root->FirstChild() ;
+
+	while ( node )
+	{
+		if ( node->Value() != std::string("guns") )
+		{
+			node = node->NextSiblingElement() ;
+			continue ;
+		}
+
+		XMLNode* type = node->FirstChild() ;
+		while ( type )
+		{
+			if ( type->Value() == std::string("particle") )
+			{
+				SDHCALGunOptions option ;
+				XMLElement* param = type->FirstChildElement() ;
+
+				while( param )
+				{
+					if ( param->Value() == std::string("pdgID") )
+						option.particleName = param->GetText() ;
+
+					if ( param->Value() == std::string("time") )
+						option.time = std::atof( param->GetText() ) ;
+
+					if ( param->Value() == std::string("position") )
+					{
+						std::string positionType = param->Attribute("type") ;
+
+						if ( positionType == std::string("cosmic") )
+						{
+							option.gunOptionPosition = "cosmic" ;
+						}
+						else
+						{
+							std::string s = param->GetText() ;
+							std::istringstream iss(s) ;
+							std::vector<std::string> result{ std::istream_iterator<std::string>(iss) , {} } ;
+
+							option.meanPositionX = std::atof(result.at(0).c_str()) ;
+							option.meanPositionY = std::atof(result.at(1).c_str()) ;
+							option.meanPositionZ = std::atof(result.at(2).c_str()) ;
+
+							if ( positionType == std::string("fixed") )
+							{
+								option.gunOptionPosition = "fixed" ;
+							}
+							if ( positionType == std::string("uniform") )
+							{
+								option.gunOptionPosition = "uniform" ;
+								option.uniformMaxPosition = param->FloatAttribute("delta") ;
+							}
+							if ( positionType == std::string("gaus") )
+							{
+								option.gunOptionPosition = "gaus" ;
+								option.sigmaPosition = param->FloatAttribute("sigma") ;
+							}
+						}
+					}
+
+					if ( param->Value() == std::string("momentum") )
+					{
+						std::string momentumType = param->Attribute("type") ;
+
+						std::string s = param->GetText() ;
+						std::istringstream iss(s) ;
+						std::vector<std::string> result{ std::istream_iterator<std::string>(iss) , {} } ;
+
+						option.momentumPhi = std::atof(result.at(0).c_str()) ;
+						option.momentumTheta = std::atof(result.at(1).c_str()) ;
+
+						if ( momentumType == std::string("fixed") )
+						{
+							option.gunOptionMomentum = "fixed" ;
+						}
+						if ( momentumType == std::string("gaus") )
+						{
+							option.gunOptionMomentum = "gaus" ;
+							option.gaussianMomentumSigma = param->FloatAttribute("sigma") ;
+						}
+					}
 
 
-	gunOptionPosition = std::string("fixed") ;
-	gunOptionMomentum = std::string("fixed") ;
-	gunOptionEnergyDistribution = std::string("fixed") ;
+					if ( param->Value() == std::string("energy") )
+					{
+						std::string energyType = param->Attribute("type") ;
 
-	meanPositionX = 0.0 * CLHEP::mm ;
-	meanPositionY = 0.0 * CLHEP::mm ;
-	uniformMaxPosition = 0.0 * CLHEP::mm ;
-	sigmaPosition = 1 * CLHEP::mm ;
+						if ( energyType == std::string("fixed") )
+						{
+							option.gunOptionEnergyDistribution = std::string("fixed") ;
+							option.particleEnergy = std::atof( param->GetText() ) * CLHEP::GeV ;
+						}
+						if ( energyType == std::string("gaus") )
+						{
+							option.gunOptionEnergyDistribution = std::string("gaus") ;
+							option.particleEnergy = std::atof( param->GetText() ) * CLHEP::GeV ;
+							option.sigmaEnergy = param->FloatAttribute("sigma") * CLHEP::GeV ;
+						}
 
-	gaussianMomentumSigma = 0.1 ;
-	momentumTheta = 0 ;
-	momentumPhi = 0 ;
+						if ( energyType == std::string("uniform") || energyType == std::string("forNN") )
+						{
+							option.gunOptionEnergyDistribution = energyType ;
 
-	particleEnergy = 30 * CLHEP::GeV ;
-	sigmaEnergy = 0.1 * CLHEP::GeV ;
-	minEnergy = 50 * CLHEP::GeV ;
-	maxEnergy = 50 * CLHEP::GeV ;
+							G4double min = param->FloatAttribute("min") ;
+							G4double max = param->FloatAttribute("max") ;
 
-	primaryPos = G4ThreeVector(0 , 0 , -20*CLHEP::mm) ;
-	primaryMom = G4ThreeVector(0 , 0 , 1) ;
-	primaryEnergy = particleEnergy ;
+							assert ( min>0 && max>0 ) ;
+							assert ( min < max ) ;
+
+							option.minEnergy = min * CLHEP::GeV ;
+							option.maxEnergy = max * CLHEP::GeV ;
+						}
+					}
+
+					param = param->NextSiblingElement() ;
+				}
+
+				optVec.push_back(option) ;
+			}
+
+			type = type->NextSiblingElement() ;
+		}
+
+		break ;
+	}
+
+	for ( const auto& option : optVec )
+		gunVec.push_back( new SDHCALGun(option) ) ;
 }
 
 
 SDHCALPrimaryGeneratorAction::~SDHCALPrimaryGeneratorAction()
 {
 	delete messenger ;
-	delete particleGun ;
+
+	for ( const auto& gun : gunVec )
+		delete gun ;
 }
 
 void SDHCALPrimaryGeneratorAction::GeneratePrimaries(G4Event* event)
 {
-	if ( gunOptionPosition == G4String("cosmic") )
-		shootForCosmic() ;
-	else
-	{
-		shootPosition() ;
-		shootMomentum() ;
-	}
-	shootEnergy() ;
-
-	particleGun->SetParticleDefinition( particleDefinition ) ;
-	particleGun->SetParticlePosition( primaryPos ) ;
-	particleGun->SetParticleMomentumDirection( primaryMom ) ;
-	particleGun->SetParticleEnergy( primaryEnergy ) ;
-
-	particleGun->GeneratePrimaryVertex(event) ;
-}
-
-void SDHCALPrimaryGeneratorAction::shootPosition()
-{
-	double X , Y , Z ;
-	X = 0.0*CLHEP::m ;
-	Y = 0.0*CLHEP::m ;
-	Z = -20*CLHEP::mm ;
-
-	MyRandom* rand = MyRandom::Instance() ;
-
-	if ( gunOptionPosition == G4String("fixed") )
-	{
-		X = meanPositionX * CLHEP::mm ;
-		Y = meanPositionY * CLHEP::mm ;
-		Z = meanPositionZ * CLHEP::mm ;
-	}
-	else if ( gunOptionPosition == G4String("uniform") )
-	{
-		X = rand->Uniform(meanPositionX - uniformMaxPosition , meanPositionX + uniformMaxPosition) * CLHEP::mm ;
-		Y = rand->Uniform(meanPositionY - uniformMaxPosition , meanPositionY + uniformMaxPosition) * CLHEP::mm ;
-	}
-	else if ( gunOptionPosition == G4String("gaus") )
-	{
-		X = rand->Gaus(meanPositionX , sigmaPosition) * CLHEP::mm ;
-		Y = rand->Gaus(meanPositionY , sigmaPosition) * CLHEP::mm ;
-	}
-	else if ( gunOptionPosition == G4String("cosmic") )
-	{
-		G4cout << " ERROR : cosmic not in shootPosition()" << G4endl ;
-		throw ;
-	}
-	else
-	{
-		G4cout << "Position option unknown : put to defaut (0,0)" << G4endl ;
-	}
-
-	primaryPos = G4ThreeVector(X, Y, Z) ;
-}
-
-void SDHCALPrimaryGeneratorAction::shootMomentum()
-{
-	double X , Y , Z ;
-	X = std::cos(momentumPhi)*std::sin(momentumTheta) ;
-	Y = std::sin(momentumPhi)*std::sin(momentumTheta) ;
-	Z = std::cos(momentumTheta) ;
-
-	MyRandom* rand = MyRandom::Instance() ;
-	if ( gunOptionMomentum == G4String("fixed") )
-	{
-	}
-	else if ( gunOptionMomentum == G4String("gaus") )
-	{
-		double phi = rand->Uniform(0 , 2*M_PI) ;
-		double theta = rand->Gaus(0 , gaussianMomentumSigma) ;
-		if (theta < 0)
-		{
-			theta = -theta ;
-			phi = -phi ;
-		}
-
-		double XX = std::cos(phi)*std::sin(theta) ;
-		double YY = std::sin(phi)*std::sin(theta) ;
-		double ZZ = std::cos(theta) ;
-
-		X += XX ;
-		Y += YY ;
-		Z += ZZ ;
-	}
-	else
-	{
-		G4cout << "Position option unknown : put to defaut theta = 0" << G4endl ;
-	}
-
-	primaryMom = G4ThreeVector(X, Y, Z) ;
-	primaryMom /= primaryMom.mag() ;
-}
-
-void SDHCALPrimaryGeneratorAction::shootForCosmic() //HardCoded
-{
-	MyRandom* rand = MyRandom::Instance() ;
-
-	double sizeZ = SDHCALDetectorConstruction::sizeZ ;
-	double sizeX = SDHCALDetectorConstruction::sizeX ;
-
-	double circleRadius = ( std::sqrt( sizeZ*sizeZ + 2.0*sizeX*sizeX ) + 10 ) * CLHEP::mm ;
-
-	double aX = rand->Uniform(-0.5*sizeX , 0.5*sizeX) * CLHEP::mm ;
-	double aY = rand->Uniform(-0.5*sizeX , 0.5*sizeX) * CLHEP::mm ;
-	double aZ = rand->Uniform(0 , sizeZ) * CLHEP::mm ;
-
-	double phi = rand->Uniform(0, 2.0*M_PI) ;
-	double theta = acos( rand->Uniform(-1 , 1) ) ;
-
-	double X = aX + circleRadius*std::cos(phi)*std::sin(theta) ;
-	double Y = aY + circleRadius*std::sin(phi)*std::sin(theta) ;
-	double Z = aZ + circleRadius*std::cos(theta) ;
-
-	G4ThreeVector position(X,Y,Z) ;
-	G4ThreeVector momentum(aX-X , aY-Y , aZ-Z) ;
-	momentum /= momentum.mag() ;
-
-	primaryPos = position ;
-	primaryMom = momentum ;
-}
-
-void SDHCALPrimaryGeneratorAction::shootEnergy()
-{
-	if ( gunOptionEnergyDistribution == G4String("fixed") )
-	{
-		primaryEnergy = particleEnergy ;
-		return ;
-	}
-
-	double shoot = particleEnergy ;
-	MyRandom* rand = MyRandom::Instance() ;
-	if ( gunOptionEnergyDistribution == G4String("gaus") )
-	{
-		shoot = rand->Gaus(particleEnergy , sigmaEnergy) ;
-		if ( shoot < 0 )
-			shoot = -shoot ;
-	}
-	else if ( gunOptionEnergyDistribution == G4String("uniform") )
-	{
-		shoot = rand->Uniform(minEnergy , maxEnergy) ;
-	}
-	else if ( gunOptionEnergyDistribution == G4String("forNN") ) //shoot in 1/x distrbution
-	{
-		double I = std::log(maxEnergy/minEnergy) ;
-		double x = rand->Uniform(0,1) ;
-		shoot = minEnergy * std::exp(x*I) ;
-	}
-	else
-	{
-		G4cout << "EnergyDistribution option unknown : put to defaut (50 GeV)" << G4endl ;
-	}
-
-	primaryEnergy = shoot ;
+	for ( const auto& gun : gunVec )
+		gun->generatePrimary(event) ;
 }
 
 void SDHCALPrimaryGeneratorAction::print() const
 {
 	G4cout << "Primary particles : " << G4endl ;
-	for ( const auto& gun : particleGunVec )
+	for ( const auto& gun : gunVec )
 	{
 		G4cout << G4endl ;
 		G4cout << "    pdgID : " << gun->GetParticleDefinition()->GetParticleName() << G4endl ;
+		G4cout << "     Time : " << gun->GetParticleTime() << " ns" << G4endl ;
 		G4cout << "      Pos : " << gun->GetParticlePosition() << G4endl ;
 		G4cout << "      Mom : " << gun->GetParticleMomentumDirection() << G4endl ;
 		G4cout << "   Energy : " << gun->GetParticleEnergy()/CLHEP::GeV << " GeV" << G4endl ;

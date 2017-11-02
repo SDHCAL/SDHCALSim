@@ -20,39 +20,103 @@
 #endif
 
 #include <string>
+#include <random>
 
 #include <Randomize.hh>
+
+#include "tinyxml2.h"
+
+
+
+struct Params
+{
+		G4int seed = 0 ;
+		G4int nEvent = 1 ;
+		G4String physicsList = "FTFP_BERT" ;
+		G4String outputFileName = "output" ;
+		RPCType rpcType = kNormalRPC ;
+} ;
+
+Params readXmlFile(std::string xmlFileName)
+{
+	Params params ;
+
+	using namespace tinyxml2 ;
+	XMLDocument doc ;
+
+	XMLError status = doc.LoadFile( xmlFileName.c_str() ) ;
+
+	if ( status != XML_SUCCESS )
+	{
+		if ( status == 2 )
+			std::cout << "No recover XML file provided or file not existing" << std::endl ;
+		else
+			std::cerr << "Erreur lors du chargement" << std::endl ;
+		throw ;
+	}
+
+	XMLHandle handle(&doc) ;
+	XMLElement* root = handle.FirstChild().ToElement() ;
+
+	XMLNode* node = root->FirstChild() ;
+
+	while ( node )
+	{
+		if ( node->Value() == std::string("seed") )
+		{
+			params.seed = std::atoi( node->ToElement()->GetText() ) ;
+		}
+		if ( node->Value() == std::string("nEvent") )
+		{
+			params.nEvent = std::atoi( node->ToElement()->GetText() ) ;
+		}
+		if ( node->Value() == std::string("rpcType") )
+		{
+			std::string type = node->ToElement()->GetText() ;
+
+			if ( type == std::string("withScintillator") )
+				params.rpcType = kWithScintillatorRPC ;
+		}
+		if ( node->Value() == std::string("physicsList") )
+		{
+			params.physicsList = node->ToElement()->GetText() ;
+		}
+		if ( node->Value() == std::string("outputFileName") )
+		{
+			params.outputFileName = node->ToElement()->GetText() ;
+		}
+
+		node = node->NextSiblingElement() ;
+	}
+
+	return params ;
+}
 
 
 int main(int argc , char** argv)
 {
-	std::string physList = "FTFP_BERT" ;
-	G4int seed = 0 ;
+	assert ( argc > 1 ) ;
 
-	if ( argc >= 4 )
-	{
-		std::cout << "SEED : " << std::atoi(argv[2]) << std::endl ;
-		std::cout << "PHYSLIST : " << std::string( argv[3] ) << std::endl ;
-		seed = std::atoi( argv[2] ) ;
-		physList = std::string( argv[3] ) ;
-	}
+	Params params = readXmlFile( argv[1] ) ;
 
-	CLHEP::HepRandom::setTheSeed(seed) ;
-
+	CLHEP::HepRandom::setTheSeed(params.seed) ;
 
 	G4RunManager* runManager = new G4RunManager ;
 
 	// Detector construction
-	runManager->SetUserInitialization( new SDHCALDetectorConstruction() ) ;
+	runManager->SetUserInitialization( new SDHCALDetectorConstruction(params.rpcType) ) ;
 
 	// Physics list
 	G4PhysListFactory* physFactory = new G4PhysListFactory() ;
-	runManager->SetUserInitialization( physFactory->GetReferencePhysList(physList) ) ;
+	runManager->SetUserInitialization( physFactory->GetReferencePhysList(params.physicsList) ) ;
 
 	// Primary generator action
-	runManager->SetUserAction( new SDHCALPrimaryGeneratorAction() ) ;
+	runManager->SetUserAction( new SDHCALPrimaryGeneratorAction( argv[1] ) ) ;
 
 	SDHCALRunAction* runAction = new SDHCALRunAction() ;
+
+	runAction->setLcioFileName( params.outputFileName + G4String(".slcio") ) ;
+	runAction->setRootFileName( params.outputFileName + G4String(".root") ) ;
 
 	runManager->SetUserAction( runAction ) ;
 	runManager->SetUserAction( new SDHCALEventAction(runAction) ) ;
@@ -60,64 +124,8 @@ int main(int argc , char** argv)
 	runManager->SetUserAction( SDHCALSteppingAction::Instance() ) ;
 	runManager->SetUserAction( SDHCALTrackingAction::Instance() ) ;
 
-	// Initialize G4 kernel
 	runManager->Initialize() ;
-
-	G4UImanager* UI = G4UImanager::GetUIpointer() ;
-
-	G4String command = "/control/execute " ;
-	G4String fileName = argv[1] ;
-	UI->ApplyCommand(command+fileName) ;
-
-	/*
-#ifdef G4VIS_USE
-	// Initialize visualization
-	G4VisManager* visManager = new G4VisExecutive ;
-	// G4VisExecutive can take a verbosity argument - see /vis/verbose guidance.
-	// G4VisManager* visManager = new G4VisExecutive("Quiet");
-	visManager->Initialize() ;
-#endif
-
-	// Get the pointer to the User Interface manager
-	G4UImanager* UImanager = G4UImanager::GetUIpointer() ;
-
-	if (argc != 1)
-	{
-		// batch mode
-		G4String command = "/control/execute " ;
-		G4String fileName = argv[1] ;
-		UImanager->ApplyCommand(command+fileName) ;
-	}
-	else
-	{
-		// interactive mode : define UI session
-
-#ifdef G4UI_USE
-		G4UIExecutive* ui = new G4UIExecutive(argc, argv) ;
-#ifdef G4VIS_USE
-		UImanager->ApplyCommand("/control/execute init_vis.mac") ;
-#else
-		UImanager->ApplyCommand("/control/execute init.mac");
-#endif
-		if ( ui->IsGUI() )
-		{
-			UImanager->ApplyCommand("/control/execute icons.mac") ;
-		}
-		ui->SessionStart() ;
-		delete ui ;
-#endif
-
-	}
-
-	// Job termination
-	// Free the store: user actions, physics_list and detector_description are
-	// owned and deleted by the run manager, so they should not be deleted
-	// in the main() program !
-
-#ifdef G4VIS_USE
-	delete visManager ;
-#endif
-*/
+	runManager->BeamOn(params.nEvent) ;
 
 	delete runManager ;
 

@@ -55,17 +55,17 @@ void SDHCALLcioWriter::createPrimaryParticles(const G4Event* event)
 
 		IMPL::MCParticleImpl* primaryPart = new IMPL::MCParticleImpl() ;
 		primaryPart->setPDG( particle->GetPDGcode() ) ;
-		primaryPart->setMass( static_cast<float>( particle->GetMass() ) ) ;
-		primaryPart->setTime( static_cast<float>( vertex->GetT0() ) ) ;
+		primaryPart->setMass( static_cast<float>( particle->GetMass()/CLHEP::GeV ) ) ;
+		primaryPart->setTime( static_cast<float>( vertex->GetT0()/CLHEP::ns ) ) ;
 		primaryPart->setCharge( static_cast<float>( particle->GetCharge() ) ) ;
 
-		G4ThreeVector g4mom = particle->GetMomentum() ;
+		G4ThreeVector g4mom = particle->GetMomentum()/CLHEP::GeV ;
 		double mom[3] ;
 		for ( int j : {0,1,2} )
 			mom[j] = g4mom[j] ;
 		primaryPart->setMomentum( mom ) ;
 
-		G4ThreeVector g4Pos = vertex->GetPosition() ;
+		G4ThreeVector g4Pos = vertex->GetPosition()/CLHEP::mm ;
 		double pos[3] ;
 		for ( int j : {0,1,2} )
 			pos[j] = g4Pos[j] ;

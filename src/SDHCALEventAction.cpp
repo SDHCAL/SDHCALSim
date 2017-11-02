@@ -53,11 +53,12 @@ void SDHCALEventAction::EndOfEventAction(const G4Event* event)
 	G4RunManager* runManager = G4RunManager::GetRunManager() ;
 	const SDHCALPrimaryGeneratorAction* anAction = dynamic_cast<const SDHCALPrimaryGeneratorAction*>( runManager->GetUserPrimaryGeneratorAction() ) ;
 
-	G4double primaryEnergy = anAction->getPrimaryEnergy()/CLHEP::GeV ;
-	G4ThreeVector primaryMom = anAction->getPrimaryMom() ;
-	G4ThreeVector primaryPos = anAction->getPrimaryPos() ;
+	SDHCALGun* gun = anAction->getGunVec().at(0) ;
 
-	G4int particleID = anAction->getParticleDefinition()->GetPDGEncoding() ;
+	G4double primaryEnergy = gun->GetParticleEnergy()/CLHEP::GeV ;
+	G4ThreeVector primaryMom = gun->GetParticleMomentumDirection() ;
+	G4ThreeVector primaryPos = gun->GetParticlePosition() ;
+	G4int particleID = gun->GetParticleDefinition()->GetPDGEncoding() ;
 
 	lcioWriter->setValue("ParticleID" , particleID) ;
 	lcioWriter->setValue("ParticleMomentum" , primaryMom) ;
