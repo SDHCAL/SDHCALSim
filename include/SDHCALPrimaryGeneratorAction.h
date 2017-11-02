@@ -62,7 +62,7 @@ class SDHCALPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 
 		std::vector<SDHCALGun*> gunVec = {} ;
 
-		SDHCALGunOptions opt ;
+		//SDHCALGunOptions opt ;
 
 		std::vector<G4ParticleGun*> particleGunVec = {} ;
 

@@ -3,10 +3,9 @@
 
 #include <stdexcept>
 #include <Randomize.hh>
-#include <TRandom3.h>
-#include <limits>
+#include <random>
 
-class MyRandom : public TRandom3 
+class MyRandom
 {
 		static MyRandom* theOneTrueInstance ;
 
@@ -20,21 +19,31 @@ class MyRandom : public TRandom3
 			return theOneTrueInstance ;
 		}
 
+		template <typename T>
+		T Uniform(T min , T max)
+		{
+			std::uniform_real_distribution<T> dist{min , max} ;
+			return dist(generator) ;
+		}
+
+		template <typename T>
+		T Gaus(T mean , T sigma)
+		{
+			std::normal_distribution<T> dist{mean , sigma} ;
+			return dist(generator) ;
+		}
 
 	protected :
 
 		MyRandom(unsigned int seed)
-			: TRandom3(seed)
+			: generator{seed}
 		{
 			if (theOneTrueInstance)
 				throw std::logic_error("MyRandom already exists") ;
 
 			theOneTrueInstance = this ;
 
-			if ( seed == 0 )
-				SetSeed( std::numeric_limits<unsigned int>::max() ) ;
-
-			std::cout << "MyRandom initialized with seed : " << GetSeed() << std::endl ;
+			std::cout << "MyRandom initialized with seed : " << seed << std::endl ;
 		}
 
 		static void initInstance()
@@ -43,6 +52,8 @@ class MyRandom : public TRandom3
 		}
 
 		virtual ~MyRandom() ;
+
+		std::mt19937_64 generator ;
 } ;
 
 #endif //MyRandom_h

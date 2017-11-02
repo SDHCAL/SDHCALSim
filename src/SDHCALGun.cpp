@@ -94,8 +94,8 @@ void SDHCALGun::shootMomentum()
 	}
 	else if ( options.gunOptionMomentum == G4String("gaus") )
 	{
-		double phi = rand->Uniform(0 , 2*M_PI) ;
-		double theta = rand->Gaus(0 , options.gaussianMomentumSigma) ;
+		double phi = rand->Uniform(0.0 , 2*M_PI) ;
+		double theta = rand->Gaus(0.0 , options.gaussianMomentumSigma) ;
 		if (theta < 0)
 		{
 			theta = -theta ;
@@ -130,10 +130,10 @@ void SDHCALGun::shootForCosmic() //HardCoded
 
 	double aX = rand->Uniform(-0.5*sizeX , 0.5*sizeX) * CLHEP::mm ;
 	double aY = rand->Uniform(-0.5*sizeX , 0.5*sizeX) * CLHEP::mm ;
-	double aZ = rand->Uniform(0 , sizeZ) * CLHEP::mm ;
+	double aZ = rand->Uniform(0.0 , sizeZ) * CLHEP::mm ;
 
-	double phi = rand->Uniform(0, 2.0*M_PI) ;
-	double theta = acos( rand->Uniform(-1 , 1) ) ;
+	double phi = rand->Uniform(0.0 , 2.0*M_PI) ;
+	double theta = acos( rand->Uniform(-1.0 , 1.0) ) ;
 
 	double X = aX + circleRadius*std::cos(phi)*std::sin(theta) ;
 	double Y = aY + circleRadius*std::sin(phi)*std::sin(theta) ;
@@ -170,7 +170,7 @@ void SDHCALGun::shootEnergy()
 	else if ( options.gunOptionEnergyDistribution == G4String("forNN") ) //shoot in 1/x distrbution
 	{
 		double I = std::log(options.maxEnergy/options.minEnergy) ;
-		double x = rand->Uniform(0,1) ;
+		double x = rand->Uniform(0.0 , 1.0) ;
 		shoot = options.minEnergy * std::exp(x*I) ;
 	}
 	else

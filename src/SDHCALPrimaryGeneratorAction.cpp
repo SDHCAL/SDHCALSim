@@ -16,6 +16,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
+#include <iterator>
 
 #include "tinyxml2.h"
 
@@ -92,8 +93,7 @@ SDHCALPrimaryGeneratorAction::SDHCALPrimaryGeneratorAction( std::string xmlFileN
 						}
 						else
 						{
-							std::string s = param->GetText() ;
-							std::istringstream iss(s) ;
+							std::istringstream iss( param->GetText() ) ;
 							std::vector<std::string> result{ std::istream_iterator<std::string>(iss) , {} } ;
 
 							option.meanPositionX = std::atof(result.at(0).c_str()) ;
@@ -121,8 +121,7 @@ SDHCALPrimaryGeneratorAction::SDHCALPrimaryGeneratorAction( std::string xmlFileN
 					{
 						std::string momentumType = param->Attribute("type") ;
 
-						std::string s = param->GetText() ;
-						std::istringstream iss(s) ;
+						std::istringstream iss( param->GetText() ) ;
 						std::vector<std::string> result{ std::istream_iterator<std::string>(iss) , {} } ;
 
 						option.momentumPhi = std::atof(result.at(0).c_str()) ;
