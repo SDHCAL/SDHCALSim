@@ -68,28 +68,3 @@ foreach( testsourcefile ${APP_SOURCES} )
 	target_link_libraries( ${testname} MyLib ${ROOT_COMPONENT_LIBRARIES} )
 	install(TARGETS ${testname} RUNTIME DESTINATION ${PROJECT_SOURCE_DIR}/bin)
 endforeach( testsourcefile ${APP_SOURCES} )
-
-
-
-
-#SET (SDHCALSim ${PROJECT_SOURCE_DIR}/src/SDHCALSim.cxx)
-#SET (SDHCALSimVis ${PROJECT_SOURCE_DIR}/src/SDHCALSimVis.cxx)
-#SET (SDHCALSimWithScintillator ${PROJECT_SOURCE_DIR}/src/SDHCALSimWithScintillator.cxx)
-
-##----------------------------------------------------------------------------
-## Add the executable, and link it to the Geant4 libraries
-##
-#add_executable(SDHCALSim ${SDHCALSim} ${sources} ${headers})
-#add_executable(SDHCALSimVis ${SDHCALSimVis} ${sources} ${headers})
-#add_executable(SDHCALSimWithScintillator ${SDHCALSimWithScintillator} ${sources} ${headers})
-##
-#target_link_libraries(SDHCALSim ${Geant4_LIBRARIES} ${EXTRA_LIB})
-#target_link_libraries(SDHCALSimVis ${Geant4_LIBRARIES} ${EXTRA_LIB})
-#target_link_libraries(SDHCALSimWithScintillator ${Geant4_LIBRARIES} ${EXTRA_LIB})
-
-##----------------------------------------------------------------------------
-## Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
-##
-#install(TARGETS SDHCALSim DESTINATION ${PROJECT_SOURCE_DIR}/bin)
-#install(TARGETS SDHCALSimVis DESTINATION ${PROJECT_SOURCE_DIR}/bin)
-#install(TARGETS SDHCALSimWithScintillator DESTINATION ${PROJECT_SOURCE_DIR}/bin)
