@@ -2,7 +2,7 @@
 # Setup the project
 #
 
-FIND_PACKAGE( ILCUTIL REQUIRED COMPONENTS ILCSOFT_CMAKE_MODULES )
+#FIND_PACKAGE( ILCUTIL REQUIRED COMPONENTS ILCSOFT_CMAKE_MODULES )
 cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
 #
 
@@ -26,13 +26,12 @@ else()
   find_package(Geant4 REQUIRED)
 endif()
 
-#find_package( Marlin 1.0 REQUIRED ) # minimum required Marlin version
 find_package( ROOT REQUIRED ) # minimum required Marlin version
-find_package( CLHEP REQUIRED )
+#find_package( CLHEP REQUIRED )
 find_package( LCIO REQUIRED )
 
 
-FOREACH( pkg LCIO ROOT CLHEP Geant4 )
+FOREACH( pkg LCIO ROOT Geant4 )
 	IF( ${pkg}_FOUND )
 		INCLUDE_DIRECTORIES( SYSYEM ${${pkg}_INCLUDE_DIRS} )
 		LINK_LIBRARIES( ${${pkg}_LIBRARIES} )
