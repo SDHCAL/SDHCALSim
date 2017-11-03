@@ -38,6 +38,8 @@ class SDHCALTrackingAction : public G4UserTrackingAction
 		G4int getPrimaryParent(const G4Track* track) const ;
 		PrimaryParticleInfo getPrimaryParticleInfo(G4int id) const ;
 
+		void reset() ;
+
 
 	private :
 

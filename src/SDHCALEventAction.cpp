@@ -22,6 +22,7 @@ void SDHCALEventAction::BeginOfEventAction(const G4Event* event)
 	beginClock = clock() ;
 
 	SDHCALSteppingAction::Instance()->reset() ;
+	SDHCALTrackingAction::Instance()->reset() ;
 
 	SDHCALLcioWriter* lcioWriter = runAction->getWriter() ;
 	lcioWriter->clear() ;

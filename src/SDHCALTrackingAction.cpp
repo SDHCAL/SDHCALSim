@@ -18,6 +18,12 @@ SDHCALTrackingAction::SDHCALTrackingAction()
 	G4cout << "Create SDHCALTrackingAction" << G4endl ;
 }
 
+void SDHCALTrackingAction::reset()
+{
+	linkMap.clear() ;
+	primaryTrackMap.clear() ;
+}
+
 
 void SDHCALTrackingAction::PreUserTrackingAction(const G4Track* track)
 {
@@ -38,6 +44,7 @@ G4int SDHCALTrackingAction::getPrimaryParent(const G4Track* track) const
 	{
 		if ( linkMap.at(parent) == 0 )
 			return parent ;
+
 		parent = linkMap.at(parent) ;
 	}
 }

@@ -6,6 +6,7 @@
 
 #include "SDHCALRunAction.h"
 #include "SDHCALSteppingAction.h"
+#include "SDHCALTrackingAction.h"
 #include "SDHCALPrimaryGeneratorAction.h"
 #include "SDHCALRPCSensitiveDetector.h"
 #include "SDHCALRootWriter.h"

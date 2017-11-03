@@ -1,10 +1,4 @@
-#----------------------------------------------------------------------------
-# Setup the project
-#
-
-#FIND_PACKAGE( ILCUTIL REQUIRED COMPONENTS ILCSOFT_CMAKE_MODULES )
 cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
-#
 
 project(SDHCALSim)
 
@@ -26,10 +20,9 @@ else()
   find_package(Geant4 REQUIRED)
 endif()
 
-find_package( ROOT REQUIRED ) # minimum required Marlin version
+find_package( ROOT REQUIRED )
 #find_package( CLHEP REQUIRED )
 find_package( LCIO REQUIRED )
-
 
 FOREACH( pkg LCIO ROOT Geant4 )
 	IF( ${pkg}_FOUND )
@@ -39,14 +32,6 @@ FOREACH( pkg LCIO ROOT Geant4 )
 	ENDIF()
 ENDFOREACH()
 
-#
-# Add specific modules
-#
-
-#----------------------------------------------------------------------------
-# Setup Geant4 include directories and compile definitions
-# Setup include directory for this project
-#
 
 ADD_DEFINITIONS( "-Wall -ansi -pedantic -std=c++11" )
 
