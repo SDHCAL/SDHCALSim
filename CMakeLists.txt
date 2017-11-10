@@ -21,7 +21,6 @@ else()
 endif()
 
 find_package( ROOT REQUIRED )
-#find_package( CLHEP REQUIRED )
 find_package( LCIO REQUIRED )
 
 FOREACH( pkg LCIO ROOT Geant4 )

@@ -4,8 +4,6 @@
 #include "SDHCALEventAction.h"
 #include "SDHCALTrackingAction.h"
 
-
-//#include <G4UserEventAction.hh>
 #include <G4PhysListFactory.hh>
 
 #include "G4RunManager.hh"
@@ -20,12 +18,8 @@
 #endif
 
 #include <string>
-#include <random>
-
-#include <Randomize.hh>
 
 #include "tinyxml2.h"
-
 
 
 struct Params
