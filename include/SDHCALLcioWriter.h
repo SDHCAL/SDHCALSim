@@ -55,7 +55,7 @@ class SDHCALLcioWriter
 		IMPL::LCEventImpl* lcEvent = nullptr ;
 		IMPL::LCCollectionVec* particleCol = nullptr ;
 		IMPL::LCCollectionVec* simVec = nullptr ;
-		IMPL::LCCollectionVec* mcVec = nullptr ;
+
 		std::map<G4int,IMPL::MCParticleImpl*> primaryParticleMap = {} ;
 
 		std::string detectorName ;

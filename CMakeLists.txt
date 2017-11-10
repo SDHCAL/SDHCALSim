@@ -21,7 +21,7 @@ else()
 endif()
 
 find_package( ROOT REQUIRED )
-find_package( LCIO REQUIRED )
+find_package( LCIO 2.11 REQUIRED )
 
 FOREACH( pkg LCIO ROOT Geant4 )
 	IF( ${pkg}_FOUND )

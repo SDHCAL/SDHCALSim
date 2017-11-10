@@ -35,7 +35,6 @@ void SDHCALLcioWriter::writeLCEvent()
 {
 	lcEvent->setWeight(0) ;
 	lcEvent->addCollection(simVec , "SDHCAL_Proto_EndCap") ;
-	lcEvent->addCollection(mcVec , "particleGenericObject") ;
 	lcEvent->addCollection(particleCol , "primaryParticles") ;
 
 	writer->writeEvent(lcEvent) ;
@@ -78,8 +77,6 @@ void SDHCALLcioWriter::createPrimaryParticles(const G4Event* event)
 void SDHCALLcioWriter::createSimCalorimeterHits(std::vector<SDHCALHit*> hits)
 {
 	simVec = new IMPL::LCCollectionVec(EVENT::LCIO::SIMCALORIMETERHIT) ;
-	mcVec = new IMPL::LCCollectionVec(EVENT::LCIO::LCGENERICOBJECT) ;
-
 
 	IMPL::LCFlagImpl chFlag(0) ;
 	EVENT::LCIO bitinfo ;
@@ -102,6 +99,8 @@ void SDHCALLcioWriter::createSimCalorimeterHits(std::vector<SDHCALHit*> hits)
 		step->Energy = static_cast<float>( hit->getEnergyDeposited()/energyUnit ) ;
 		step->Time = static_cast<float>( hit->getTime()/timeUnit ) ;
 		step->PDG = hit->getPdgID() ;
+		step->Length = static_cast<float>( hit->getTrueLength() ) ;
+//		step->Length = static_cast<float>( hit->getDeltaPos().mag() ) ;
 
 		int I = hit->getI() ; // + 1 ;
 		int J = hit->getJ() ; // + 1 ;
@@ -149,43 +148,11 @@ void SDHCALLcioWriter::createSimCalorimeterHits(std::vector<SDHCALHit*> hits)
 			hitMap[key]->setPosition(cellPos) ;
 		}
 
-		hitMap[key]->addMCParticleContribution( step->Particle , step->Energy , step->Time , step->PDG , step->StepPosition ) ;
-
-		//		G4ThreeVector globalBeginPos = (*it)->getBeginPos() ;
-		//		G4ThreeVector globalEndPos = (*it)->getEndPos() ;
-
-		//		G4ThreeVector deltaInLocalCoord = (*it)->getRPC()->globalToRpcCoordTransform( (*it)->getDeltaPos() ) ;
-
-		G4ThreeVector cheatBeginPos = cheatPos - 0.5*hit->getDeltaPos() ;
-		G4ThreeVector cheatEndPos = cheatPos + 0.5*hit->getDeltaPos() ;
-
-		IMPL::LCGenericObjectImpl* particle = new IMPL::LCGenericObjectImpl() ;
-		particle->setIntVal(0 , hitMap[key]->getCellID0() ) ;
-		particle->setIntVal(1 , hitMap[key]->getNMCContributions() ) ;
-		particle->setIntVal(2 , hit->getTrackStatus() ) ;
-
-		//		particle->setFloatVal(0 , static_cast<float>( globalBeginPos.x() ) ) ;
-		//		particle->setFloatVal(1 , static_cast<float>( globalBeginPos.y() ) ) ;
-		//		particle->setFloatVal(2 , static_cast<float>( globalBeginPos.z() ) ) ;
-		//		particle->setFloatVal(3 , static_cast<float>( globalEndPos.x() ) ) ;
-		//		particle->setFloatVal(4 , static_cast<float>( globalEndPos.y() ) ) ;
-		//		particle->setFloatVal(5 , static_cast<float>( globalEndPos.z() ) ) ;
-
-		particle->setFloatVal(0 , static_cast<float>( cheatBeginPos.x() ) ) ;
-		particle->setFloatVal(1 , static_cast<float>( cheatBeginPos.y() ) ) ;
-		particle->setFloatVal(2 , static_cast<float>( cheatBeginPos.z() ) ) ;
-		particle->setFloatVal(3 , static_cast<float>( cheatEndPos.x() ) ) ;
-		particle->setFloatVal(4 , static_cast<float>( cheatEndPos.y() ) ) ;
-		particle->setFloatVal(5 , static_cast<float>( cheatEndPos.z() ) ) ;
-
-		particle->setFloatVal(6 , static_cast<float>( hit->getTrueLength() ) ) ;
-
-		mcVec->addElement(particle) ;
+		hitMap[key]->addMCParticleContribution( step->Particle , step->Energy , step->Time , step->Length , step->PDG , step->StepPosition ) ;
 	}
 
 	for ( const auto& hit : hitMap )
 		simVec->addElement(hit.second) ;
-
 }
 
 void SDHCALLcioWriter::setValue(std::string key , int value)
