@@ -99,8 +99,8 @@ void SDHCALLcioWriter::createSimCalorimeterHits(std::vector<SDHCALHit*> hits)
 		step->Energy = static_cast<float>( hit->getEnergyDeposited()/energyUnit ) ;
 		step->Time = static_cast<float>( hit->getTime()/timeUnit ) ;
 		step->PDG = hit->getPdgID() ;
-		step->Length = static_cast<float>( hit->getTrueLength() ) ;
-//		step->Length = static_cast<float>( hit->getDeltaPos().mag() ) ;
+//		step->Length = static_cast<float>( hit->getTrueLength() ) ;
+		step->Length = static_cast<float>( hit->getDeltaPos().mag() ) ;
 
 		int I = hit->getI() ; // + 1 ;
 		int J = hit->getJ() ; // + 1 ;
