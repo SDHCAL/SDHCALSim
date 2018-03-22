@@ -58,7 +58,7 @@ Params readXmlFile(std::string xmlFileName)
 	{
 		if ( node->Value() == std::string("seed") )
 		{
-			params.seed = std::atoi( node->ToElement()->GetText() ) ;
+			params.seed = std::atoi( node->ToElement()->GetText() ) + 1 ;
 		}
 		if ( node->Value() == std::string("nEvent") )
 		{
