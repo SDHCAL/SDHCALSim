@@ -28,6 +28,7 @@ class SDHCALHit : public G4VHit
 		inline G4int getTrackID() const { return trackID ; }
 		inline G4int getPdgID() const { return pdgID ; }
 		inline G4double getEnergyDeposited() const { return energyDeposited ; }
+		inline G4double getBetaGamma() const { return betaGamma ; }
 		inline SDHCALRPC* getRPC() const { return rpc ; }
 		inline G4int getRPCID() const { return RPCID ; }
 		inline G4int getI() const { return I ; }
@@ -53,6 +54,7 @@ class SDHCALHit : public G4VHit
 		G4int trackID ;
 		G4int pdgID ;
 		G4double energyDeposited ;
+		G4double betaGamma ;
 		SDHCALRPC* rpc ;
 		G4int RPCID ;
 		G4int I ;

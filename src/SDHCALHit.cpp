@@ -23,6 +23,8 @@ SDHCALHit::SDHCALHit(const G4Step* step , SDHCALRPC* _rpc)
 	pdgID = step->GetTrack()->GetDynamicParticle()->GetPDGcode() ;
 	energyDeposited = step->GetTotalEnergyDeposit() ;
 
+	betaGamma = step->GetPreStepPoint()->GetBeta()*step->GetPreStepPoint()->GetGamma() ;
+
 	RPCID = rpc->getID() ;
 	isEnteringStep = (step->GetPreStepPoint()->GetStepStatus() == fGeomBoundary) ;
 	isLeavingStep = (step->GetPostStepPoint()->GetStepStatus() == fGeomBoundary) ;

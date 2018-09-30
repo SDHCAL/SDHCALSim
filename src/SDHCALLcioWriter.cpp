@@ -97,6 +97,7 @@ void SDHCALLcioWriter::createSimCalorimeterHits(std::vector<SDHCALHit*> hits)
 		IMPL::MCParticleCont* step = new IMPL::MCParticleCont() ;
 		step->Particle = primaryParticleMap.at( hit->getPrimaryID() ) ;
 		step->Energy = static_cast<float>( hit->getEnergyDeposited()/energyUnit ) ;
+//		step->Energy = static_cast<float>( hit->getBetaGamma() ) ;
 		step->Time = static_cast<float>( hit->getTime()/timeUnit ) ;
 		step->PDG = hit->getPdgID() ;
 //		step->Length = static_cast<float>( hit->getTrueLength() ) ;
