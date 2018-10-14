@@ -13,10 +13,10 @@ class SDHCALPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
 	public :
 		SDHCALPrimaryGeneratorAction() ;
-		SDHCALPrimaryGeneratorAction( std::string xmlFileName ) ;
+		SDHCALPrimaryGeneratorAction( G4String jsonFileName ) ;
 		virtual ~SDHCALPrimaryGeneratorAction() ;
 
-		void setParticleDefinition(std::string particleName)
+		void setParticleDefinition(G4String particleName)
 		{
 			G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable() ;
 			particleDefinition = particleTable->FindParticle( particleName ) ;

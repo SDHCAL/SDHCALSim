@@ -18,7 +18,7 @@
 #include <cstring>
 #include <iterator>
 
-#include "tinyxml2.h"
+#include "json.hpp"
 
 #include "MyRandom.h"
 
@@ -33,51 +33,32 @@ SDHCALPrimaryGeneratorAction::SDHCALPrimaryGeneratorAction()
 	gunVec.push_back(new SDHCALGun(opt)) ;
 }
 
-SDHCALPrimaryGeneratorAction::SDHCALPrimaryGeneratorAction( std::string xmlFileName )
+SDHCALPrimaryGeneratorAction::SDHCALPrimaryGeneratorAction( G4String jsonFileName )
 {
 	messenger = new SDHCALPrimaryGeneratorActionMessenger(this) ;
 
-	G4cout << "SDHCALPrimaryGeneratorAction::SDHCALPrimaryGeneratorAction( '" << xmlFileName << "' )" << G4endl ;
-	using namespace tinyxml2 ;
-	XMLDocument doc ;
+	G4cout << "SDHCALPrimaryGeneratorAction::SDHCALPrimaryGeneratorAction( '" << jsonFileName << "' )" << G4endl ;
 
-	XMLError status = doc.LoadFile( xmlFileName.c_str() ) ;
-
-	if ( status != XML_SUCCESS )
+	if ( jsonFileName == G4String("") )
 	{
-		if ( status == 2 )
-			std::cout << "No recover XML file provided or file not existing" << std::endl ;
-		else
-			std::cerr << "Erreur lors du chargement" << std::endl ;
-		throw ;
+		std::cout << "ERROR : no json file provided" << std::endl ;
+		std::terminate() ;
 	}
 
-	XMLHandle handle(&doc) ;
-	XMLElement* root = handle.FirstChild().ToElement() ;
+	std::ifstream file(jsonFileName) ;
+	auto json = nlohmann::json::parse(file) ;
 
-	XMLNode* node = root->FirstChild() ;
-
-	while ( node )
+	if ( !json.count("particuleGuns") )
 	{
-		if ( node->Value() != std::string("guns") )
-		{
-			node = node->NextSiblingElement() ;
-			continue ;
-		}
-
-		XMLNode* type = node->FirstChild() ;
-		while ( type )
-		{
-			if ( type->Value() == std::string("particle") )
-				gunVec.push_back( new SDHCALGun(type) ) ;
-
-			type = type->NextSiblingElement() ;
-		}
-
-		break ;
+		G4cout << "ERROR : no gun provided" << G4endl ;
+		std::terminate() ;
 	}
+
+	auto gunList = json.at("particuleGuns") ;
+
+	for ( const auto& gun : gunList )
+		gunVec.push_back( new SDHCALGun(gun) ) ;
 }
-
 
 SDHCALPrimaryGeneratorAction::~SDHCALPrimaryGeneratorAction()
 {

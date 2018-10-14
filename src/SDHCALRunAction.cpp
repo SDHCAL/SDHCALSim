@@ -5,19 +5,10 @@
 #include <globals.hh>
 #include <ctime>
 
-SDHCALRunAction::SDHCALRunAction()
-	: G4UserRunAction()
-{
-	writer = nullptr ;
-
-	lcioFileName = "test.slcio" ;
-	rootFileName = "test.root" ;
-}
-
-SDHCALRunAction::~SDHCALRunAction()
-{
-
-}
+//SDHCALRunAction::SDHCALRunAction()
+//	: G4UserRunAction()
+//{
+//}
 
 G4Run* SDHCALRunAction::GenerateRun()
 {
