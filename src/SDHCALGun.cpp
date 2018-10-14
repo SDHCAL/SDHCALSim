@@ -83,11 +83,14 @@ SDHCALGun::SDHCALGun(nlohmann::json json)
 	if ( json.count("cosmic") )
 	{
 		options.cosmicGun = json.at("cosmic").get<G4bool>() ;
-		return ;
+
+		if ( options.cosmicGun )
+			return ;
 	}
 
 	if ( json.count("vertex") )
 	{
+
 		auto vertexParam = json.at("vertex") ;
 
 		if ( vertexParam.count("time") )
