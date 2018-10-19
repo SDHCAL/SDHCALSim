@@ -76,6 +76,7 @@ void SDHCALEventAction::EndOfEventAction(const G4Event* event)
 	G4double depositedEnergy = steppingAction->getDepositedEnergy()/CLHEP::GeV ;
 	G4double leakedEnergy = steppingAction->getLeakedEnergy()/CLHEP::GeV ;
 	G4double emFraction = steppingAction->getEMFraction() ;
+	G4double depositedEnergyNeutron = steppingAction->getDepositedEnergyPerParticleType()[2112]/CLHEP::GeV ;
 
 	G4cout << "Deposited energy : " << depositedEnergy << " GeV" << G4endl ;
 	G4cout << "Leaked energy : " << leakedEnergy << " GeV" << G4endl ;
@@ -83,6 +84,7 @@ void SDHCALEventAction::EndOfEventAction(const G4Event* event)
 	G4cout << G4endl ;
 
 	lcioWriter->setValue("DepositedEnergy" , depositedEnergy ) ;
+	lcioWriter->setValue("DepositedEnergyNeutron" , depositedEnergyNeutron ) ;
 	lcioWriter->setValue("LeakedEnergy" , leakedEnergy ) ;
 	lcioWriter->setValue("EMFraction" , emFraction ) ;
 
@@ -112,6 +114,7 @@ void SDHCALEventAction::EndOfEventAction(const G4Event* event)
 	rootWriter->setPrimaryPos( primaryPos ) ;
 	rootWriter->setPrimaryMom( primaryMom ) ;
 	rootWriter->setDepositedEnergy( depositedEnergy ) ;
+	rootWriter->setDepositedEnergyNeutron( depositedEnergyNeutron ) ;
 	rootWriter->setLeakedEnergy( leakedEnergy ) ;
 	rootWriter->setEmFraction( emFraction ) ;
 	rootWriter->setComputingTime( timeOfThisEvent ) ;

@@ -49,6 +49,7 @@ class SDHCALRootWriter
 		void setPrimaryPos(G4ThreeVector value) { primaryPos[0] = value.x() ; primaryPos[1] = value.y() ; primaryPos[2] = value.z() ; }
 		void setPrimaryMom(G4ThreeVector value) { primaryMom[0] = value.x() ; primaryMom[1] = value.y() ; primaryMom[2] = value.z() ; }
 		inline void setDepositedEnergy(double value) { depositedEnergy = value ; }
+		inline void setDepositedEnergyNeutron(double value) { depositedEnergyNeutron = value ; }
 		inline void setLeakedEnergy(double value) { leakedEnergy = value ; }
 		inline void setEmFraction(double value) { emFraction = value ; }
 		inline void setComputingTime(double value) { computingTime = value ; }
@@ -68,6 +69,7 @@ class SDHCALRootWriter
 		double primaryPos[3] ;
 		double primaryMom[3] ;
 		double depositedEnergy ;
+		double depositedEnergyNeutron ;
 		double leakedEnergy ;
 		double emFraction ;
 		double computingTime ;
