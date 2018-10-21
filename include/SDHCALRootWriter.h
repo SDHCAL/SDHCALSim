@@ -50,6 +50,8 @@ class SDHCALRootWriter
 		void setPrimaryMom(G4ThreeVector value) { primaryMom[0] = value.x() ; primaryMom[1] = value.y() ; primaryMom[2] = value.z() ; }
 		inline void setDepositedEnergy(double value) { depositedEnergy = value ; }
 		inline void setDepositedEnergyNeutron(double value) { depositedEnergyNeutron = value ; }
+		inline void setNNeutrons(int value) { nNeutrons = value ; }
+		inline void setNPi0(int value) { nPi0 = value ; }
 		inline void setLeakedEnergy(double value) { leakedEnergy = value ; }
 		inline void setEmFraction(double value) { emFraction = value ; }
 		inline void setComputingTime(double value) { computingTime = value ; }
@@ -73,6 +75,9 @@ class SDHCALRootWriter
 		double leakedEnergy ;
 		double emFraction ;
 		double computingTime ;
+
+		int nNeutrons = 0 ;
+		int nPi0 = 0 ;
 
 		std::vector<double> stepCosAngle ;
 		std::vector<double> stepLength ;

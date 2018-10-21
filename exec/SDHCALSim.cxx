@@ -3,6 +3,7 @@
 #include "SDHCALRunAction.h"
 #include "SDHCALEventAction.h"
 #include "SDHCALTrackingAction.h"
+#include "SDHCALStackingAction.h"
 
 #include <G4PhysListFactory.hh>
 
@@ -28,6 +29,7 @@ struct Params
 		G4int nEvent = 1 ;
 		G4String physicsList = "FTFP_BERT" ;
 		G4String outputFileName = "output" ;
+		G4bool killNeutrons = false ;
 } ;
 
 Params readJsonFile(G4String jsonFileName)
@@ -51,6 +53,8 @@ Params readJsonFile(G4String jsonFileName)
 		params.nEvent = json.at("nEvents").get<G4int>() ;
 	if ( json.count("seed") )
 		params.seed = json.at("seed").get<G4int>()  + 1 ;
+	if ( json.count("killNeutrons") )
+		params.killNeutrons = json.at("killNeutrons").get<G4bool>() ;
 
 	return params ;
 }
@@ -86,6 +90,9 @@ int main(int argc , char** argv)
 
 	runManager->SetUserAction( SDHCALSteppingAction::Instance() ) ;
 	runManager->SetUserAction( SDHCALTrackingAction::Instance() ) ;
+	runManager->SetUserAction( SDHCALStackingAction::Instance() ) ;
+
+	SDHCALStackingAction::Instance()->setKillNeutrons(params.killNeutrons) ;
 
 	runManager->Initialize() ;
 	runManager->BeamOn(params.nEvent) ;

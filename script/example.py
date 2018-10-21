@@ -20,6 +20,9 @@ if __name__ == '__main__' :
 	params.nEvent = 10
 	params.seed = 0
 	params.outputFileName = 'outputName'
+	
+	params.oldConfig = False
+	params.killNeutrons = False
 
 
 	charged = sim.Particle()

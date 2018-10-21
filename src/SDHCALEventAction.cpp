@@ -23,6 +23,7 @@ void SDHCALEventAction::BeginOfEventAction(const G4Event* event)
 
 	SDHCALSteppingAction::Instance()->reset() ;
 	SDHCALTrackingAction::Instance()->reset() ;
+	SDHCALStackingAction::Instance()->reset() ;
 
 	SDHCALLcioWriter* lcioWriter = runAction->getWriter() ;
 	lcioWriter->clear() ;
@@ -88,8 +89,19 @@ void SDHCALEventAction::EndOfEventAction(const G4Event* event)
 	lcioWriter->setValue("LeakedEnergy" , leakedEnergy ) ;
 	lcioWriter->setValue("EMFraction" , emFraction ) ;
 
+	const auto& nParticlesPerIDMap = SDHCALStackingAction::Instance()->getNumberOfParticlesPerID() ;
+	G4int nNeutrons = 0 ;
+	G4int nPi0 = 0 ;
+
+	if ( nParticlesPerIDMap.count(2112) )
+		nNeutrons = nParticlesPerIDMap.at(2112) ;
+	if ( nParticlesPerIDMap.count(111) )
+		nPi0 = nParticlesPerIDMap.at(111) ;
+
 	lcioWriter->writeLCEvent() ;
 
+	lcioWriter->setValue("nNeutrons" , nNeutrons ) ;
+	lcioWriter->setValue("nPi0" , nPi0 ) ;
 
 	int nRealHits = 0 ;
 	for ( std::vector<SDHCALHit*>::const_iterator it = hits.begin() ; it != hits.end() ; ++it )
@@ -115,6 +127,8 @@ void SDHCALEventAction::EndOfEventAction(const G4Event* event)
 	rootWriter->setPrimaryMom( primaryMom ) ;
 	rootWriter->setDepositedEnergy( depositedEnergy ) ;
 	rootWriter->setDepositedEnergyNeutron( depositedEnergyNeutron ) ;
+	rootWriter->setNNeutrons( nNeutrons ) ;
+	rootWriter->setNPi0( nPi0 ) ;
 	rootWriter->setLeakedEnergy( leakedEnergy ) ;
 	rootWriter->setEmFraction( emFraction ) ;
 	rootWriter->setComputingTime( timeOfThisEvent ) ;

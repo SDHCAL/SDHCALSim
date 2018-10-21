@@ -39,6 +39,7 @@ class Params :
 		self.rpcType = "normal"
 		self.oldConfig = False
 		self.outputFileName = "output"
+		self.killNeutrons = False
 
 
 
@@ -50,7 +51,10 @@ def launch(a) :
 	oldConfigBool = "false"
 	if a.oldConfig :
 		oldConfigBool = "true"
-	
+
+	killNeutronsBool = "false"
+	if a.killNeutrons :
+		killNeutronsBool = "true"	
 
 	jsonFileContent = '''
 	{
@@ -58,6 +62,7 @@ def launch(a) :
 		"physicsList" : "'''+ a.physicsList +'''",
 		"nEvents" : '''+ str(a.nEvent) +''',
 		"seed" : '''+ str(a.seed) +''',
+		"killNeutrons" : ''' + killNeutronsBool + ''',
 		
 		"detectorConfig" :
 		{
