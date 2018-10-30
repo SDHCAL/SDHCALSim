@@ -98,10 +98,14 @@ void SDHCALEventAction::EndOfEventAction(const G4Event* event)
 	if ( nParticlesPerIDMap.count(111) )
 		nPi0 = nParticlesPerIDMap.at(111) ;
 
-	lcioWriter->writeLCEvent() ;
-
 	lcioWriter->setValue("nNeutrons" , nNeutrons ) ;
 	lcioWriter->setValue("nPi0" , nPi0 ) ;
+
+
+
+	lcioWriter->writeLCEvent() ;
+
+
 
 	int nRealHits = 0 ;
 	for ( std::vector<SDHCALHit*>::const_iterator it = hits.begin() ; it != hits.end() ; ++it )
