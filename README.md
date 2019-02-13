@@ -21,6 +21,7 @@
 	
 
 2) running
+
 set the correct `SIMEXE` env variable in script/example.py
 
 to run :
