@@ -39,7 +39,7 @@ include_directories( ${PROJECT_SOURCE_DIR}/include )
 
 file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cpp)
 
-file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.h)
+file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.h ${PROJECT_SOURCE_DIR}/include/*.hpp)
 
 add_library( MyLib ${sources} ${headers} )
 

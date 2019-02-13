@@ -11,8 +11,8 @@ SDHCALRootWriter::SDHCALRootWriter()
 
 	instance = this ;
 
-	file = NULL ;
-	tree = NULL ;
+	file = nullptr ;
+	tree = nullptr ;
 }
 
 void SDHCALRootWriter::createRootFile( std::string fileName )
@@ -27,6 +27,9 @@ void SDHCALRootWriter::createRootFile( std::string fileName )
 	tree->Branch("primaryPos" , &primaryPos , "primaryPos[3]/D") ;
 	tree->Branch("primaryMom" , &primaryMom , "primaryMom[3]/D") ;
 	tree->Branch("depositedEnergy" , &depositedEnergy) ;
+	tree->Branch("depositedEnergyNeutron" , &depositedEnergyNeutron) ;
+	tree->Branch("nNeutrons" , &nNeutrons) ;
+	tree->Branch("nPi0" , &nPi0) ;
 	tree->Branch("leakedEnergy" , &leakedEnergy) ;
 	tree->Branch("emFraction" , &emFraction) ;
 	tree->Branch("computingTime" , &computingTime) ;

@@ -70,6 +70,25 @@ void buildSDHCALMaterials()
 	Steel304L->AddMaterial(Mo , fractionMo304L) ;
 
 
+	//TO REPRODUCE OLD RESULTS
+	G4double oldDensity = 7.85*CLHEP::g/CLHEP::cm3 ; //to reproduce old results
+	G4Material* Steel316L_Old = new G4Material("SDHCAL_Steel316L_Old" , oldDensity , 5) ;
+	Steel316L_Old->AddMaterial(Fer,fractionFe316L) ;
+	Steel316L_Old->AddMaterial(Cr,fractionCr316L) ;
+	Steel316L_Old->AddMaterial(Ni,fractionNi316L) ;
+	Steel316L_Old->AddMaterial(Mo,fractionMo316L) ;
+	Steel316L_Old->AddMaterial(Mn,fractionMn316L) ;
+
+	G4Material* Steel304L_Old = new G4Material("SDHCAL_Steel304L_Old" , oldDensity , 7) ;
+	Steel304L_Old->AddMaterial(Fer, fractionFe304L) ;
+	Steel304L_Old->AddMaterial(Cr , fractionCr304L) ;
+	Steel304L_Old->AddMaterial(Ni , fractionNi304L) ;
+	Steel304L_Old->AddMaterial(Mn , fractionMn304L) ;
+	Steel304L_Old->AddMaterial(Si , fractionSi304L) ;
+	Steel304L_Old->AddMaterial(Cu , fractionCu304L) ;
+	Steel304L_Old->AddMaterial(Mo , fractionMo304L) ;
+
+
 	//	G4Material* glass = man->FindOrBuildMaterial("G4_Pyrex_Glass") ;
 	//	G4Material* mylar = man->FindOrBuildMaterial("G4_MYLAR") ;
 	//	G4Material* graphite = man->FindOrBuildMaterial("G4_GRAPHITE") ;

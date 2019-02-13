@@ -20,109 +20,146 @@ SDHCALGun::SDHCALGun(const SDHCALGunOptions& opt)
 {
 }
 
-SDHCALGun::SDHCALGun(tinyxml2::XMLNode* node)
+SDHCALGun::SDHCALGun(nlohmann::json json)
 	: G4ParticleGun(1) ,
 	  options()
 {
-	using namespace tinyxml2 ;
-	XMLElement* param = node->FirstChildElement() ;
+	G4cout << "SDHCALGun::SDHCALGun()" << G4endl ;
 
-	while( param )
+	if ( json.count("particleName") )
+		options.particleName = json.at("particleName").get<G4String>() ;
+
+	if ( json.count("energy") )
 	{
-		if ( param->Value() == std::string("pdgID") )
-			options.particleName = param->GetText() ;
+		auto energyParam = json.at("energy") ;
 
-		if ( param->Value() == std::string("time") )
-			options.time = std::atof( param->GetText() ) ;
 
-		if ( param->Value() == std::string("position") )
+		if ( !energyParam.count("option") )
+			G4cout << "WARNING : energy option not provided, assume fixed" << G4endl ;
+		else
+			options.gunOptionEnergyDistribution = energyParam.at("option").get<G4String>() ;
+
+
+		if ( options.gunOptionEnergyDistribution == "uniform"
+			 || options.gunOptionEnergyDistribution == "forNN" )
 		{
-			std::string positionType = param->Attribute("type") ;
-
-			if ( positionType == std::string("cosmic") )
+			if ( !energyParam.count("min") || !energyParam.count("max") )
 			{
-				options.gunOptionPosition = "cosmic" ;
+				G4cout << "ERROR : min or max value not provided" << G4endl ;
+				std::terminate() ;
 			}
+
+			options.minEnergy = energyParam.at("min").get<G4double>() * CLHEP::GeV ;
+			options.maxEnergy = energyParam.at("max").get<G4double>() * CLHEP::GeV ;
+
+			assert ( options.minEnergy>0 && options.maxEnergy>0 ) ;
+			assert ( options.minEnergy < options.maxEnergy ) ;
+
+		}
+		else
+		{
+			if ( !energyParam.count("value") )
+				G4cout << "WARNING : energy value not provided, assume 30GeV" << G4endl ;
 			else
+				options.particleEnergy = energyParam.at("value").get<G4double>() * CLHEP::GeV ;
+
+
+			if ( options.gunOptionEnergyDistribution == "gaus" )
 			{
-				std::istringstream iss( param->GetText() ) ;
-				std::vector<std::string> result{ std::istream_iterator<std::string>(iss) , {} } ;
+				if ( !energyParam.count("sigma") )
+					G4cout << "WARNING : energy sigma not provided, assume 0.1GeV" << G4endl ;
 
-				options.meanPositionX = std::atof(result.at(0).c_str()) ;
-				options.meanPositionY = std::atof(result.at(1).c_str()) ;
-				options.meanPositionZ = std::atof(result.at(2).c_str()) ;
-
-				if ( positionType == std::string("fixed") )
-				{
-					options.gunOptionPosition = "fixed" ;
-				}
-				if ( positionType == std::string("uniform") )
-				{
-					options.gunOptionPosition = "uniform" ;
-					options.uniformMaxPosition = param->FloatAttribute("delta") ;
-				}
-				if ( positionType == std::string("gaus") )
-				{
-					options.gunOptionPosition = "gaus" ;
-					options.sigmaPosition = param->FloatAttribute("sigma") ;
-				}
+				options.sigmaEnergy = energyParam.at("sigma").get<G4double>() * CLHEP::GeV ;
+			}
+			else if ( options.gunOptionEnergyDistribution != "fixed" )
+			{
+				G4cout << "ERROR : energy option " << energyParam.at("option") << " unknown" << G4endl ;
+				std::terminate() ;
 			}
 		}
+	}
 
-		if ( param->Value() == std::string("momentum") )
+
+	if ( json.count("cosmic") )
+	{
+		options.cosmicGun = json.at("cosmic").get<G4bool>() ;
+
+		if ( options.cosmicGun )
+			return ;
+	}
+
+	if ( json.count("vertex") )
+	{
+
+		auto vertexParam = json.at("vertex") ;
+
+		if ( vertexParam.count("time") )
+			options.time = vertexParam.at("time").get<G4double>() * CLHEP::ns ;
+
+
+		if ( !vertexParam.count("option") )
+			G4cout << "WARNING : position option not provided, assume fixed" << G4endl ;
+		else
+			options.gunOptionPosition = vertexParam.at("option").get<G4String>() ;
+
+		if ( vertexParam.count("position") )
 		{
-			std::string momentumType = param->Attribute("type") ;
-
-			std::istringstream iss( param->GetText() ) ;
-			std::vector<std::string> result{ std::istream_iterator<std::string>(iss) , {} } ;
-
-			options.momentumPhi = std::atof(result.at(0).c_str()) ;
-			options.momentumTheta = std::atof(result.at(1).c_str()) ;
-
-			if ( momentumType == std::string("fixed") )
-			{
-				options.gunOptionMomentum = "fixed" ;
-			}
-			if ( momentumType == std::string("gaus") )
-			{
-				options.gunOptionMomentum = "gaus" ;
-				options.gaussianMomentumSigma = param->FloatAttribute("sigma") ;
-			}
+			auto pos = vertexParam.at("position") ;
+			options.meanPositionX = pos.at("x").get<G4double>() * CLHEP::mm ;
+			options.meanPositionY = pos.at("y").get<G4double>() * CLHEP::mm ;
+			options.meanPositionZ = pos.at("z").get<G4double>() * CLHEP::mm ;
 		}
 
-
-		if ( param->Value() == std::string("energy") )
+		if ( options.gunOptionPosition == "gaus" )
 		{
-			std::string energyType = param->Attribute("type") ;
+			if ( !vertexParam.count("sigma") )
+				G4cout << "WARNING : position sigma not provided, assume 1mm" << G4endl ;
 
-			if ( energyType == std::string("fixed") )
-			{
-				options.gunOptionEnergyDistribution = std::string("fixed") ;
-				options.particleEnergy = std::atof( param->GetText() ) * CLHEP::GeV ;
-			}
-			if ( energyType == std::string("gaus") )
-			{
-				options.gunOptionEnergyDistribution = std::string("gaus") ;
-				options.particleEnergy = std::atof( param->GetText() ) * CLHEP::GeV ;
-				options.sigmaEnergy = param->FloatAttribute("sigma") * CLHEP::GeV ;
-			}
+			options.sigmaPosition = vertexParam.at("sigma").get<G4double>() * CLHEP::mm ;
+		}
+		else if ( options.gunOptionPosition == "uniform" )
+		{
+			if ( !vertexParam.count("delta") )
+				G4cout << "WARNING : position delta not provided, assume 0mm" << G4endl ;
 
-			if ( energyType == std::string("uniform") || energyType == std::string("forNN") )
-			{
-				options.gunOptionEnergyDistribution = energyType ;
+			options.uniformMaxPosition = vertexParam.at("delta").get<G4double>() * CLHEP::mm ;
+		}
+		else if ( options.gunOptionPosition != "fixed" )
+		{
+			G4cout << "ERROR : energy option " << vertexParam.at("option") << " unknown" << G4endl ;
+			std::terminate() ;
+		}
+	}
 
-				G4double min = param->FloatAttribute("min") ;
-				G4double max = param->FloatAttribute("max") ;
+	if ( json.count("momentum") )
+	{
+		auto momentumParam = json.at("momentum") ;
 
-				assert ( min>0 && max>0 ) ;
-				assert ( min < max ) ;
 
-				options.minEnergy = min * CLHEP::GeV ;
-				options.maxEnergy = max * CLHEP::GeV ;
-			}
+		if ( !momentumParam.count("option") )
+			G4cout << "WARNING : momentum option not provided, assume fixed" << G4endl ;
+		else
+			options.gunOptionMomentum = momentumParam.at("option").get<G4String>() ;
+
+		if ( momentumParam.count("direction") )
+		{
+			auto pos = momentumParam.at("direction") ;
+			options.momentumPhi = pos.at("phi").get<G4double>() ;
+			options.momentumTheta = pos.at("theta").get<G4double>() ;
 		}
 
-		param = param->NextSiblingElement() ;
+		if ( options.gunOptionMomentum == "gaus" )
+		{
+			if ( !momentumParam.count("sigma") )
+				G4cout << "WARNING : momentum sigma not provided, assume 0.1" << G4endl ;
+
+			options.gaussianMomentumSigma = momentumParam.at("sigma").get<G4double>() ;
+		}
+		else if ( options.gunOptionMomentum != "fixed" )
+		{
+			G4cout << "ERROR : momentum option " << momentumParam.at("option") << " unknown" << G4endl ;
+			std::terminate() ;
+		}
 	}
 }
 
@@ -130,7 +167,7 @@ void SDHCALGun::generatePrimary(G4Event* event)
 {
 	SetParticleDefinition( G4ParticleTable::GetParticleTable()->FindParticle( options.particleName ) ) ;
 
-	if ( options.gunOptionPosition == G4String("cosmic") )
+	if ( options.cosmicGun )
 		shootForCosmic() ;
 	else
 	{
@@ -278,7 +315,7 @@ void SDHCALGun::shootEnergy()
 	}
 	else
 	{
-		G4cout << "EnergyDistribution option unknown : put to defaut (50 GeV)" << G4endl ;
+		G4cout << "EnergyDistribution option " << options.gunOptionEnergyDistribution << " unknown : put to defaut (50 GeV)" << G4endl ;
 	}
 
 	SetParticleEnergy( shoot ) ;

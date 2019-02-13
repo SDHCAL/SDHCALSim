@@ -11,6 +11,8 @@
 #include <G4Region.hh>
 #include <G4RegionStore.hh>
 
+#include "json.hpp"
+
 #include "SDHCALMaterials.h"
 #include "SDHCALRPC.h"
 #include "SDHCALRPCWithScintillator.h"
@@ -19,9 +21,40 @@
 G4double SDHCALDetectorConstruction::sizeX ;
 G4double SDHCALDetectorConstruction::sizeZ ;
 
-SDHCALDetectorConstruction::SDHCALDetectorConstruction(RPCType _rpcType)
+SDHCALDetectorConstruction::SDHCALDetectorConstruction(G4String jsonFileName)
 {
-	rpcType = _rpcType ;
+	rpcType = kNormalRPC ;
+	if ( jsonFileName == G4String("") )
+	{
+		std::cout << "ERROR : no json file provided" << std::endl ;
+		std::terminate() ;
+	}
+
+	std::ifstream file(jsonFileName) ;
+	auto json = nlohmann::json::parse(file) ;
+
+	if ( json.count("detectorConfig") )
+	{
+		auto detectorConfig = json.at("detectorConfig") ;
+
+		if ( detectorConfig.count("rpcType") )
+		{
+			auto type = detectorConfig.at("rpcType").get<G4String>() ;
+
+			if ( type == "normal")
+				rpcType = kNormalRPC ;
+			else if ( type == "withScintillator")
+				rpcType = kWithScintillatorRPC ;
+			else
+			{
+				std::cout << "ERROR : RPC Type unknown" << std::endl ;
+				std::terminate() ;
+			}
+		}
+
+		if ( detectorConfig.count("oldConfig") )
+			oldConfig = detectorConfig.at("oldConfig").get<G4bool>() ;
+	}
 }
 
 SDHCALDetectorConstruction::~SDHCALDetectorConstruction()
@@ -46,6 +79,9 @@ G4VPhysicalVolume* SDHCALDetectorConstruction::Construct()
 	G4Material* defaultMaterial = man->FindOrBuildMaterial("G4_Galactic") ;
 	G4Material* airMaterial = man->FindOrBuildMaterial("G4_AIR") ;
 	G4Material* absorberMaterial = G4Material::GetMaterial("SDHCAL_Steel304L" , true) ;
+	if ( oldConfig ) //to reproduce old results
+		absorberMaterial = G4Material::GetMaterial("SDHCAL_Steel304L_Old" , true) ;
+
 
 	// World
 	G4Box* solidWorld = new G4Box("World", worldSize/2 , worldSize/2 , worldSize/2) ;
@@ -56,7 +92,7 @@ G4VPhysicalVolume* SDHCALDetectorConstruction::Construct()
 	for ( G4int i = 0 ; i < nLayers ; ++i )
 	{
 		if ( rpcType == kNormalRPC )
-			rpcVec.push_back( new SDHCALRPC(i , nPadX , nPadY , padSize) ) ;
+			rpcVec.push_back( new SDHCALRPC(i , nPadX , nPadY , padSize , oldConfig) ) ;
 		else if ( rpcType == kWithScintillatorRPC )
 			rpcVec.push_back( new SDHCALRPCWithScintillator(i , nPadX , nPadY , padSize) ) ;
 	}
@@ -64,7 +100,11 @@ G4VPhysicalVolume* SDHCALDetectorConstruction::Construct()
 	G4double RPCSizeZ = rpcVec.at(0)->getSizeZ() ;
 
 	G4double absorberStructureSizeZ = 15*CLHEP::mm ;
+
 	G4double airGapSizeZ = 1*CLHEP::mm ;
+	if ( oldConfig ) //to reproduce old results
+		airGapSizeZ = 0*CLHEP::mm ;
+
 	G4double caloSizeZ = nLayers*( absorberStructureSizeZ + 2*airGapSizeZ + RPCSizeZ ) ;
 
 	sizeX = caloSizeX ;

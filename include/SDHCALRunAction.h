@@ -15,8 +15,8 @@ class G4Run ;
 class SDHCALRunAction : public G4UserRunAction
 {
 	public :
-		SDHCALRunAction() ;
-		virtual ~SDHCALRunAction() ;
+		SDHCALRunAction() = default ;
+		virtual ~SDHCALRunAction() = default ;
 
 		G4Run* GenerateRun() ;
 
@@ -29,10 +29,10 @@ class SDHCALRunAction : public G4UserRunAction
 		inline void setRootFileName(G4String name) { rootFileName = name ; }
 
 	protected :
-		SDHCALLcioWriter* writer ;
+		SDHCALLcioWriter* writer = nullptr ;
 
-		G4String lcioFileName ;
-		G4String rootFileName ;
+		G4String lcioFileName = "test.slcio" ;
+		G4String rootFileName = "test.root" ;
 } ;
 
 #endif //SDHCALRunAction_h

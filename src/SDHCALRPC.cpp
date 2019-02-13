@@ -29,8 +29,9 @@
 
 std::set<SDHCALRPC*> SDHCALRPC::allTheRPC ;
 
-SDHCALRPC::SDHCALRPC( G4int _id , G4int _nPadX , G4int _nPadY, G4double _cellSize )
+SDHCALRPC::SDHCALRPC(G4int _id , G4int _nPadX , G4int _nPadY, G4double _cellSize , bool old)
 {
+	oldConfig = old ;
 	id = _id ;
 
 	nPadX = _nPadX ;
@@ -191,6 +192,14 @@ void SDHCALRPC::getMaterials()
 	absorberMaterial = G4Material::GetMaterial("SDHCAL_Steel316L" , true) ;
 	maskMaterial = G4Material::GetMaterial("SDHCAL_epoxy" , true) ;
 	PCBMaterial = G4Material::GetMaterial("SDHCAL_g10" , true) ;
+
+	if ( oldConfig ) //to reproduce old results
+	{
+		absorberMaterial = G4Material::GetMaterial("SDHCAL_Steel316L_Old" , true) ;
+		maskMaterial = G4Material::GetMaterial("G4_Galactic" , true) ;
+		PCBMaterial = G4Material::GetMaterial("G4_Galactic" , true) ;
+	}
+
 	mylarMaterial = man->FindOrBuildMaterial("G4_MYLAR") ;
 	graphiteMaterial = man->FindOrBuildMaterial("G4_GRAPHITE") ;
 	glassMaterial = man->FindOrBuildMaterial("G4_Pyrex_Glass") ;
@@ -198,8 +207,7 @@ void SDHCALRPC::getMaterials()
 }
 
 void SDHCALRPC::setCoordTransform(G4AffineTransform trans)
-{	
-//	coordTransform = trans ;
+{
 	globalToRpcTransform = trans ;
 	rpcToGlobalTransform = globalToRpcTransform.Inverse() ;
 	transformComputed = true ;

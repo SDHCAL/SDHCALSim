@@ -18,7 +18,7 @@ class SDHCALRPCSensitiveDetector ;
 class SDHCALRPC
 {
 	public :
-		SDHCALRPC(G4int _id , G4int _nPadX , G4int _nPadY, G4double _cellSize) ;
+		SDHCALRPC(G4int _id , G4int _nPadX , G4int _nPadY, G4double _cellSize , bool old = false) ;
 		virtual ~SDHCALRPC() ;
 
 		G4LogicalVolume* getLogicRPC() { return logicRPC ; }
@@ -57,6 +57,8 @@ class SDHCALRPC
 		virtual void getMaterials() ;
 		virtual void build() ;
 
+		G4bool oldConfig = false ;
+
 		G4String name ;
 
 		G4int id ;
@@ -70,7 +72,6 @@ class SDHCALRPC
 		G4bool transformComputed ;
 		G4AffineTransform rpcToGlobalTransform ;
 		G4AffineTransform globalToRpcTransform ;
-		G4AffineTransform coordTransform ;
 
 		G4Material* defaultMaterial ;
 		G4Material* absorberMaterial ;

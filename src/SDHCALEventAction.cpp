@@ -23,6 +23,7 @@ void SDHCALEventAction::BeginOfEventAction(const G4Event* event)
 
 	SDHCALSteppingAction::Instance()->reset() ;
 	SDHCALTrackingAction::Instance()->reset() ;
+	SDHCALStackingAction::Instance()->reset() ;
 
 	SDHCALLcioWriter* lcioWriter = runAction->getWriter() ;
 	lcioWriter->clear() ;
@@ -76,6 +77,7 @@ void SDHCALEventAction::EndOfEventAction(const G4Event* event)
 	G4double depositedEnergy = steppingAction->getDepositedEnergy()/CLHEP::GeV ;
 	G4double leakedEnergy = steppingAction->getLeakedEnergy()/CLHEP::GeV ;
 	G4double emFraction = steppingAction->getEMFraction() ;
+	G4double depositedEnergyNeutron = steppingAction->getDepositedEnergyPerParticleType()[2112]/CLHEP::GeV ;
 
 	G4cout << "Deposited energy : " << depositedEnergy << " GeV" << G4endl ;
 	G4cout << "Leaked energy : " << leakedEnergy << " GeV" << G4endl ;
@@ -83,10 +85,26 @@ void SDHCALEventAction::EndOfEventAction(const G4Event* event)
 	G4cout << G4endl ;
 
 	lcioWriter->setValue("DepositedEnergy" , depositedEnergy ) ;
+	lcioWriter->setValue("DepositedEnergyNeutron" , depositedEnergyNeutron ) ;
 	lcioWriter->setValue("LeakedEnergy" , leakedEnergy ) ;
 	lcioWriter->setValue("EMFraction" , emFraction ) ;
 
+	const auto& nParticlesPerIDMap = SDHCALStackingAction::Instance()->getNumberOfParticlesPerID() ;
+	G4int nNeutrons = 0 ;
+	G4int nPi0 = 0 ;
+
+	if ( nParticlesPerIDMap.count(2112) )
+		nNeutrons = nParticlesPerIDMap.at(2112) ;
+	if ( nParticlesPerIDMap.count(111) )
+		nPi0 = nParticlesPerIDMap.at(111) ;
+
+	lcioWriter->setValue("nNeutrons" , nNeutrons ) ;
+	lcioWriter->setValue("nPi0" , nPi0 ) ;
+
+
+
 	lcioWriter->writeLCEvent() ;
+
 
 
 	int nRealHits = 0 ;
@@ -112,6 +130,9 @@ void SDHCALEventAction::EndOfEventAction(const G4Event* event)
 	rootWriter->setPrimaryPos( primaryPos ) ;
 	rootWriter->setPrimaryMom( primaryMom ) ;
 	rootWriter->setDepositedEnergy( depositedEnergy ) ;
+	rootWriter->setDepositedEnergyNeutron( depositedEnergyNeutron ) ;
+	rootWriter->setNNeutrons( nNeutrons ) ;
+	rootWriter->setNPi0( nPi0 ) ;
 	rootWriter->setLeakedEnergy( leakedEnergy ) ;
 	rootWriter->setEmFraction( emFraction ) ;
 	rootWriter->setComputingTime( timeOfThisEvent ) ;

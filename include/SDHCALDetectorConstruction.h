@@ -13,7 +13,7 @@ enum RPCType
 class SDHCALDetectorConstruction : public G4VUserDetectorConstruction
 {
 	public :
-		SDHCALDetectorConstruction(RPCType _rpcType = kNormalRPC) ;
+		SDHCALDetectorConstruction(G4String jsonFileName) ;
 		~SDHCALDetectorConstruction() ;
 
 		G4VPhysicalVolume* Construct() ;
@@ -23,9 +23,8 @@ class SDHCALDetectorConstruction : public G4VUserDetectorConstruction
 
 	protected :
 
-		RPCType rpcType ;
-
-
+		RPCType rpcType = kNormalRPC ;
+		G4bool oldConfig = false ;
 } ;
 
 

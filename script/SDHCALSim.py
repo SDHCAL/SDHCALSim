@@ -7,8 +7,10 @@ class Particle :
 		self.particleName = "mu-"
 
 		self.time = 0
+		
+		self.cosmic = False
 
-		self.positionOption = "fixed"       #fixed uniform gaus cosmic
+		self.positionOption = "fixed"       #fixed uniform gaus
 		self.positionX = 0                  #0 is calorimeter center
 		self.positionY = 0
 		self.positionZ = -20                #0 is calorimeter begin
@@ -35,45 +37,67 @@ class Params :
 		self.seed = 0
 		self.particleList = []
 		self.rpcType = "normal"
+		self.oldConfig = False
 		self.outputFileName = "output"
+		self.killNeutrons = False
 
 
 
 def launch(a) :
 
 	pid = os.getpid()
-	xmlFileName = str(pid) + '.xml'
+	jsonFileName = str(pid) + '.json'
+	
+	oldConfigBool = "false"
+	if a.oldConfig :
+		oldConfigBool = "true"
 
-	xmlFileContent = '''
-	<config>
-		<physicsList>'''+ a.physicsList +'''</physicsList>
-		<nEvent>'''+ str(a.nEvent) +'''</nEvent>
-		<seed>'''+ str(a.seed) +'''</seed>
-		<rpcType>'''+ a.rpcType +'''</rpcType>
-		<outputFileName>'''+ a.outputFileName +'''</outputFileName>
-		<guns>'''
+	killNeutronsBool = "false"
+	if a.killNeutrons :
+		killNeutronsBool = "true"	
+
+	jsonFileContent = '''
+	{
+		"outputFileName" : "'''+ a.outputFileName +'''",
+		"physicsList" : "'''+ a.physicsList +'''",
+		"nEvents" : '''+ str(a.nEvent) +''',
+		"seed" : '''+ str(a.seed) +''',
+		"killNeutrons" : ''' + killNeutronsBool + ''',
+		
+		"detectorConfig" :
+		{
+			"rpcType" : "'''+ a.rpcType +'''",
+			"oldConfig" : ''' + oldConfigBool + '''
+		},
+
+		"particuleGuns" :
+		['''
 
 	for particle in a.particleList :
-		xmlFileContent = xmlFileContent + '''
-			<particle>
-					<pdgID>''' + particle.particleName + '''</pdgID>
-					<time>''' + str(particle.time) + '''</time>
-					<energy type="''' + particle.energyDistribution+ '''" sigma="''' + str(particle.sigmaEnergy) + '''" min="''' + str(particle.minEnergy) + '''" max="''' + str(particle.maxEnergy) + '''">''' + str(particle.energy) + '''</energy>
-					<position type="''' + particle.positionOption + '''" delta="''' + str(particle.uniformDeltaPos) + '''" sigma="''' + str(particle.sigmaPos) + '''">''' + str(particle.positionX) + ''' ''' + str(particle.positionY) + ''' ''' + str(particle.positionZ) + '''</position> 
-					<momentum type="''' + particle.momentumOption + '''" sigma="''' + str(particle.sigmaMomentum) + '''">''' + str(particle.momentumPhi) + ''' ''' + str(particle.momentumTheta) + '''</momentum>
-			</particle>'''
+		cosmicBool = "true"
+		if not particle.cosmic :
+			cosmicBool = "false"
+			
+		jsonFileContent = jsonFileContent + '''
+			{
+				"particleName" : "''' + particle.particleName + '''",
+				"cosmic"   : ''' + cosmicBool + ''',		
+				"energy"   : { "option" : "''' + particle.energyDistribution+ '''" , "value" : ''' + str(particle.energy) + ''' , "sigma" : ''' + str(particle.sigmaEnergy) + ''' , "min" : ''' + str(particle.minEnergy) + ''' , "max" : ''' + str(particle.maxEnergy) + ''' },	
+				"vertex"   : { "time" : ''' + str(particle.time) + ''' , "option" : "''' + particle.positionOption + '''" , "position" : {"x":''' + str(particle.positionX) + ''', "y":''' + str(particle.positionY) + ''', "z":''' + str(particle.positionZ) + '''} , "delta" : ''' + str(particle.uniformDeltaPos) + ''' , "sigma" : ''' + str(particle.sigmaPos) + ''' },
+				"momentum" : { "option" : "''' + particle.momentumOption + '''" , "direction" : {"phi": ''' + str(particle.momentumPhi) + ''', "theta" : ''' + str(particle.momentumTheta) + '''} , "sigma" : ''' + str(particle.sigmaMomentum) + ''' }
+			}'''
 
-	xmlFileContent = xmlFileContent + '''
-		</guns>
-	</config>'''
+	jsonFileContent = jsonFileContent + '''
+		]
+	}'''
 
-	xmlFile = open(xmlFileName , 'w')
-	xmlFile.write(xmlFileContent)
-	xmlFile.close()
+	jsonFile = open(jsonFileName , 'w')
+	jsonFile.write(jsonFileContent)
+	jsonFile.close()
 
 
 	simuExe = os.environ["SIMEXE"]
 
-	os.system(simuExe + ' ' + xmlFileName)
+	os.system(simuExe + ' ' + jsonFileName)
 
-	os.system('rm ' + xmlFileName)
+	os.system('rm ' + jsonFileName)

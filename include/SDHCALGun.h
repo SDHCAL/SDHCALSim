@@ -3,7 +3,7 @@
 
 #include <G4ParticleGun.hh>
 
-#include "tinyxml2.h"
+#include "json.hpp"
 
 struct SDHCALGunOptions
 {
@@ -14,6 +14,8 @@ struct SDHCALGunOptions
 		G4double sigmaEnergy = 0.1 * CLHEP::GeV ;
 		G4double minEnergy = 30 * CLHEP::GeV ;
 		G4double maxEnergy = 30 * CLHEP::GeV ;
+
+		G4bool cosmicGun = false ;
 
 		G4String gunOptionPosition = "fixed" ;
 
@@ -40,7 +42,7 @@ class SDHCALGun : public G4ParticleGun
 	public :
 		SDHCALGun() ;
 		SDHCALGun(const SDHCALGunOptions& opt) ;
-		SDHCALGun(tinyxml2::XMLNode* node) ;
+		SDHCALGun(nlohmann::json json) ;
 		~SDHCALGun() = default ;
 
 
