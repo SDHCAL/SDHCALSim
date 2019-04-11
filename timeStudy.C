@@ -7,6 +7,13 @@
 
 //#include "UTIL/CellIDDecoder.h"
 
+class SimCaloImplAccessor : public IMPL::SimCalorimeterHitImpl
+{
+public:
+  SimCaloImplAccessor() : SimCalorimeterHitImpl() {};  
+  IMPL::MCParticleContVec& vec() {return _vec;}
+};
+
 
 //Make some graph
 TGraph* createAgraph(timeStudy& ts,float radius)
@@ -148,7 +155,8 @@ void timeStudy::Loop()
       std::vector<IMPL::SimCalorimeterHitImpl*> &hitvec=*SDHCAL_Proto_EndCap;
       for (int ihit=0; ihit<nHits; ++ihit)
 	{
-	  IMPL::SimCalorimeterHitImpl* hit=hitvec[ihit];
+	  IMPL::SimCalorimeterHitImpl* phit=hitvec[ihit];
+	  SimCaloImplAccessor* hit=(SimCaloImplAccessor*) phit; //C'est un hack un peu sale mais pas le temps de faire mieux
 	  int iChambre=( ( (hit->getCellID0())>>24)&63);
 	  //cout << ( ( (hit->getCellID0())>>24)&63) << " : ";
 	  //cout << "chambre " << cd(hit)["K-1"] << " a z=" << hit->getPosition()[2] << endl;
@@ -156,7 +164,7 @@ void timeStudy::Loop()
 	  //cout << "test " << hit->_vec.size() << endl;
 	  //cout << "PDG : ";
 	  int ct = 0, cm=0;
-	  for (IMPL::MCParticleContVec::iterator it=hit->_vec.begin(); it!=hit->_vec.end(); ++it)
+	  for (IMPL::MCParticleContVec::iterator it=hit->vec().begin(); it!=hit->vec().end(); ++it)
 	    {
 	      ct++;
 	      HitPhase* aPointer = new HitPhase;

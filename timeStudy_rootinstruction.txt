@@ -1,6 +1,8 @@
 In ROOT, do :
 
 For generating the tree out of the lcio file :
+gSystem->Load("${LCIO}/lib/liblcio.so"); 
+gSystem->Load("${LCIO}/lib/liblcioDict.so");
 .L writeTree.C
 writeTree("test.000.slcio")
 .q
