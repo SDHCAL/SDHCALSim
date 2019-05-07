@@ -15,7 +15,7 @@
 #include "EVENT/LCGenericObject.h"
 #include "EVENT/LCEvent.h"
 
-#include "NNClusters.h"  // in MarlinUtil
+#include "MarlinUtil_NNClusters.h"  // in MarlinUtil
 
 //ROOT stuff
 #include "TDirectory.h"

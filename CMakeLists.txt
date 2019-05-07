@@ -89,6 +89,7 @@ set(PROJECT_HEADER
 set(ANALYSER_HEADER
 	${CMAKE_CURRENT_SOURCE_DIR}/include/SDHCAL_Util_CaloHitVector_template.h
 	${CMAKE_CURRENT_SOURCE_DIR}/include/SDHCAL_Util_CaloHitVector.h
+	${CMAKE_CURRENT_SOURCE_DIR}/include/MarlinUtil_NNClusters.h
 	${CMAKE_CURRENT_SOURCE_DIR}/include/SDHCAL_Simu_EventAnalyser.h
     )
 
