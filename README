@@ -1,6 +1,6 @@
 
 
-Quick steps to build the sdhcal sim:
+Quick steps to build the sdhcal sim (with ilcsoft) :
 ------------------------------------------
 
     . /path/to/ilcsoft/installation/v01-XX/init_ilcsoft.sh
@@ -8,6 +8,20 @@ Quick steps to build the sdhcal sim:
     cd build
     cmake -C $ILCSOFT/ILCSoft.cmake ..
     make install # this should create executives SDHCAL_Simu in build and bin directories
+
+Quick steps to build the sdhcal sim (without ilcsoft) :
+------------------------------------------
+
+    You'll need LCIO, ROOT and GEANT4 software
+
+      	export LCIOdir=/path/to/lcio/installation/directory
+	export ROOTdir=/path/to/root/installation/directory
+	export GEANT4dir=/path/to/geant4/installation/directory
+	source  installtool/init.sh
+	mkdir build ; cd build ;
+	cmake -C ../installtool/local.cmake .. ;
+	make -j4 install ;
+	cd ..
 
 
 Quick steps to start simulation

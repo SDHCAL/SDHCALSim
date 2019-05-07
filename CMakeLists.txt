@@ -1,7 +1,7 @@
 #----------------------------------------------------------------------------
 # Setup the project
 #
-FIND_PACKAGE( ILCUTIL REQUIRED COMPONENTS ILCSOFT_CMAKE_MODULES )
+#FIND_PACKAGE( ILCUTIL REQUIRED COMPONENTS ILCSOFT_CMAKE_MODULES )
 cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
 #
 project(SDHCAL_G4Simu)
@@ -11,18 +11,18 @@ project(SDHCAL_G4Simu)
 # You can set WITH_GEANT4_UIVIS to OFF via the command line or ccmake/cmake-gui
 # to build a batch mode only executable
 #
-#option(WITH_GEANT4_UIVIS "Build example with Geant4 UI and Vis drivers" ON)
-#if(WITH_GEANT4_UIVIS)
-#find_package(Geant4 REQUIRED ui_all vis_all)
-#else()
-find_package(Geant4 REQUIRED)
-#find_package( Marlin 1.0 REQUIRED ) # minimum required Marlin version
-find_package( ROOT REQUIRED ) # minimum required Marlin version
-#find_package( CLHEP REQUIRED )
-find_package( LCIO REQUIRED )
-find_package( MarlinUtil REQUIRED )
 
-FOREACH( pkg LCIO ROOT Geant4 MarlinUtil)
+option(WITH_GEANT4_UIVIS "Build example with Geant4 UI and Vis drivers" ON)
+if(WITH_GEANT4_UIVIS)
+ find_package(Geant4 REQUIRED ui_all vis_all)
+else()
+ find_package(Geant4 REQUIRED)
+endif()
+ 
+find_package( ROOT REQUIRED ) # minimum required Marlin version
+find_package( LCIO 2.11 REQUIRED )
+
+FOREACH( pkg LCIO ROOT Geant4 )
     IF( ${pkg}_FOUND )
         INCLUDE_DIRECTORIES( ${${pkg}_INCLUDE_DIRS} )
         LINK_LIBRARIES( ${${pkg}_LIBRARIES} )
@@ -35,10 +35,14 @@ ENDFOREACH()
 # Add specific modules
 #
 
+
 #----------------------------------------------------------------------------
 # Setup Geant4 include directories and compile definitions
 # Setup include directory for this project
 #
+ADD_DEFINITIONS( "-Wall -ansi -pedantic -std=c++11" )
+
+
 include(${Geant4_USE_FILE})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
