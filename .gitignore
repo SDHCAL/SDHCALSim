@@ -8,3 +8,4 @@ build/
 src/*.~
 include/*.~
 CMakeLists.txt.user
+.vscode/
