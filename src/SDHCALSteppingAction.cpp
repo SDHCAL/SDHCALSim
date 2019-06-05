@@ -19,7 +19,7 @@ SDHCALSteppingAction::SDHCALSteppingAction()
 	: G4UserSteppingAction()
 {
 	if (instance)
-		throw std::logic_error("LyonSteppingAction already exists") ;
+		throw std::logic_error("SDHCALSteppingAction already exists") ;
 
 	G4cout << "Create SDHCALSteppingAction" << G4endl ;
 
