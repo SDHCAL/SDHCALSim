@@ -61,98 +61,65 @@ SDHCALRPCWithScintillator::SDHCALRPCWithScintillator(G4int _id , G4int _nPadX , 
 
 void SDHCALRPCWithScintillator::build()
 {
-	G4double CassetteAbsorber_Thickness    = 2.500*CLHEP::mm ;
+	struct LayerInRPC
+	{
+		std::string name ;
+		G4double width ;
+		G4Material* material ;
+		G4bool isGasGap ;
+	} ;
 
-//	G4double RPC_ChipPackage_Thickness     = 1.600*CLHEP::mm ;
-//	G4double RPC_PCB_Thickness             = 1.200*CLHEP::mm ;
-	G4double Scintillator_Thickness        = 3.000*CLHEP::mm ;
-	G4double RPC_Mylar_Thickness           = 0.015*CLHEP::mm ;
-	G4double RPC_Graphite_Thickness        = 0.050*CLHEP::mm ;
-	G4double RPC_ThinGlass                 = 0.700*CLHEP::mm ;
-	G4double RPC_Gap_Thickness             = 1.200*CLHEP::mm ;
-	G4double RPC_ThickGlass                = 1.100*CLHEP::mm ;
+	using CLHEP::mm ;
 
-	G4double RPC_Thickness = Scintillator_Thickness
-							 + 2.0 * RPC_Mylar_Thickness
-							 + 2.0 * RPC_Graphite_Thickness
-							 + RPC_ThinGlass
-							 + RPC_Gap_Thickness
-							 + RPC_ThickGlass ;
+ 	//layers of the RPC ordered from front to back
+	std::vector<LayerInRPC> layers ;
+	layers.push_back( {"FrontCassetteAbsorber" , 2.500*mm , absorberMaterial     , false} ) ;
+	layers.push_back( {"MylarAnode"            , 0.015*mm , mylarMaterial        , false} ) ;	
+	layers.push_back( {"GraphiteAnode"         , 0.050*mm , graphiteMaterial     , false} ) ;	
+	layers.push_back( {"ThinGlass"             , 0.700*mm , glassMaterial        , false} ) ;	
+	layers.push_back( {"GasGap"                , 1.200*mm , gasGapMaterial       , true } ) ; //we want to keep trace of this later
+	layers.push_back( {"ThickGlass"            , 1.100*mm , glassMaterial        , false} ) ;
+	layers.push_back( {"GraphiteCathode"       , 0.050*mm , graphiteMaterial     , false} ) ;	
+	layers.push_back( {"MylarCathode"          , 0.015*mm , mylarMaterial        , false} ) ;
+	layers.push_back( {"Scintillator"          , 3.000*mm , scintillatorMaterial , false} ) ;
+	layers.push_back( {"BackCassetteAbsorber"  , 2.500*mm , absorberMaterial     , false} ) ;
 
-	G4double CassetteThickness = RPC_Thickness + 2.0*CassetteAbsorber_Thickness ;
-	sizeZ = CassetteThickness ;
+	//compute total RPC cassette width
+	G4double cassetteThickness = 0.0 ;
+	for ( const auto& layer : layers )
+		cassetteThickness += layer.width ;
 
+	sizeZ = cassetteThickness ;
 
-	G4double CassetteAbsorberFrontZ    = -CassetteThickness/2         + CassetteAbsorber_Thickness/2 ;
-	G4double RPC_MylarAnodePosZ        = CassetteAbsorberFrontZ       + CassetteAbsorber_Thickness/2    + RPC_Mylar_Thickness/2 ;
-	G4double RPC_GraphiteAnodePosZ     = RPC_MylarAnodePosZ           + RPC_Mylar_Thickness/2           + RPC_Graphite_Thickness/2 ;
-	G4double RPC_ThinGlassPosZ         = RPC_GraphiteAnodePosZ        + RPC_Graphite_Thickness/2        + RPC_ThinGlass/2 ;
-	G4double RPC_GapPosZ               = RPC_ThinGlassPosZ            + RPC_ThinGlass/2                 + RPC_Gap_Thickness/2 ;
-	G4double RPC_ThickGlassPosZ        = RPC_GapPosZ                  + RPC_Gap_Thickness/2             + RPC_ThickGlass/2 ;
-	G4double RPC_GraphiteCathodePosZ   = RPC_ThickGlassPosZ           + RPC_ThickGlass/2                + RPC_Graphite_Thickness/2 ;
-	G4double RPC_MylarCathodePosZ      = RPC_GraphiteCathodePosZ      + RPC_Graphite_Thickness/2        + RPC_Mylar_Thickness/2 ;
-	G4double ScintillatorPosZ          = RPC_MylarCathodePosZ         + RPC_Mylar_Thickness/2           + Scintillator_Thickness/2 ;
-	G4double CassetteAbsorberBackZ     = ScintillatorPosZ             + Scintillator_Thickness/2        + CassetteAbsorber_Thickness/2 ;
-
-
-	G4Box* solidCassette = new G4Box(name , sizeX/2, sizeY/2, CassetteThickness/2) ;
+	//create logic RPC volume (indefined placement)
+	G4Box* solidCassette = new G4Box(name , sizeX/2, sizeY/2, cassetteThickness/2) ;
 	G4LogicalVolume* logicCassette = new G4LogicalVolume(solidCassette ,  defaultMaterial , name ) ;
 
-	//Inside Cassette -------------------------------------------------------
+	G4LogicalVolume* logicGap = nullptr ;
 
-	//mylar anode
-	G4Box* solidRPCmylarAnode = new G4Box("MylarAnode" , sizeX/2 , sizeY/2 , RPC_Mylar_Thickness/2) ;
-	G4LogicalVolume* logicRPCmylarAnode = new G4LogicalVolume(solidRPCmylarAnode , mylarMaterial , "MylarAnode") ;
-	new G4PVPlacement(0 , G4ThreeVector(0,0,RPC_MylarAnodePosZ) , logicRPCmylarAnode , "MylarAnode" , logicCassette , false , 0 , true) ;
+	//construct all the layers 
+	G4double zPos = -cassetteThickness/2 ; //we start at front of the cassette
+	for ( const auto& layer : layers )
+	{
+		//create logic layer volume (indefined placement)
+		auto solid = new G4Box(layer.name , sizeX/2 , sizeY/2 , layer.width/2) ;
+		auto logic = new G4LogicalVolume(solid , layer.material , layer.name) ;
 
-	//mylar cathode
-	G4Box* solidRPCmylarCathode = new G4Box("MylarCathode" , sizeX/2 , sizeY/2 , RPC_Mylar_Thickness/2) ;
-	G4LogicalVolume* logicRPCmylarCathode = new G4LogicalVolume(solidRPCmylarCathode , mylarMaterial , "MylarCathode") ;
-	new G4PVPlacement(0 , G4ThreeVector(0,0,RPC_MylarCathodePosZ) , logicRPCmylarCathode , "MylarCathode" , logicCassette , false , 0 , true) ;
+		zPos += layer.width/2 ; //we are now at center of the current layer (where it has to be placed)
 
-	//Graphite anode
-	G4Box* solidRPCGraphiteAnode = new G4Box("GraphiteAnode" , sizeX/2 , sizeY/2 , RPC_Graphite_Thickness/2) ;
-	G4LogicalVolume* logicRPCGraphiteAnode = new G4LogicalVolume(solidRPCGraphiteAnode , graphiteMaterial , "GraphiteAnode") ;
-	new G4PVPlacement(0 , G4ThreeVector(0,0,RPC_GraphiteAnodePosZ) , logicRPCGraphiteAnode , "GraphiteAnode" , logicCassette , false , 0 , true) ;
+		//place the layer at zPos
+		G4VPhysicalVolume* volume = new G4PVPlacement(0 , G4ThreeVector(0,0,zPos) , logic , layer.name, logicCassette , false , 0 , true) ;	//logicCassette is the mother volume
 
-	//Graphite cathode
-	G4Box* solidRPCGraphiteCathode = new G4Box("GraphiteCathode" , sizeX/2 , sizeY/2 , RPC_Graphite_Thickness/2) ;
-	G4LogicalVolume* logicRPCGraphiteCathode = new G4LogicalVolume(solidRPCGraphiteCathode ,  graphiteMaterial , "GraphiteCathode") ;
-	new G4PVPlacement(0 , G4ThreeVector(0,0,RPC_GraphiteCathodePosZ) , logicRPCGraphiteCathode , "GraphiteCathode" ,  logicCassette , false , 0 , true) ;
+		zPos += layer.width/2 ; //we are now at the back of the current layer
 
-	//thin glass
-	G4Box* solidRPCThinGlass = new G4Box("ThinGlass" , sizeX/2 , sizeY/2 , RPC_ThinGlass/2) ;
-	G4LogicalVolume* logicRPCThinGlass = new G4LogicalVolume(solidRPCThinGlass , glassMaterial , "ThinGlass") ;
-	new G4PVPlacement(0 , G4ThreeVector(0,0,RPC_ThinGlassPosZ) , logicRPCThinGlass , "ThinGlass" , logicCassette , false , 0 , true) ;
+		if ( layer.isGasGap ) //we keep trace of the gas gap
+		{
+			logicGap = logic ;
+			physiGasGap = volume ;
+		}
+	}
 
-	//thick glass
-	G4Box* solidRPCThickGlass = new G4Box("ThickGlass" , sizeX/2 , sizeY/2 , RPC_ThickGlass/2) ;
-	G4LogicalVolume* logicRPCThickGlass = new G4LogicalVolume(solidRPCThickGlass , glassMaterial , "ThickGlass") ;
-	new G4PVPlacement(0 , G4ThreeVector(0,0,RPC_ThickGlassPosZ) , logicRPCThickGlass , "ThickGlass" , logicCassette , false , 0 , true) ;
-
-	//gas gap
-	G4Box* solidGap = new G4Box("GasGap" , sizeX/2 , sizeY/2 , RPC_Gap_Thickness/2) ;
-	G4LogicalVolume* logicGap = new G4LogicalVolume(solidGap , gasGapMaterial , "GasGap") ;
-	physiGasGap = new G4PVPlacement(0 , G4ThreeVector(0.,0.,RPC_GapPosZ) , logicGap , "GasGap" , logicCassette , false , 0 , true) ;
-
-	//	G4bool allLocal = true ;
-	//	logicGap->SetFieldManager( fEmFieldSetup->GetLocalFieldManager() , allLocal ) ;
-
-	//scintillator
-	G4Box* solidScintillator = new G4Box("Scintillator" , sizeX/2 , sizeY/2 , Scintillator_Thickness/2) ;
-	G4LogicalVolume* logicScintillator = new G4LogicalVolume(solidScintillator , scintillatorMaterial , "Scintillator") ;
-	new G4PVPlacement(0 , G4ThreeVector(0.,0.,ScintillatorPosZ) , logicScintillator , "Scintillator" , logicCassette , false , 0 , true) ;
-
-
-	//back absorber
-	G4Box* solidBackCassetteAbsorber = new G4Box("BackCassetteAbsorber" , sizeX/2 , sizeY/2 , CassetteAbsorber_Thickness/2) ;
-	G4LogicalVolume* logicBackCassetteAbsorber = new G4LogicalVolume(solidBackCassetteAbsorber , absorberMaterial , "BackCassetteAbsorber") ;
-	new G4PVPlacement(0 , G4ThreeVector(0,0,CassetteAbsorberBackZ) , logicBackCassetteAbsorber , "BackCassetteAbsorber" , logicCassette , false , 0 , true) ;
-
-	//front absorber
-	G4Box* solidFrontCassetteAbsorber = new G4Box("FrontCassetteAbsorber" , sizeX/2 , sizeY/2 , CassetteAbsorber_Thickness/2) ;
-	G4LogicalVolume* logicFrontCassetteAbsorber = new G4LogicalVolume(solidFrontCassetteAbsorber , absorberMaterial , "FrontCassetteAbsorber") ;
-	new G4PVPlacement(0 , G4ThreeVector(0,0,CassetteAbsorberFrontZ) , logicFrontCassetteAbsorber , "FrontCassetteAbsorber" , logicCassette , false , 0 , true) ;
+	assert ( logicGap ) ; //if we don't have the gas gap we have a problem
 
 	std::stringstream sensName ; sensName << "RPC" << id ;
 	sensitiveDetector = new SDHCALRPCSensitiveDetector(sensName.str() , this ) ;
