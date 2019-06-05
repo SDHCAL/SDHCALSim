@@ -130,7 +130,7 @@ G4VPhysicalVolume* SDHCALDetectorConstruction::Construct()
 		currentPos += RPCSizeZ/2 + airGapSizeZ ;
 	}
 
-	G4VPhysicalVolume* calorimeter = new G4PVPlacement( NULL , G4ThreeVector(0 , 0 , 0.5*caloSizeZ) , logicCalorimeter , "Calorimeter" , logicWorld , false , 0 , true) ;
+	G4VPhysicalVolume* calorimeter = new G4PVPlacement( nullptr , G4ThreeVector(0 , 0 , 0.5*caloSizeZ) , logicCalorimeter , "Calorimeter" , logicWorld , false , 0 , true) ;
 
 	//for stepping action
 	G4Region* regionCalor = G4RegionStore::GetInstance()->FindOrCreateRegion("RegionCalorimeter") ;

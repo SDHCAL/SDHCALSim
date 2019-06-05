@@ -20,8 +20,8 @@ SDHCALRPCSensitiveDetector::SDHCALRPCSensitiveDetector(G4String name , SDHCALRPC
 	std::stringstream colName ; colName << "HitsRPC" << ID ;
 	collectionName.insert( colName.str() ) ;
 
-	currentHit = NULL ;
-	hitsCollection = NULL ;
+	currentHit = nullptr ;
+	hitsCollection = nullptr ;
 
 	sensitiveDetectorVec.insert(this) ;
 }
@@ -33,7 +33,7 @@ SDHCALRPCSensitiveDetector::~SDHCALRPCSensitiveDetector()
 
 void SDHCALRPCSensitiveDetector::Initialize(G4HCofThisEvent* HCE)
 {
-	currentHit = NULL ;
+	currentHit = nullptr ;
 
 	hitsCollection = new SDHCALHitCollection(SensitiveDetectorName , collectionName.at(0) ) ;
 	HCE->AddHitsCollection(ID , hitsCollection) ;
@@ -67,7 +67,7 @@ G4bool SDHCALRPCSensitiveDetector::ProcessHits(G4Step* step , G4TouchableHistory
 	{
 		currentHit->finalize() ;
 		hitsCollection->insert(currentHit) ;
-		currentHit = NULL ;
+		currentHit = nullptr ;
 	}
 
 	return true ;
@@ -87,7 +87,7 @@ void SDHCALRPCSensitiveDetector::finalizeLastHit()
 
 	currentHit->finalize() ;
 	hitsCollection->insert(currentHit) ;
-	currentHit = NULL ;
+	currentHit = nullptr ;
 }
 
 void SDHCALRPCSensitiveDetector::EndOfEvent(G4HCofThisEvent*)

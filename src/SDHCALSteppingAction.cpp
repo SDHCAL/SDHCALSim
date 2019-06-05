@@ -27,7 +27,7 @@ SDHCALSteppingAction::SDHCALSteppingAction()
 	depositedEnergy = 0.0 ;
 	leakEnergy = 0.0 ;
 	lastStepTime = 0.0 ;
-	interestedRegion = NULL ;
+	interestedRegion = nullptr ;
 }
 
 void SDHCALSteppingAction::UserSteppingAction(const G4Step* step)

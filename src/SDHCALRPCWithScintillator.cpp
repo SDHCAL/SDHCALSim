@@ -47,10 +47,10 @@ SDHCALRPCWithScintillator::SDHCALRPCWithScintillator(G4int _id , G4int _nPadX , 
 
 	transformComputed = false ;
 
-	logicRPC = NULL ;
-	physicRPC = NULL ;
-	sensitiveDetector = NULL ;
-	physiGasGap = NULL ;
+	logicRPC = nullptr ;
+	physicRPC = nullptr ;
+	sensitiveDetector = nullptr ;
+	physiGasGap = nullptr ;
 
 	SDHCALRPCWithScintillator::getMaterials() ;
 	SDHCALRPCWithScintillator::build() ;

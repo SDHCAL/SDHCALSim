@@ -16,7 +16,7 @@ class SDHCALRootWriter
 	protected :
 		SDHCALRootWriter() ;
 		void static initInstance() { new SDHCALRootWriter ; }
-		~SDHCALRootWriter() { instance = NULL ; }
+		~SDHCALRootWriter() { instance = nullptr ; }
 	public :
 		static SDHCALRootWriter* Instance()
 		{

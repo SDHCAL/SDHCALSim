@@ -49,10 +49,10 @@ SDHCALRPC::SDHCALRPC(G4int _id , G4int _nPadX , G4int _nPadY, G4double _cellSize
 
 	transformComputed = false ;
 
-	logicRPC = NULL ;
-	physicRPC = NULL ;
-	sensitiveDetector = NULL ;
-	physiGasGap = NULL ;
+	logicRPC = nullptr ;
+	physicRPC = nullptr ;
+	sensitiveDetector = nullptr ;
+	physiGasGap = nullptr ;
 
 	SDHCALRPC::getMaterials() ;
 	SDHCALRPC::build() ;
