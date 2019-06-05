@@ -61,7 +61,12 @@ Params readJsonFile(G4String jsonFileName)
 
 int main(int argc , char** argv)
 {
-	assert ( argc > 1 ) ;
+	if ( argc != 2 )
+	{
+		G4cerr << "Error with arguments passed for the program" << G4endl ;
+		std::terminate() ;
+	}
+	
 	G4String jsonFileName = argv[1] ;
 
 	Params params = readJsonFile( jsonFileName ) ;
