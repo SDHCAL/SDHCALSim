@@ -104,7 +104,7 @@ SDHCALRPC::SDHCALRPC(G4int _id , const SDHCALRPCGeom& _geom)
 	G4LogicalVolumeStore* store = G4LogicalVolumeStore::GetInstance() ;
 	std::stringstream sname ; sname << "Cassette" << id ;
 	name = sname.str() ;
-	if ( store->GetVolume(name ) )
+	if ( store->GetVolume(name , false) )
 	{
 		G4cerr << "WARNING : RPC with ID = " << id << " already existing" << G4endl ;
 		std::terminate() ;
@@ -168,7 +168,7 @@ void SDHCALRPC::build(const SDHCALRPCGeom& _geom)
 		zPos += layer.width*mm/2 ; //we are now at center of the current layer (where it has to be placed)
 
 		//place the layer at zPos
-		G4VPhysicalVolume* volume = new G4PVPlacement(0 , G4ThreeVector(0,0,zPos) , logic , layer.name, logicCassette  , 0 , true) ;	//logicCassette is the mother volume
+		G4VPhysicalVolume* volume = new G4PVPlacement(0 , G4ThreeVector(0,0,zPos) , logic , layer.name , logicCassette , false , 0 , true) ;	//logicCassette is the mother volume
 
 		zPos += layer.width*mm/2 ; //we are now at the back of the current layer
 
@@ -192,7 +192,7 @@ void SDHCALRPC::build(const SDHCALRPCGeom& _geom)
 	}
 
 	std::stringstream sensName ; sensName << "RPC" << id ;
-	sensitiveDetector = new SDHCALRPCSensitiveDetector(sensName.str() , this ) ;
+	sensitiveDetector = new SDHCALRPCSensitiveDetector(sensName.str() , this) ;
 	G4SDManager::GetSDMpointer()->AddNewDetector(sensitiveDetector) ;
 	logicGap->SetSensitiveDetector(sensitiveDetector) ;
 
@@ -201,7 +201,7 @@ void SDHCALRPC::build(const SDHCALRPCGeom& _geom)
 
 G4VPhysicalVolume* SDHCALRPC::createPhysicalVolume(G4RotationMatrix* rot , G4ThreeVector trans , G4LogicalVolume* motherLogic)
 {
-	physicRPC = new G4PVPlacement(rot , trans , logicRPC , name , motherLogic  , 0 , true) ;
+	physicRPC = new G4PVPlacement(rot , trans , logicRPC , name , motherLogic , false , 0 , true) ;
 	return physicRPC ;
 }
 
