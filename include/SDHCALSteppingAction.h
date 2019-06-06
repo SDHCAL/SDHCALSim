@@ -55,14 +55,12 @@ class SDHCALSteppingAction : public G4UserSteppingAction
 		void processSteps() ;
 
 		inline void setInterestedRegion(G4Region* region) { interestedRegion = region ; }
-		inline void setPhysicalVolume(G4VPhysicalVolume* volume) { calorimeter = volume ; transform = G4AffineTransform( volume->GetObjectRotationValue() , volume->GetObjectTranslation() ) ; transform.Invert() ; }
-		G4ThreeVector transformInCaloCoord(G4ThreeVector worldCoord) { return transform.TransformPoint(worldCoord) ; }
+		inline void setPhysicalVolume(G4VPhysicalVolume* volume) { calorimeter = volume ; }
 
 		G4double getDepositedEnergy() const { return depositedEnergy ; }
 		G4double getLeakedEnergy() const { return leakedEnergy ; }
 
 		G4double getEMFraction() const ;
-
 
 		G4double GetSideLeakEnergy() const { return sideleakEnergy ; }
 		G4double GetFrontLeakEnergy() const { return frontleakEnergy ; }
@@ -83,8 +81,6 @@ class SDHCALSteppingAction : public G4UserSteppingAction
 	private :
 		G4Region* interestedRegion = nullptr ;
 		G4VPhysicalVolume* calorimeter = nullptr ;
-		G4AffineTransform transform {} ;
-
 
 		G4double depositedEnergy = 0.0 ;
 		G4double leakedEnergy = 0.0 ;
