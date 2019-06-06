@@ -41,10 +41,6 @@ class SDHCALPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 		inline void setMinEnergy(G4double energy) { minEnergy = energy * CLHEP::GeV ; }
 		inline void setMaxEnergy(G4double energy) { maxEnergy = energy * CLHEP::GeV ; }
 
-
-
-
-
 		inline const G4ThreeVector& getPrimaryPos() const { return primaryPos ; }
 		inline const G4ThreeVector& getPrimaryMom() const { return primaryMom ; }
 		inline G4double getPrimaryEnergy() const { return primaryEnergy ; }
@@ -57,43 +53,46 @@ class SDHCALPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 
 		const std::vector<SDHCALGun*>& getGunVec() const { return gunVec ; }
 
-	protected :
-		SDHCALPrimaryGeneratorActionMessenger* messenger ;
+		SDHCALPrimaryGeneratorAction(const SDHCALPrimaryGeneratorAction&) = delete ;
+		void operator=(const SDHCALPrimaryGeneratorAction&) = delete ;
 
-		std::vector<SDHCALGun*> gunVec = {} ;
+	protected :
+		SDHCALPrimaryGeneratorActionMessenger* messenger {} ;
+
+		std::vector<SDHCALGun*> gunVec {} ;
 
 		//SDHCALGunOptions opt ;
 
-		std::vector<G4ParticleGun*> particleGunVec = {} ;
+		std::vector<G4ParticleGun*> particleGunVec {} ;
 
 
-		G4ParticleDefinition* particleDefinition ;
-		G4ThreeVector primaryMom ;
-		G4ThreeVector primaryPos ;
-		G4double primaryEnergy ;
+		G4ParticleDefinition* particleDefinition {} ;
+		G4ThreeVector primaryMom {} ;
+		G4ThreeVector primaryPos {} ;
+		G4double primaryEnergy {} ;
 
-		G4String gunOptionPosition ;
-		G4String gunOptionMomentum ;
-		G4String gunOptionEnergyDistribution ;
-
-
-		G4double meanPositionX ;
-		G4double meanPositionY ;
-		G4double meanPositionZ ;
-		G4double uniformMaxPosition ; //uniform position
-		G4double sigmaPosition ; //gaussian position
+		G4String gunOptionPosition {} ;
+		G4String gunOptionMomentum {} ;
+		G4String gunOptionEnergyDistribution {} ;
 
 
-		G4double gaussianMomentumSigma ;
-		G4double momentumTheta ;
-		G4double momentumPhi ;
+		G4double meanPositionX {} ;
+		G4double meanPositionY {} ;
+		G4double meanPositionZ {} ;
+		G4double uniformMaxPosition {} ; //uniform position
+		G4double sigmaPosition {} ;//gaussian position
 
-		G4double particleEnergy ;
-		G4double sigmaEnergy ;
-		G4double minEnergy ;
-		G4double maxEnergy ;
 
-		G4double caloFrontZ ;
+		G4double gaussianMomentumSigma {} ;
+		G4double momentumTheta {} ;
+		G4double momentumPhi {} ;
+
+		G4double particleEnergy {} ;
+		G4double sigmaEnergy {} ;
+		G4double minEnergy {} ;
+		G4double maxEnergy {} ;
+
+		G4double caloFrontZ {} ;
 
 } ;
 

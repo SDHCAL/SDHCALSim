@@ -17,9 +17,9 @@ class SDHCALRPCSensitiveDetector ;
 
 struct SDHCALRPCGeom
 {
-	G4int nPadX ;
-	G4int nPadY ;
-	G4double cellSize ;
+	G4int nPadX {} ;
+	G4int nPadY {} ;
+	G4double cellSize {} ;
 	
 	struct Layer
 	{
@@ -28,7 +28,7 @@ struct SDHCALRPCGeom
 		G4String material ;
 	} ;
 
-	std::vector<Layer> layers ;
+	std::vector<Layer> layers {} ;
 } ;
 
 class SDHCALRPC
@@ -68,32 +68,33 @@ class SDHCALRPC
 
 		G4VPhysicalVolume* createPhysicalVolume(G4RotationMatrix* rot , G4ThreeVector trans , G4LogicalVolume* motherLogic) ;
 
-
+		SDHCALRPC(const SDHCALRPC&) = delete ;
+		void operator=(const SDHCALRPC&) = delete ;
 
 	protected :
 		static std::set<SDHCALRPC*> allTheRPC ;
 
 		virtual void build(const SDHCALRPCGeom& _geom) ;
 
-		G4String name ;
+		G4String name {} ;
 
-		G4int id ;
-		G4int nPadX ;
-		G4int nPadY ;
-		G4double cellSize ;
-		G4double sizeX ;
-		G4double sizeY ;
-		G4double sizeZ ;
+		G4int id {} ;
+		G4int nPadX {} ;
+		G4int nPadY {} ;
+		G4double cellSize {} ;
+		G4double sizeX {} ;
+		G4double sizeY {} ;
+		G4double sizeZ {} ;
 
-		G4bool transformComputed = false ;
-		G4AffineTransform rpcToGlobalTransform ;
-		G4AffineTransform globalToRpcTransform ;
+		G4bool transformComputed {} ;
+		G4AffineTransform rpcToGlobalTransform {} ;
+		G4AffineTransform globalToRpcTransform {} ;
 
-		G4LogicalVolume* logicRPC = nullptr ;
-		G4VPhysicalVolume* physicRPC = nullptr ;
-		SDHCALRPCSensitiveDetector* sensitiveDetector = nullptr ;
+		G4LogicalVolume* logicRPC {} ;
+		G4VPhysicalVolume* physicRPC {} ;
+		SDHCALRPCSensitiveDetector* sensitiveDetector {} ;
 
-		G4VPhysicalVolume* physiGasGap = nullptr ;
+		G4VPhysicalVolume* physiGasGap {} ;
 
 } ;
 

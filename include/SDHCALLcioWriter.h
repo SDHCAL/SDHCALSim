@@ -48,17 +48,19 @@ class SDHCALLcioWriter
 
 		void clear() ;
 
+		SDHCALLcioWriter(const SDHCALLcioWriter&) = delete ;
+		void operator=(const SDHCALLcioWriter&) = delete ;
 
 	protected :
-		lcio::LCWriter* writer = nullptr ;
+		lcio::LCWriter* writer {} ;
 
-		IMPL::LCEventImpl* lcEvent = nullptr ;
-		IMPL::LCCollectionVec* particleCol = nullptr ;
-		IMPL::LCCollectionVec* simVec = nullptr ;
+		IMPL::LCEventImpl* lcEvent {} ;
+		IMPL::LCCollectionVec* particleCol {} ;
+		IMPL::LCCollectionVec* simVec {} ;
 
-		std::map<G4int,IMPL::MCParticleImpl*> primaryParticleMap = {} ;
+		std::map<G4int,IMPL::MCParticleImpl*> primaryParticleMap {} ;
 
-		std::string detectorName ;
+		std::string detectorName {} ;
 } ;
 
 #endif //SDHCALLcioWriter_h

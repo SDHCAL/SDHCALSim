@@ -14,7 +14,7 @@ class SDHCALDetectorConstruction : public G4VUserDetectorConstruction
 {
 	public :
 		SDHCALDetectorConstruction(G4String jsonFileName) ;
-		~SDHCALDetectorConstruction() ;
+		~SDHCALDetectorConstruction() = default ;
 
 		G4VPhysicalVolume* Construct() ;
 

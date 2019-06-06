@@ -6,10 +6,6 @@
 
 #include "SDHCALRPC.h"
 
-SDHCALHit::SDHCALHit()
-{
-}
-
 SDHCALHit::SDHCALHit(const G4Step* step , SDHCALRPC* _rpc)
 {
 	rpc = _rpc ;

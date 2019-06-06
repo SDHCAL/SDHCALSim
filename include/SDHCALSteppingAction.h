@@ -19,14 +19,14 @@ class LyonDetectorConstruction ;
 
 struct StepInfo
 {
-	G4double energyDeposited ;
-	G4double time ;
-	G4ThreeVector preStepPoint ;
-	G4ThreeVector postStepPoint ;
-	G4double leakingEnergy ;
-	G4StepStatus stepStatus ;
-	G4int particleID ;
-	G4bool isLeaving ;
+	G4double energyDeposited {} ;
+	G4double time {} ;
+	G4ThreeVector preStepPoint {} ;
+	G4ThreeVector postStepPoint {} ;
+	G4double leakingEnergy {} ;
+	G4StepStatus stepStatus {} ;
+	G4int particleID {} ;
+	G4bool isLeaving {} ;
 } ;
 
 class SDHCALSteppingAction : public G4UserSteppingAction
@@ -77,27 +77,29 @@ class SDHCALSteppingAction : public G4UserSteppingAction
 		inline G4double getLastStepTime() const { return lastStepTime ; }
 		inline const std::vector<StepInfo>& getSteps() const { return steps ; }
 
+		SDHCALSteppingAction(const SDHCALSteppingAction&) = delete ;
+		void operator=(const SDHCALSteppingAction&) = delete ;
 
 	private :
-		G4Region* interestedRegion ;
-		G4VPhysicalVolume* calorimeter ;
-		G4AffineTransform transform ;
+		G4Region* interestedRegion = nullptr ;
+		G4VPhysicalVolume* calorimeter = nullptr ;
+		G4AffineTransform transform {} ;
 
 
-		G4double depositedEnergy ;
-		G4double leakedEnergy ;
+		G4double depositedEnergy = 0.0 ;
+		G4double leakedEnergy = 0.0 ;
 
-		std::map<G4int , G4double> depositedEnergyPerParticleType ;
-		std::map<G4int , G4double> leakedEnergyPerParticleType ;
+		std::map<G4int , G4double> depositedEnergyPerParticleType = {} ;
+		std::map<G4int , G4double> leakedEnergyPerParticleType = {} ;
 
-		G4double leakEnergy ;
-		G4double sideleakEnergy ;
-		G4double frontleakEnergy ;
-		G4double rearleakEnergy ;
+		G4double leakEnergy = 0.0 ;
+		G4double sideleakEnergy = 0.0 ;
+		G4double frontleakEnergy = 0.0 ;
+		G4double rearleakEnergy = 0.0 ;
 
-		G4double lastStepTime ;
+		G4double lastStepTime = 0.0 ;
 
-		std::vector<StepInfo> steps ;
+		std::vector<StepInfo> steps = {} ;
 } ;
 
 #endif //SDHCALSteppingAction_h

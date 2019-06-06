@@ -24,10 +24,6 @@ SDHCALSteppingAction::SDHCALSteppingAction()
 	G4cout << "Create SDHCALSteppingAction" << G4endl ;
 
 	instance = this ;
-	depositedEnergy = 0.0 ;
-	leakEnergy = 0.0 ;
-	lastStepTime = 0.0 ;
-	interestedRegion = nullptr ;
 }
 
 void SDHCALSteppingAction::UserSteppingAction(const G4Step* step)

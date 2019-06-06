@@ -20,9 +20,6 @@ SDHCALRPCSensitiveDetector::SDHCALRPCSensitiveDetector(G4String name , SDHCALRPC
 	std::stringstream colName ; colName << "HitsRPC" << ID ;
 	collectionName.insert( colName.str() ) ;
 
-	currentHit = nullptr ;
-	hitsCollection = nullptr ;
-
 	sensitiveDetectorVec.insert(this) ;
 }
 SDHCALRPCSensitiveDetector::~SDHCALRPCSensitiveDetector()

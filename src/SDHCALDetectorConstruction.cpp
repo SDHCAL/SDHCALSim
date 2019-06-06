@@ -22,7 +22,6 @@ G4double SDHCALDetectorConstruction::sizeZ ;
 
 SDHCALDetectorConstruction::SDHCALDetectorConstruction(G4String jsonFileName)
 {
-	rpcType = kNormalRPC ;
 	if ( jsonFileName == G4String("") )
 	{
 		std::cout << "ERROR : no json file provided" << std::endl ;
@@ -54,11 +53,6 @@ SDHCALDetectorConstruction::SDHCALDetectorConstruction(G4String jsonFileName)
 		if ( detectorConfig.count("oldConfig") )
 			oldConfig = detectorConfig.at("oldConfig").get<G4bool>() ;
 	}
-}
-
-SDHCALDetectorConstruction::~SDHCALDetectorConstruction()
-{
-
 }
 
 G4VPhysicalVolume* SDHCALDetectorConstruction::Construct()

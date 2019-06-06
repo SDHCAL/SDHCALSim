@@ -25,14 +25,14 @@ find_package( LCIO 2.11 REQUIRED )
 
 FOREACH( pkg LCIO ROOT Geant4 )
 	IF( ${pkg}_FOUND )
-		INCLUDE_DIRECTORIES( SYSYEM ${${pkg}_INCLUDE_DIRS} )
+		INCLUDE_DIRECTORIES( SYSTEM ${${pkg}_INCLUDE_DIRS} )
 		LINK_LIBRARIES( ${${pkg}_LIBRARIES} )
 		ADD_DEFINITIONS ( ${${pkg}_DEFINITIONS} )
 	ENDIF()
 ENDFOREACH()
 
 
-ADD_DEFINITIONS( "-Wall -ansi -pedantic -std=c++11" )
+ADD_DEFINITIONS( "-Wall -ansi -pedantic -std=c++11 -Weffc++" )
 
 include( ${Geant4_USE_FILE} )
 include_directories( ${PROJECT_SOURCE_DIR}/include )
