@@ -15,10 +15,31 @@
 class G4LogicalVolume ;
 class SDHCALRPCSensitiveDetector ;
 
+struct SDHCALRPCGeom
+{
+	G4int nPadX ;
+	G4int nPadY ;
+	G4double cellSize ;
+	
+	struct Layer
+	{
+		G4String name ;
+		G4double width ; //in mm
+		G4String material ;
+	} ;
+
+	std::vector<Layer> layers ;
+} ;
+
 class SDHCALRPC
 {
+	public : 
+		static SDHCALRPC* buildStandardRPC(G4int _id , G4int _nPadX , G4int _nPadY , G4double _cellSize) ;
+		static SDHCALRPC* buildOldStandardRPC(G4int _id , G4int _nPadX , G4int _nPadY , G4double _cellSize) ;
+		static SDHCALRPC* buildWithScintillatorRPC(G4int _id , G4int _nPadX , G4int _nPadY , G4double _cellSize) ;
+
 	public :
-		SDHCALRPC(G4int _id , G4int _nPadX , G4int _nPadY, G4double _cellSize , bool old = false) ;
+		SDHCALRPC(G4int _id , const SDHCALRPCGeom& _geom) ;
 		virtual ~SDHCALRPC() ;
 
 		G4LogicalVolume* getLogicRPC() { return logicRPC ; }
@@ -52,12 +73,7 @@ class SDHCALRPC
 	protected :
 		static std::set<SDHCALRPC*> allTheRPC ;
 
-		SDHCALRPC() { ; } //Just for derived class
-
-		virtual void getMaterials() ;
-		virtual void build() ;
-
-		G4bool oldConfig = false ;
+		virtual void build(const SDHCALRPCGeom& _geom) ;
 
 		G4String name ;
 
@@ -69,24 +85,15 @@ class SDHCALRPC
 		G4double sizeY ;
 		G4double sizeZ ;
 
-		G4bool transformComputed ;
+		G4bool transformComputed = false ;
 		G4AffineTransform rpcToGlobalTransform ;
 		G4AffineTransform globalToRpcTransform ;
 
-		G4Material* defaultMaterial ;
-		G4Material* absorberMaterial ;
-		G4Material* maskMaterial ;
-		G4Material* PCBMaterial ;
-		G4Material* mylarMaterial ;
-		G4Material* graphiteMaterial ;
-		G4Material* glassMaterial ;
-		G4Material* gasGapMaterial ;
+		G4LogicalVolume* logicRPC = nullptr ;
+		G4VPhysicalVolume* physicRPC = nullptr ;
+		SDHCALRPCSensitiveDetector* sensitiveDetector = nullptr ;
 
-		G4LogicalVolume* logicRPC ;
-		G4VPhysicalVolume* physicRPC ;
-		SDHCALRPCSensitiveDetector* sensitiveDetector ;
-
-		G4VPhysicalVolume* physiGasGap ;
+		G4VPhysicalVolume* physiGasGap = nullptr ;
 
 } ;
 
