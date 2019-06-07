@@ -1,0 +1,14 @@
+*.slcio
+*.root
+*.xml
+bin/
+script/
+build/
+./instruction
+src/*.~
+include/*.~
+CMakeLists.txt.user
+.vscode/
+
+doc/Doxyfile
+doc/html/*
