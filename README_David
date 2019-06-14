@@ -1,0 +1,36 @@
+
+
+Quick steps to run a simulation (SDHCALSim repertory)
+-----------------------------------------------------
+source monInit.sh                                  // Export LCIO, ROOT and GEANT4 directories                                       
+bin/SDHCAL_Simu mac/testrun.mac                    // Run a simulation with testrun.mac parameters
+-----------------------------------------------------
+
+
+mv test.000.slcio nom_explicite.slcio                                     
+mv nom_explicite.slcio ~/SDHCALSim_debut/Simulations
+
+
+Quick steps to build the root file (SDHCALSim_debut repertory) 
+--------------------------------------------------------------------------
+gSystem->Load("${LCIO}/lib/liblcio.so");              /*    Load      
+gSystem->Load("${LCIO}/lib/liblcioDict.so");                Libraries  */
+.x writeTree.C("nom_explicite.slcio")                // Write the root file
+.q                                                            
+--------------------------------------------------------------------------
+
+
+mv lcioTree.root nom_explicite.root
+
+
+Quick steps to start digitisation and make graphs (SDHCALSim_debut repertory)
+-----------------------------------------------------------------------------
+gSystem->Load("${LCIO}/lib/liblcio.so");           /*      Load
+gSystem->Load("${LCIO}/lib/liblcioDict.so");               Libraries */
+gSystem->CompileMacro("DeadTime.C");               // Run Deadtime
+calculeExemple(1,9e4,MODELE::EDB)                  // (Rayon mort ,Temps mort, modele (RTM/EDB/NP/BDM) )
+-----------------------------------------------------------------------------
+
+
+dumpevent ../SDHCALSim_debut/Simulations/slcio/450_kaons_100_runs_1e7.slcio 1 | less    // Read slcio file
+.x RayonTempsmort.C                                                                     // Dead time in function of dead radius to reproduce efficacity graphs
