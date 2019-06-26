@@ -21,7 +21,6 @@ using namespace std;
 
 
 
-
 struct MCContributionLocalisation
 {
   MCContributionLocalisation() : lehit(NULL), indiceContribution(0) {}
@@ -89,7 +88,6 @@ private:
 
 };
 
-//design pattern decorator
 class ajouteMuonDansTempsMortLente : public ModeleTempsMort
 {
 private:

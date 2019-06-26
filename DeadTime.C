@@ -60,7 +60,7 @@ void DeadTime::Loop()
       Long64_t ientry = LoadTree(jentry);
       if (ientry < 0) break;
       nb = fChain->GetEntry(jentry);   nbytes += nb;
-      trouveLesMuons(0);
+      trouveLesMuons(0);                                                             // Muons dans la chambre numero 0,...,6
       if (lesMuons.empty()) continue;
       nMuonsEnvoyes+=lesMuons.size();
       nMuonsDetectes+=modele->NombreMuonsDetectes(lesMuons,lesPasMuons);
@@ -68,7 +68,7 @@ void DeadTime::Loop()
       int NpasMuon=0;
       double timeMin(0),timeMax(0);
       bool timeSet=false;
-      for (vector<MCContributionLocalisation>::iterator itReste=lesPasMuons.begin(); itReste!= lesPasMuons.end(); ++itReste)
+      for (vector<MCContributionLocalisation>::iterator itReste=lesPasMuons.begin(); itReste!= lesPasMuons.end(); ++itReste)   // Calcul intervalle de temps d'envoi
       {
          const float* RestePos=itReste->lehit->getStepPosition(itReste->indiceContribution);
          double ResteTime=itReste->lehit->getTimeCont(itReste->indiceContribution);
@@ -77,22 +77,22 @@ void DeadTime::Loop()
 	 NpasMuon++;
       }
       if (timeMax>timeMin)
-         event_flux.push_back(NpasMuon/((timeMax-timeMin)*(3.14159*0.5*0.5)*1e-9));
+         event_flux.push_back(NpasMuon/((timeMax-timeMin)*(3.14159*0.5*0.5)*1e-9));                      // Rayon du flux de gammas de 5mm 
    }
-   efficacite=nMuonsDetectes/double(nMuonsEnvoyes);
+   efficacite=nMuonsDetectes/double(nMuonsEnvoyes);                                                      // Calcul efficacite
 
    cout << "L'efficacite de detection est de "<< efficacite*100 << " %" << endl; 
    if (event_flux.empty()) return;
    double meanflux=0;
-   for (std::vector<double>::iterator it=event_flux.begin(); it!=event_flux.end(); ++it) 
-   meanflux+=(*it);
-   flux = meanflux/event_flux.size();
+   for (std::vector<double>::iterator it=event_flux.begin(); it!=event_flux.end(); ++it)               
+   meanflux+=(*it);                             
+   flux = meanflux/event_flux.size();                                                                    // Calcul flux réel de gammas
    cout << "Le flux moyen est de " << flux*(1000/3)<< " particules/cm^2/s" << endl;
    cout << "-------------------------------------------------------------" << endl;
 }
 
 
-void DeadTime::trouveLesMuons(int numeroChambre)
+void DeadTime::trouveLesMuons(int numeroChambre)                                                         // Fonction pour trouver les mu+
 {
    lesMuons.clear();
    lesPasMuons.clear();
@@ -112,7 +112,7 @@ void DeadTime::trouveLesMuons(int numeroChambre)
 
 
 
-int rayonTempsMort::NombreMuonsDetectes(vector<MCContributionLocalisation>& lesMuons, vector<MCContributionLocalisation>& lesPasMuons)
+int rayonTempsMort::NombreMuonsDetectes(vector<MCContributionLocalisation>& lesMuons, vector<MCContributionLocalisation>& lesPasMuons) // Modele detecteur paralysable
 {
    int nDetectes=0;
    for (vector<MCContributionLocalisation>::iterator itMuon=lesMuons.begin(); itMuon!= lesMuons.end(); ++itMuon)
@@ -133,7 +133,7 @@ int rayonTempsMort::NombreMuonsDetectes(vector<MCContributionLocalisation>& lesM
    return nDetectes;
 }
 
-int BeaucoupDeMuons::NombreMuonsDetectes(vector<MCContributionLocalisation>& lesMuons, vector<MCContributionLocalisation>& lesPasMuons)
+int BeaucoupDeMuons::NombreMuonsDetectes(vector<MCContributionLocalisation>& lesMuons, vector<MCContributionLocalisation>& lesPasMuons) // Cas ou il y'aurait plusieurs mu+
 {
    int nDetectes=0;
    for (vector<MCContributionLocalisation>::iterator itMuon=lesMuons.begin(); itMuon!= lesMuons.end(); ++itMuon)
@@ -187,8 +187,8 @@ int ajouteMuonDansTempsMortLente::NombreMuonsDetectes(vector<MCContributionLocal
 }
 
 
-int TempsMortNonParalysable::NombreMuonsDetectes(vector<MCContributionLocalisation>& lesMuons, vector<MCContributionLocalisation>& lesPasMuons)
-{
+int TempsMortNonParalysable::NombreMuonsDetectes(vector<MCContributionLocalisation>& lesMuons, vector<MCContributionLocalisation>& lesPasMuons)  // Non paralysable sans prise
+{                                                                                                                                                // en compte effets de bords
    int nDetectes=0;
    for (vector<MCContributionLocalisation>::iterator itMuon=lesMuons.begin(); itMuon!= lesMuons.end(); ++itMuon)
    {
@@ -234,7 +234,7 @@ int TempsMortNonParalysable::NombreMuonsDetectes(vector<MCContributionLocalisati
 }
 
 
-int EffetsDeBords::NombreMuonsDetectes(vector<MCContributionLocalisation>& lesMuons, vector<MCContributionLocalisation>& lesPasMuons)
+int EffetsDeBords::NombreMuonsDetectes(vector<MCContributionLocalisation>& lesMuons, vector<MCContributionLocalisation>& lesPasMuons)      // Prise en compte effets de bords
 {
    int nDetectes=0;
    double lastMuonTime=-1e9;
@@ -306,15 +306,15 @@ map<double,double> calculeEff(map<double,string>& nomsDesFichiersROOT, ModeleTem
       DeadTime d(tree);
       d.setModeleDeTempsMort(modele);
       d.Loop();
-    //  resultats[itfilename->first]=d.getEfficacite();      // Modele theorique
-      resultats[d.getFlux()]=d.getEfficacite();              // Modele Reel
+     // resultats[itfilename->first]=d.getEfficacite();                              // Modele FLUX THEORIQUE de gammas
+      resultats[d.getFlux()]=d.getEfficacite();                                      // Modele FLUX REEL de gammas
       f->Close();
    }
    return resultats;
 } 
 
 
-MODELE::MODELE()
+MODELE::MODELE()                                                                     // les 4 MODELES pour le calcul d'efficacite
 {
   Mes_modeles[RTM]=new rayonTempsMort();
   Mes_modeles[BDM]=new BeaucoupDeMuons();
@@ -338,27 +338,18 @@ void calculExemplePourModele(ModeleTempsMort* modele)
 {
  map<double,string> fluxgamma1_nomFichiers;
   { 
-  /*
-   fluxgamma1_nomFichiers[5.3e4]="1_cm_5_muons_1000_runs_1e7.root";
-   fluxgamma1_nomFichiers[1.06e5]="1_cm_10_muons_1000_runs_1e7.root";
-   fluxgamma1_nomFichiers[2.65e5]="1_cm_25_muons_1000_runs_1e7.root";
-   fluxgamma1_nomFichiers[5.3e5]="1_cm_50_muons_1000_runs_1e7.root";
-   fluxgamma1_nomFichiers[1.06e6]="1_cm_100_muons_1000_runs_1e7.root";
-   fluxgamma1_nomFichiers[2.12e6]="1_cm_200_muons_1000_runs_1e7.root";
-   fluxgamma1_nomFichiers[3.18e6]="1_cm_300_muons_1000_runs_1e7.root";
-   fluxgamma1_nomFichiers[4.24e6]="1_cm_400_muons_1000_runs_1e7.root";
-   fluxgamma1_nomFichiers[5.3e6]="1_cm_500_muons_1000_runs_1e7.root";
-   fluxgamma1_nomFichiers[6.36e6]="1_cm_600_muons_1000_runs_1e7.root";
-   fluxgamma1_nomFichiers[7.42e6]="1_cm_700_muons_1000_runs_1e7.root";
-   fluxgamma1_nomFichiers[8.48e6]="1_cm_800_muons_1000_runs_1e7.root";
-   fluxgamma1_nomFichiers[9.54e6]="1_cm_900_muons_1000_runs_1e7.root";
-   fluxgamma1_nomFichiers[1.06e7]="1_cm_1000_muons_1000_runs_1e7.root";
-   fluxgamma1_nomFichiers[1.59e7]="1_cm_1500_muons_1000_runs_1e7.root";
-   fluxgamma1_nomFichiers[2.12e7]="1_cm_2000_muons_1000_runs_1e7.root";
-   fluxgamma1_nomFichiers[3.18e7]="1_cm_3000_muons_1000_runs_1e7.root"; */
 
-   fluxgamma1_nomFichiers[2.12e5]="5_muons_1000_runs_1e7.root";
-   fluxgamma1_nomFichiers[4.23e5]="10_muons_1000_runs_1e7.root";
+   fluxgamma1_nomFichiers[4.23e3]="10_muons_1000_runs_1e9.root";
+   fluxgamma1_nomFichiers[8.46e3]="20_muons_1000_runs_1e9.root";
+   fluxgamma1_nomFichiers[1.27e4]="30_muons_1000_runs_1e9.root";
+   fluxgamma1_nomFichiers[1.69e4]="40_muons_1000_runs_1e9.root";
+   fluxgamma1_nomFichiers[2.12e4]="50_muons_1000_runs_1e9.root";
+   fluxgamma1_nomFichiers[4.23e4]="10_muons_1000_runs_1e8.root";
+   fluxgamma1_nomFichiers[8.46e4]="20_muons_1000_runs_1e8.root";
+   fluxgamma1_nomFichiers[1.27e5]="30_muons_1000_runs_1e8.root";
+   fluxgamma1_nomFichiers[1.69e5]="40_muons_1000_runs_1e8.root";                     // Fichiers dans le dossier Simulations (ici root_MODELE_2)
+   fluxgamma1_nomFichiers[2.12e5]="50_muons_1000_runs_1e8.root";                     // Entre crochets [] le flux théorique de gammas
+   fluxgamma1_nomFichiers[4.23e5]="100_muons_1000_runs_1e8.root";
    fluxgamma1_nomFichiers[1.06e6]="25_muons_1000_runs_1e7.root";
    fluxgamma1_nomFichiers[2.12e6]="50_muons_1000_runs_1e7.root";
    fluxgamma1_nomFichiers[4.23e6]="100_muons_1000_runs_1e7.root";
@@ -366,37 +357,30 @@ void calculExemplePourModele(ModeleTempsMort* modele)
    fluxgamma1_nomFichiers[1.27e7]="300_muons_1000_runs_1e7.root";
    fluxgamma1_nomFichiers[1.69e7]="400_muons_1000_runs_1e7.root";
    fluxgamma1_nomFichiers[2.12e7]="500_muons_1000_runs_1e7.root";
-   fluxgamma1_nomFichiers[2.53e7]="600_muons_1000_runs_1e7.root";
-   fluxgamma1_nomFichiers[2.96e7]="700_muons_1000_runs_1e7.root";
-   fluxgamma1_nomFichiers[3.38e7]="800_muons_1000_runs_1e7.root";
-   fluxgamma1_nomFichiers[3.80e7]="900_muons_1000_runs_1e7.root";
-   fluxgamma1_nomFichiers[4.23e7]="1000_muons_1000_runs_1e7.root";
-   fluxgamma1_nomFichiers[6.35e7]="1500_muons_1000_runs_1e7.root";
-   fluxgamma1_nomFichiers[8.46e7]="2000_muons_1000_runs_1e7.root";
-
   }
        
-  map<double,double> res1=calculeEff(fluxgamma1_nomFichiers,modele);
+  map<double,double> res1=calculeEff(fluxgamma1_nomFichiers,modele);  
   TGraphErrors *gr1=new TGraphErrors(res1.size());
+
   int numero1=0;
-  for (map<double,double>::iterator it=res1.begin(); it!=res1.end(); ++it)
+
+  for (map<double,double>::iterator it=res1.begin(); it!=res1.end(); ++it)           // Creation courbe efficacite
   {
-     gr1->SetPoint(numero1,it->first,it->second);
-     gr1->SetPointError(numero1,0,3*sqrt((it->second)*(100-it->second)/1000));
+     gr1->SetPoint(numero1,it->first,(it->second)*0.98);                             // (0.98 ou 0.93) Facteur multiplicatif pour coller avec les courbes experimentales
+     gr1->SetPointError(numero1,0,3*sqrt((it->second)*(100-it->second)/1000));       // Barres d'erreurs à +- 3 sigmas
      ++numero1;
   } 
   gr1->SetTitle("Courbe de l'efficacite pour 1000 runs");
   gr1->SetMarkerStyle(8);
-  gr1->SetLineColor(kRed);
+  gr1->SetLineColor(kGreen);
   gr1->SetLineWidth(2); 
   gr1->Fit("gaus");
  
- // TF1 *g1 = new TF1("g1","gaus+[3]/(pow(x,[4]))",0.,200000000.);
- // gr1->Fit ("g1","R");
-
-    TGraphErrors *gr2 = new TGraphErrors(6);
-    gr2->SetName("Graph1");
-    gr2->SetTitle("");
+  // TF1 *g1 = new TF1("g1","gaus+[3]/(pow(x,[4]))",0.,100000000.);                // Fonction pour fitter 
+  // gr1->Fit ("g1","R");                                                           // EDB et NP             
+ 
+    TGraphErrors *gr2 = new TGraphErrors(6);                                        
+    gr2->SetTitle("Float Glass");
     gr2->SetFillColor(1);
     gr2->SetLineColor(2);
     gr2->SetMarkerColor(2);
@@ -404,7 +388,7 @@ void calculExemplePourModele(ModeleTempsMort* modele)
     gr2->SetMarkerSize(1.8);
     gr2->SetPoint(0,1500000,0);
     gr2->SetPointError(0,0,0);
-    gr2->SetPoint(1,681818.2,0.0381356*100);
+    gr2->SetPoint(1,681818.2,0.0381356*100);                                        // Efficacite experimentale float glass
     gr2->SetPointError(1,0,0.0638412*100);
     gr2->SetPoint(2,217391.3,0.242259*100);
     gr2->SetPointError(2,0,0.0371513*100);
@@ -414,19 +398,19 @@ void calculExemplePourModele(ModeleTempsMort* modele)
     gr2->SetPointError(4,0,0.021681*100);
     gr2->SetPoint(5,150,0.929634*100);
     gr2->SetPointError(5,0,0.00395216*100);
+    gr2->Fit("gaus");
 
-  TGraphErrors *gr3 = new TGraphErrors(6);
-    gr3->SetName("Graph0");
-    gr3->SetTitle("");
+  TGraphErrors *gr3 = new TGraphErrors(7);
+    gr3->SetTitle("Low Resistive Glass");
     gr3->SetFillColor(1);
     gr3->SetLineColor(4);
     gr3->SetMarkerColor(4);
     gr3->SetMarkerStyle(22);
-    gr3->SetMarkerSize(1.8);
+    gr3->SetMarkerSize(1.8);      
     gr3->SetPoint(0,1500000,0.192982*100);
     gr3->SetPointError(0,0,0.118988*100);
-    gr3->SetPoint(1,681818.2,0.704545*100);
-    gr3->SetPointError(1,0,0.0473106*100);
+    gr3->SetPoint(1,681818.2,0.704545*100);                                        // Efficacite experimentale low resistive glass
+    gr3->SetPointError(1,0,0.0473106*100);                                
     gr3->SetPoint(2,217391.3,0.943028*100);
     gr3->SetPointError(2,0,0.009242*100);
     gr3->SetPoint(3,68181.82,0.973359*100);
@@ -435,32 +419,33 @@ void calculExemplePourModele(ModeleTempsMort* modele)
     gr3->SetPointError(4,0,0.0132405*100);
     gr3->SetPoint(5,150,0.97559*100);
     gr3->SetPointError(5,0,0.00223768*100);
-
-
-
+    gr3->SetPoint(6,2.53e7,0);
+    gr3->SetPointError(0,0,0);
+    gr3->Fit("gaus");
 
   TCanvas *c=new TCanvas;
   TMultiGraph *F=new TMultiGraph();
   F->Add(gr1,"AP");
-  F->Add(gr2,"APL");
-  F->Add(gr3,"APL");
-  F->SetTitle("Efficacite de detection en fonction du flux de photons pour un rayon et temps mort donne");
+  F->Add(gr2,"AP");
+  F->Add(gr3,"AP");
+  F->SetTitle("Efficacite de detection en fonction du flux de photons pour un rayon et temps mort donne");     // Multigraph 
   F->GetXaxis()->SetTitle("Flux de gammas (photons/cm^2/s)");
   F->GetYaxis()->SetTitle("Efficacite de detection (%)");
   F->GetXaxis()->CenterTitle(1);
   F->GetYaxis()->CenterTitle(1);
-  F->GetXaxis()->SetRangeUser(0.,200000000.);
+  F->GetXaxis()->SetRangeUser(0.,100000000.);
   F->GetYaxis()->SetRangeUser(0.,100.);
   F->Draw("A");
   gPad->SetLogx();
   c->BuildLegend();
+
 }
 
-void calculeExemple(double rayon, double temps,MODELE::VALEUR v)
+void calculeExemple(double rayon, double temps,MODELE::VALEUR v)                // Fonction à appeler dans root pour faire les graphs
 {
    MODELE mf;
    ModeleTempsMort* modele=mf.get(v);
-   if (NULL==modele) return;
+   if (NULL==modele) return;    
    modele->setRayonMort(rayon);
    modele->setTempsMort(temps);
    calculExemplePourModele(modele);
