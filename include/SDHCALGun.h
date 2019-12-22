@@ -27,7 +27,7 @@ struct SDHCALGunOptions
 
 
 		G4String gunOptionMomentum = "fixed" ;
-		G4ThreeVector primaryMom ;
+		G4ThreeVector primaryMom {} ;
 
 		G4double gaussianMomentumSigma = 0.1 ;
 		G4double momentumTheta = 0 ;

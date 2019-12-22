@@ -8,3 +8,7 @@ build/
 src/*.~
 include/*.~
 CMakeLists.txt.user
+.vscode/
+
+doc/Doxyfile
+doc/html/*

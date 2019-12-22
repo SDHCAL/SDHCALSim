@@ -30,16 +30,18 @@ class SDHCALRPCSensitiveDetector : public G4VSensitiveDetector
 
 		static inline const std::set<SDHCALRPCSensitiveDetector*>& getSensitiveDetectorVec() { return sensitiveDetectorVec ; }
 
+		SDHCALRPCSensitiveDetector(const SDHCALRPCSensitiveDetector&) = delete ;
+		void operator=(const SDHCALRPCSensitiveDetector&) = delete ;
 
 	protected :
 		static std::set<SDHCALRPCSensitiveDetector*> sensitiveDetectorVec ;
 
-		SDHCALHitCollection* hitsCollection ;
-		G4int ID ;
+		SDHCALHitCollection* hitsCollection {} ;
+		G4int ID {} ;
 
-		SDHCALRPC* rpc ;
+		SDHCALRPC* rpc {} ;
 
-		SDHCALHit* currentHit ;
+		SDHCALHit* currentHit {} ;
 } ;
 
 #endif //SDHCALRPCSensitiveDetector_h

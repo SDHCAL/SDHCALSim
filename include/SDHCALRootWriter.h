@@ -16,7 +16,7 @@ class SDHCALRootWriter
 	protected :
 		SDHCALRootWriter() ;
 		void static initInstance() { new SDHCALRootWriter ; }
-		~SDHCALRootWriter() { instance = NULL ; }
+		~SDHCALRootWriter() { instance = nullptr ; }
 	public :
 		static SDHCALRootWriter* Instance()
 		{
@@ -59,31 +59,31 @@ class SDHCALRootWriter
 		inline void setStepLength(std::vector<double> value) { stepLength = value ; }
 		inline void setStepTime(std::vector<double> value) { stepTime = value ; }
 
+		SDHCALRootWriter(const SDHCALRootWriter&) = delete ;
+		void operator=(const SDHCALRootWriter&) = delete ;
 
 	protected :
-		TFile* file ;
-		TTree* tree ;
+		TFile* file {} ;
+		TTree* tree {} ;
 
-		int eventNumber ;
-		int nHit ;
-		int primaryID ;
-		double primaryEnergy ;
-		double primaryPos[3] ;
-		double primaryMom[3] ;
-		double depositedEnergy ;
-		double depositedEnergyNeutron ;
-		double leakedEnergy ;
-		double emFraction ;
-		double computingTime ;
+		int eventNumber {} ;
+		int nHit {} ;
+		int primaryID {} ;
+		double primaryEnergy {} ;
+		double primaryPos[3] {} ;
+		double primaryMom[3] {} ;
+		double depositedEnergy {} ;
+		double depositedEnergyNeutron {} ;
+		double leakedEnergy {} ;
+		double emFraction {} ;
+		double computingTime {} ;
 
-		int nNeutrons = 0 ;
-		int nPi0 = 0 ;
+		int nNeutrons {} ;
+		int nPi0 {} ;
 
-		std::vector<double> stepCosAngle ;
-		std::vector<double> stepLength ;
-		std::vector<double> stepTime ;
-
-
+		std::vector<double> stepCosAngle {} ;
+		std::vector<double> stepLength {} ;
+		std::vector<double> stepTime {} ;
 } ;
 
 

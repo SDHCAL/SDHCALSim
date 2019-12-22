@@ -13,21 +13,17 @@
 #include <G4Box.hh>
 #include <g4root.hh>
 
-SDHCALSteppingAction* SDHCALSteppingAction::instance = 0 ;
+SDHCALSteppingAction* SDHCALSteppingAction::instance = nullptr ;
 
 SDHCALSteppingAction::SDHCALSteppingAction()
 	: G4UserSteppingAction()
 {
 	if (instance)
-		throw std::logic_error("LyonSteppingAction already exists") ;
+		throw std::logic_error("SDHCALSteppingAction already exists") ;
 
 	G4cout << "Create SDHCALSteppingAction" << G4endl ;
 
 	instance = this ;
-	depositedEnergy = 0.0 ;
-	leakEnergy = 0.0 ;
-	lastStepTime = 0.0 ;
-	interestedRegion = NULL ;
 }
 
 void SDHCALSteppingAction::UserSteppingAction(const G4Step* step)

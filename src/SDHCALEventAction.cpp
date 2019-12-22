@@ -13,10 +13,6 @@ SDHCALEventAction::SDHCALEventAction(SDHCALRunAction* _runAction)
 }
 
 
-SDHCALEventAction::~SDHCALEventAction()
-{
-}
-
 void SDHCALEventAction::BeginOfEventAction(const G4Event* event)
 {
 	beginClock = clock() ;

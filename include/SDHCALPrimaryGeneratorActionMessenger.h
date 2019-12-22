@@ -17,33 +17,35 @@ class SDHCALPrimaryGeneratorActionMessenger : public G4UImessenger
 
 		void SetNewValue(G4UIcommand* command, G4String value) ;
 
+		SDHCALPrimaryGeneratorActionMessenger(const SDHCALPrimaryGeneratorActionMessenger&) = delete ;
+		void operator=(const SDHCALPrimaryGeneratorActionMessenger&) = delete ;
 
 	protected :
 
-		SDHCALPrimaryGeneratorAction* generator ;
+		SDHCALPrimaryGeneratorAction* generator {} ;
 
-		G4UIdirectory* dir ;
+		G4UIdirectory* dir {} ;
 
-		G4UIcmdWithAString* particleDefinitionCmd ;
+		G4UIcmdWithAString* particleDefinitionCmd {} ;
 
-		G4UIcmdWithAString* posOptionCmd ;
-		G4UIcmdWithADouble* posXCmd ;
-		G4UIcmdWithADouble* posYCmd ;
-		G4UIcmdWithADouble* posZCmd ;
-		G4UIcmdWithADouble* uniformMaxPosCmd ;
-		G4UIcmdWithADouble* sigmaPosCmd ;
+		G4UIcmdWithAString* posOptionCmd {} ;
+		G4UIcmdWithADouble* posXCmd {} ;
+		G4UIcmdWithADouble* posYCmd {} ;
+		G4UIcmdWithADouble* posZCmd {} ;
+		G4UIcmdWithADouble* uniformMaxPosCmd {} ;
+		G4UIcmdWithADouble* sigmaPosCmd {} ;
 
-		G4UIcmdWithAString* momOptionCmd ;
-		G4UIcmdWithADouble* momPhiCmd ;
-		G4UIcmdWithADouble* momThetaCmd ;
-		G4UIcmdWithADouble* momSigmaCmd ; //gaussian sigma value for gaussian gun momentum option
+		G4UIcmdWithAString* momOptionCmd {} ;
+		G4UIcmdWithADouble* momPhiCmd {} ;
+		G4UIcmdWithADouble* momThetaCmd {} ;
+		G4UIcmdWithADouble* momSigmaCmd {} ;//gaussian sigma value for gaussian gun momentum option
 
 
-		G4UIcmdWithAString* energyOptionCmd ;
-		G4UIcmdWithADouble* energyCmd ;
-		G4UIcmdWithADouble* sigmaEnergyCmd ;
-		G4UIcmdWithADouble* minEnergyCmd ;
-		G4UIcmdWithADouble* maxEnergyCmd ;
+		G4UIcmdWithAString* energyOptionCmd {} ;
+		G4UIcmdWithADouble* energyCmd {} ;
+		G4UIcmdWithADouble* sigmaEnergyCmd {} ;
+		G4UIcmdWithADouble* minEnergyCmd {} ;
+		G4UIcmdWithADouble* maxEnergyCmd {} ;
 } ;
 
 #endif //SDHCALPrimaryGeneratorActionMessenger_h
