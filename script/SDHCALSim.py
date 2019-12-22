@@ -43,6 +43,20 @@ class Params :
 
 
 
+def particleConfig(particle) :
+	cosmicBool = "true"
+	if not particle.cosmic :
+		cosmicBool = "false"
+			
+		return '''
+			{
+				"particleName" : "''' + particle.particleName + '''",
+				"cosmic"   : ''' + cosmicBool + ''',		
+				"energy"   : { "option" : "''' + particle.energyDistribution+ '''" , "value" : ''' + str(particle.energy) + ''' , "sigma" : ''' + str(particle.sigmaEnergy) + ''' , "min" : ''' + str(particle.minEnergy) + ''' , "max" : ''' + str(particle.maxEnergy) + ''' },	
+				"vertex"   : { "time" : ''' + str(particle.time) + ''' , "option" : "''' + particle.positionOption + '''" , "position" : {"x":''' + str(particle.positionX) + ''', "y":''' + str(particle.positionY) + ''', "z":''' + str(particle.positionZ) + '''} , "delta" : ''' + str(particle.uniformDeltaPos) + ''' , "sigma" : ''' + str(particle.sigmaPos) + ''' },
+				"momentum" : { "option" : "''' + particle.momentumOption + '''" , "direction" : {"phi": ''' + str(particle.momentumPhi) + ''', "theta" : ''' + str(particle.momentumTheta) + '''} , "sigma" : ''' + str(particle.sigmaMomentum) + ''' }
+			}'''
+
 def launch(a) :
 
 	pid = os.getpid()
@@ -73,23 +87,17 @@ def launch(a) :
 		"particuleGuns" :
 		['''
 
-	for particle in a.particleList :
-		cosmicBool = "true"
-		if not particle.cosmic :
-			cosmicBool = "false"
-			
-		jsonFileContent = jsonFileContent + '''
-			{
-				"particleName" : "''' + particle.particleName + '''",
-				"cosmic"   : ''' + cosmicBool + ''',		
-				"energy"   : { "option" : "''' + particle.energyDistribution+ '''" , "value" : ''' + str(particle.energy) + ''' , "sigma" : ''' + str(particle.sigmaEnergy) + ''' , "min" : ''' + str(particle.minEnergy) + ''' , "max" : ''' + str(particle.maxEnergy) + ''' },	
-				"vertex"   : { "time" : ''' + str(particle.time) + ''' , "option" : "''' + particle.positionOption + '''" , "position" : {"x":''' + str(particle.positionX) + ''', "y":''' + str(particle.positionY) + ''', "z":''' + str(particle.positionZ) + '''} , "delta" : ''' + str(particle.uniformDeltaPos) + ''' , "sigma" : ''' + str(particle.sigmaPos) + ''' },
-				"momentum" : { "option" : "''' + particle.momentumOption + '''" , "direction" : {"phi": ''' + str(particle.momentumPhi) + ''', "theta" : ''' + str(particle.momentumTheta) + '''} , "sigma" : ''' + str(particle.sigmaMomentum) + ''' }
-			}'''
+
+	for particle in a.particleList[:-1] :
+		jsonFileContent = jsonFileContent + particleConfig(particle) + ','
+
+	jsonFileContent = jsonFileContent + particleConfig(a.particleList[-1])
+
 
 	jsonFileContent = jsonFileContent + '''
 		]
 	}'''
+
 
 	jsonFile = open(jsonFileName , 'w')
 	jsonFile.write(jsonFileContent)
