@@ -79,7 +79,7 @@ G4VPhysicalVolume* SDHCALDetectorConstruction::Construct()
 	// World
 	G4Box* solidWorld = new G4Box("World", worldSize/2 , worldSize/2 , worldSize/2) ;
 	G4LogicalVolume* logicWorld = new G4LogicalVolume(solidWorld , defaultMaterial , "World") ;
-	G4VPhysicalVolume* physiWorld = new G4PVPlacement(0 , G4ThreeVector() ,  logicWorld , "World" , 0 , false , 0 , true) ;
+	G4VPhysicalVolume* physiWorld = new G4PVPlacement(nullptr , G4ThreeVector() ,  logicWorld , "World" , nullptr , false , 0 , true) ;
 
 	std::vector<SDHCALRPC*> rpcVec ;
 	for ( G4int i = 0 ; i < nLayers ; ++i )
@@ -118,12 +118,12 @@ G4VPhysicalVolume* SDHCALDetectorConstruction::Construct()
 		currentPos += absorberStructureSizeZ/2 ;
 		G4Box* solidAbsorberStructure = new G4Box("AbsorberStructure" , caloSizeX/2 , caloSizeY/2 , absorberStructureSizeZ/2) ;
 		G4LogicalVolume* logicAbsorberStructure = new G4LogicalVolume(solidAbsorberStructure , absorberMaterial , "AbsorberStructure") ;
-		new G4PVPlacement(0 , G4ThreeVector(0,0,currentPos) , logicAbsorberStructure , "AbsorberStructure" , logicCalorimeter , false , 0 , true) ;
+		new G4PVPlacement(nullptr , G4ThreeVector(0,0,currentPos) , logicAbsorberStructure , "AbsorberStructure" , logicCalorimeter , false , 0 , true) ;
 
 		currentPos += absorberStructureSizeZ/2 + airGapSizeZ + RPCSizeZ/2 ;
 
 		std::stringstream name ; name << "Cassette" << i ;
-		rpcVec.at(i)->createPhysicalVolume(0 , G4ThreeVector(0,0,currentPos) , logicCalorimeter) ;
+		rpcVec.at(i)->createPhysicalVolume(nullptr , G4ThreeVector(0,0,currentPos) , logicCalorimeter) ;
 
 		currentPos += RPCSizeZ/2 + airGapSizeZ ;
 	}

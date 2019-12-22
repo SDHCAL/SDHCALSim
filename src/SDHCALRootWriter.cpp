@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-SDHCALRootWriter* SDHCALRootWriter::instance = 0 ;
+SDHCALRootWriter* SDHCALRootWriter::instance = nullptr ;
 
 SDHCALRootWriter::SDHCALRootWriter()
 {

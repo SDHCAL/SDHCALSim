@@ -19,7 +19,7 @@ class SDHCALEventAction : public G4UserEventAction
 {
 	public :
 		SDHCALEventAction(SDHCALRunAction* _runAction) ;
-		virtual ~SDHCALEventAction() ;
+		virtual ~SDHCALEventAction() = default ;
 
 		virtual void BeginOfEventAction(const G4Event* event) ;
 		virtual void EndOfEventAction(const G4Event* event) ;

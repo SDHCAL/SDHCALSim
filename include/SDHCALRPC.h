@@ -28,12 +28,13 @@ struct SDHCALRPCGeom
 		G4String material ;
 	} ;
 
-	std::vector<Layer> layers {} ;
+	std::vector<Layer> layers {} ; //This vector needs one and only one layer called 'GasGap' which corresponds to the gas gap
 } ;
 
 class SDHCALRPC
 {
 	public : 
+		// Helper functions to construct pre-defined RPCs
 		static SDHCALRPC* buildStandardRPC(G4int _id , G4int _nPadX , G4int _nPadY , G4double _cellSize) ;
 		static SDHCALRPC* buildOldStandardRPC(G4int _id , G4int _nPadX , G4int _nPadY , G4double _cellSize) ;
 		static SDHCALRPC* buildWithScintillatorRPC(G4int _id , G4int _nPadX , G4int _nPadY , G4double _cellSize) ;

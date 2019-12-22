@@ -43,7 +43,7 @@ SDHCALRPC* SDHCALRPC::buildStandardRPC(G4int _id , G4int _nPadX , G4int _nPadY ,
 	geom.layers.push_back( {"MylarAnode"            , 0.050 , "G4_MYLAR"         } ) ;	
 	geom.layers.push_back( {"GraphiteAnode"         , 0.050 , "G4_GRAPHITE"      } ) ;	
 	geom.layers.push_back( {"ThinGlass"             , 0.700 , "G4_Pyrex_Glass"   } ) ;	
-	geom.layers.push_back( {"GasGap"                , 1.200 , "SDHCAL_RPCGaz"    } ) ; //we want to keep trace of this layer
+	geom.layers.push_back( {"GasGap"                , 1.200 , "SDHCAL_RPCGaz"    } ) ; //the layer called GasGap has a special Role
 	geom.layers.push_back( {"ThickGlass"            , 1.100 , "G4_Pyrex_Glass"   } ) ;
 	geom.layers.push_back( {"GraphiteCathode"       , 0.050 , "G4_GRAPHITE"      } ) ;	
 	geom.layers.push_back( {"MylarCathode"          , 0.180 , "G4_MYLAR"         } ) ;
@@ -66,7 +66,7 @@ SDHCALRPC* SDHCALRPC::buildOldStandardRPC(G4int _id , G4int _nPadX , G4int _nPad
 	geom.layers.push_back( {"MylarAnode"            , 0.050 , "G4_MYLAR"             } ) ;	
 	geom.layers.push_back( {"GraphiteAnode"         , 0.050 , "G4_GRAPHITE"          } ) ;	
 	geom.layers.push_back( {"ThinGlass"             , 0.700 , "G4_Pyrex_Glass"       } ) ;	
-	geom.layers.push_back( {"GasGap"                , 1.200 , "SDHCAL_RPCGaz"        } ) ; //we want to keep trace of this layer
+	geom.layers.push_back( {"GasGap"                , 1.200 , "SDHCAL_RPCGaz"        } ) ; //the layer called GasGap has a special Role
 	geom.layers.push_back( {"ThickGlass"            , 1.100 , "G4_Pyrex_Glass"       } ) ;
 	geom.layers.push_back( {"GraphiteCathode"       , 0.050 , "G4_GRAPHITE"          } ) ;	
 	geom.layers.push_back( {"MylarCathode"          , 0.180 , "G4_MYLAR"             } ) ;
@@ -87,7 +87,7 @@ SDHCALRPC* SDHCALRPC::buildWithScintillatorRPC(G4int _id , G4int _nPadX , G4int 
 	geom.layers.push_back( {"MylarAnode"            , 0.015 , "G4_MYLAR"         } ) ;	
 	geom.layers.push_back( {"GraphiteAnode"         , 0.050 , "G4_GRAPHITE"      } ) ;	
 	geom.layers.push_back( {"ThinGlass"             , 0.700 , "G4_Pyrex_Glass"   } ) ;	
-	geom.layers.push_back( {"GasGap"                , 1.200 , "SDHCAL_RPCGaz"    } ) ; //we want to keep trace of this later
+	geom.layers.push_back( {"GasGap"                , 1.200 , "SDHCAL_RPCGaz"    } ) ; //the layer called GasGap has a special Role
 	geom.layers.push_back( {"ThickGlass"            , 1.100 , "G4_Pyrex_Glass"   } ) ;
 	geom.layers.push_back( {"GraphiteCathode"       , 0.050 , "G4_GRAPHITE"      } ) ;	
 	geom.layers.push_back( {"MylarCathode"          , 0.015 , "G4_MYLAR"         } ) ;
@@ -168,7 +168,7 @@ void SDHCALRPC::build(const SDHCALRPCGeom& _geom)
 		zPos += layer.width*mm/2 ; //we are now at center of the current layer (where it has to be placed)
 
 		//place the layer at zPos
-		G4VPhysicalVolume* volume = new G4PVPlacement(0 , G4ThreeVector(0,0,zPos) , logic , layer.name , logicCassette , false , 0 , true) ;	//logicCassette is the mother volume
+		G4VPhysicalVolume* volume = new G4PVPlacement(nullptr , G4ThreeVector(0,0,zPos) , logic , layer.name , logicCassette , false , 0 , true) ;	//logicCassette is the mother volume
 
 		zPos += layer.width*mm/2 ; //we are now at the back of the current layer
 

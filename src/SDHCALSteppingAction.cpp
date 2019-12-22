@@ -13,7 +13,7 @@
 #include <G4Box.hh>
 #include <g4root.hh>
 
-SDHCALSteppingAction* SDHCALSteppingAction::instance = 0 ;
+SDHCALSteppingAction* SDHCALSteppingAction::instance = nullptr ;
 
 SDHCALSteppingAction::SDHCALSteppingAction()
 	: G4UserSteppingAction()
