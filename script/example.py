@@ -8,37 +8,30 @@ import math
 
 
 if __name__ == '__main__' :
+  executable='SDHCALSim'
+  os.environ["SIMEXE"] = os.path.join(os.path.dirname(__file__),os.pardir,'bin',executable)
 
-	os.environ["SIMEXE"] = '/path/to/SDHCALSim/bin/SDHCALSim'
+  particle = 'e-'
+  energy = 10
+  params = sim.Params()
+  params.physicsList = 'QGSP_BERT'
+  params.nEvent = 10
+  params.seed = 0
+  params.outputFileName = 'outputName'
 
-	particle = 'e-'
-	energy = 10
+  params.oldConfig = False
+  params.killNeutrons = False
 
+  charged = sim.Particle()
+  charged.particleName = particle
+  charged.energy = energy
 
-	params = sim.Params()
-	params.physicsList = 'QGSP_BERT'
-	params.nEvent = 10
-	params.seed = 0
-	params.outputFileName = 'outputName'
-	
-	params.oldConfig = False
-	params.killNeutrons = False
+  charged.momentumOption = 'gaus'
+  charged.sigmaMomentum = 0.15
 
+  charged.positionOption = 'gaus'
+  charged.sigmaPos = 33
 
-	charged = sim.Particle()
-	charged.particleName = particle
-	charged.energy = energy
+  params.particleList.append(charged)
 
-
-	charged.momentumOption = 'gaus'
-	charged.sigmaMomentum = 0.15
-
-	charged.positionOption = 'gaus'
-	charged.sigmaPos = 33
-
-
-	params.particleList.append(charged)
-
-	sim.launch( params )
-
-
+  sim.launch( params )
