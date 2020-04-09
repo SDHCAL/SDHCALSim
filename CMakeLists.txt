@@ -5,8 +5,8 @@ project(SDHCALSim VERSION "0.2.0" LANGUAGES CXX)
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/cmake")
 
 if(DEFINED ENV{LCIO})
-  set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "$ENV{LCIO}")
-  message(STATUS "LCIO ENV found")
+  set(CMAKE_PREFIX_PATH "$ENV{LCIO};${CMAKE_PREFIX_PATH}" CACHE PATH "CMAKE_PREFIX_PATH" FORCE)
+  message(STATUS "LCIO environment found ${CMAKE_PREFIX_PATH}")
 endif()
 
 # Ask CMake to output a compile_commands.json file for use with things like Vim YCM.

@@ -12,3 +12,5 @@ CMakeLists.txt.user
 
 doc/Doxyfile
 doc/html/*
+.kdev4
+*.kdev4
