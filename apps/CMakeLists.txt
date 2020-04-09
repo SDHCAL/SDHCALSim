@@ -1,0 +1,7 @@
+file(GLOB APP_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp" )
+foreach( testsourcefile ${APP_SOURCES} )
+	get_filename_component(testname ${testsourcefile} NAME_WE)
+	add_executable(${testname} ${testsourcefile})
+	target_link_libraries(${testname} PRIVATE MyLib)
+	install(TARGETS ${testname} RUNTIME DESTINATION ${PROJECT_SOURCE_DIR}/bin)
+endforeach()
