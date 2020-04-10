@@ -1,29 +1,21 @@
-1) Installation
+## Installation
 
-1.1) Installation with ilcsoft
+# Installation with ilcsoft
 
+mkdir build ; cd build ;
+cmake -C $ILCSOFT/ILCSoft.cmake ..;
+make -j4 install ;
+cd ..
 
-     	mkdir build ; cd build ;
-	cmake -C $ILCSOFT/ILCSoft.cmake ..;
-	make -j4 install ;
-	cd ..
+# Installation without ilcsoft. you'll need LCIO, ROOT and GEANT4 software
 
-1.2) Installation without ilcsoft. you'll need LCIO, ROOT and GEANT4 software
+export LCIOdir=/path/to/lcio/installation/directory
+source  installtool/init.sh
+mkdir build ; cd build ;
+cmake -C ../installtool/local.cmake .. ;
+make -j4 install ;
+cd ..
 
-     	export LCIOdir=/path/to/lcio/installation/directory
-	export ROOTdir=/path/to/root/installation/directory
-	export GEANT4dir=/path/to/geant4/installation/directory
-	source  installtool/init.sh
-	mkdir build ; cd build ;
-	cmake -C ../installtool/local.cmake .. ;
-	make -j4 install ;
-	cd ..
-	
+## Running
 
-2) running
-
-set the correct `SIMEXE` env variable in script/example.py
-
-to run :
-
-	./script/example.py
+./script/example.py
