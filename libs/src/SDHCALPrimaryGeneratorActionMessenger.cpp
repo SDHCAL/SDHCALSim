@@ -1,5 +1,5 @@
 #include "SDHCALPrimaryGeneratorActionMessenger.h"
-#include "SDHCALPrimaryGeneratorAction.h"
+#include "SDHCALPrimaryGeneratorAction.hpp"
 
 #include <G4UIdirectory.hh>
 #include <G4UIcmdWithADouble.hh>

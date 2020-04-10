@@ -2,7 +2,7 @@
 
 #include <G4ParticleTable.hh>
 
-#include "SDHCALDetectorConstruction.h"
+#include "SDHCALDetectorConstruction.hpp"
 
 #include <iterator>
 

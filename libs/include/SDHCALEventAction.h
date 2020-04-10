@@ -8,7 +8,7 @@
 #include "SDHCALSteppingAction.h"
 #include "SDHCALTrackingAction.h"
 #include "SDHCALStackingAction.h"
-#include "SDHCALPrimaryGeneratorAction.h"
+#include "SDHCALPrimaryGeneratorAction.hpp"
 #include "SDHCALRPCSensitiveDetector.h"
 #include "SDHCALRootWriter.h"
 

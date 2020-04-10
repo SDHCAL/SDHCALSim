@@ -1,4 +1,4 @@
-#include "SDHCALDetectorConstruction.h"
+#include "SDHCALDetectorConstruction.hpp"
 
 #include <G4NistManager.hh>
 #include <G4Box.hh>
@@ -11,8 +11,6 @@
 #include <G4Region.hh>
 #include <G4RegionStore.hh>
 
-#include "json.hpp"
-
 #include "SDHCALMaterials.h"
 #include "SDHCALRPC.h"
 
@@ -20,20 +18,11 @@
 G4double SDHCALDetectorConstruction::sizeX ;
 G4double SDHCALDetectorConstruction::sizeZ ;
 
-SDHCALDetectorConstruction::SDHCALDetectorConstruction(G4String jsonFileName)
+SDHCALDetectorConstruction::SDHCALDetectorConstruction(const nlohmann::json& json):m_Json(json)
 {
-	if ( jsonFileName == G4String("") )
+	if (m_Json.count("detectorConfig") )
 	{
-		std::cout << "ERROR : no json file provided" << std::endl ;
-		std::terminate() ;
-	}
-
-	std::ifstream file(jsonFileName) ;
-	auto json = nlohmann::json::parse(file) ;
-
-	if ( json.count("detectorConfig") )
-	{
-		auto detectorConfig = json.at("detectorConfig") ;
+		auto detectorConfig = m_Json.at("detectorConfig") ;
 
 		if ( detectorConfig.count("rpcType") )
 		{

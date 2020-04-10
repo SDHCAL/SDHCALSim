@@ -1,5 +1,5 @@
 #include "SDHCALSteppingAction.h"
-#include "SDHCALDetectorConstruction.h"
+#include "SDHCALDetectorConstruction.hpp"
 
 #include <G4Step.hh>
 #include <G4RunManager.hh>

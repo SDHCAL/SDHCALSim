@@ -1,5 +1,6 @@
 set(INCLUDES
-    include/SDHCALPrimaryGeneratorAction.h 
+    include/SDHCALActionInitialization.hpp
+    include/SDHCALPrimaryGeneratorAction.hpp
     include/SDHCALRPC.h
     include/SDHCALSteppingAction.h
     include/SDHCALRootWriter.h
@@ -13,12 +14,13 @@ set(INCLUDES
     include/SDHCALStackingAction.h
     include/SDHCALRunAction.h
     include/SDHCALEventAction.h 
-    include/SDHCALDetectorConstruction.h 
+    include/SDHCALDetectorConstruction.hpp 
     include/SDHCALRun.h
     include/SDHCALMaterials.h
     )
     
 set(SRC
+    src/SDHCALActionInitialization.cpp
     src/SDHCALPrimaryGeneratorAction.cpp 
     src/SDHCALRPC.cpp
     src/SDHCALSteppingAction.cpp

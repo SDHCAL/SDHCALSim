@@ -1,108 +1,84 @@
-#include "SDHCALDetectorConstruction.h"
-#include "SDHCALPrimaryGeneratorAction.h"
-#include "SDHCALRunAction.h"
-#include "SDHCALEventAction.h"
-#include "SDHCALTrackingAction.h"
-#include "SDHCALStackingAction.h"
+#include "G4PhysListFactory.hh"
 
-#include <G4PhysListFactory.hh>
+#include "SDHCALDetectorConstruction.hpp"
+#include "SDHCALActionInitialization.hpp"
 
-#include "G4RunManager.hh"
-#include "G4UImanager.hh"
+#ifdef G4MULTITHREADED
+  #include "G4MTRunManager.hh"
+#else
+  #include "G4RunManager.hh"
+#endif
 
 #ifdef G4VIS_USE
 #include "G4VisExecutive.hh"
 #endif
 
-#ifdef G4UI_USE
-#include "G4UIExecutive.hh"
-#endif
-
-#include <string>
-
 #include "json.hpp"
-
-
-struct Params
-{
-		G4int seed = 0 ;
-		G4int nEvent = 1 ;
-		G4String physicsList = "FTFP_BERT" ;
-		G4String outputFileName = "output" ;
-		G4bool killNeutrons = false ;
-} ;
-
-Params readJsonFile(G4String jsonFileName)
-{
-	Params params ;
-
-	if ( jsonFileName == G4String("") )
-	{
-		std::cout << "ERROR : no json file provided" << std::endl ;
-		std::terminate() ;
-	}
-
-	std::ifstream file(jsonFileName) ;
-	auto json = nlohmann::json::parse(file) ;
-
-	if ( json.count("outputFileName") )
-		params.outputFileName = json.at("outputFileName").get<G4String>() ;
-	if ( json.count("physicsList") )
-		params.physicsList = json.at("physicsList").get<G4String>() ;
-	if ( json.count("nEvents") )
-		params.nEvent = json.at("nEvents").get<G4int>() ;
-	if ( json.count("seed") )
-		params.seed = json.at("seed").get<G4int>()  + 1 ;
-	if ( json.count("killNeutrons") )
-		params.killNeutrons = json.at("killNeutrons").get<G4bool>() ;
-
-	return params ;
-}
+#include <memory>
 
 int main(int argc , char** argv)
 {
-	if ( argc != 2 )
-	{
-		G4cerr << "Error with arguments passed for the program" << G4endl ;
-		std::terminate() ;
-	}
-	
-	G4String jsonFileName = argv[1] ;
+  #ifdef G4UI_USE
+  G4cout<<"Compile with G4UI_USE"<<G4endl;
+  #endif
+  #ifdef G4VIS_USE
+  G4cout<<"Compile with G4VIS_USE"<<G4endl;
+  #endif
+  if(argc !=2)
+  {
+    G4cerr << "Please profile a json file as argument !" << G4endl ;
+    std::exit(-1) ;
+  }
 
-	Params params = readJsonFile( jsonFileName ) ;
+  G4String jsonFileName = argv[1] ;
+  if(jsonFileName == G4String(""))
+  {
+    G4cerr << "ERROR : no json file provided" << G4endl ;
+    std::exit(-1) ;
+  }
+  std::ifstream file(jsonFileName.c_str()) ;
+  nlohmann::json json{};
+  try
+  {
+    json = nlohmann::json::parse(file);
+  }
+  catch (nlohmann::json::parse_error& e)
+  {
+    G4cerr <<  "message: " << e.what() << '\n'
+              << "exception id: " << e.id << '\n'
+              << "byte position of error: " << e.byte << G4endl ;
+  }
 
-	CLHEP::HepRandom::setTheSeed(params.seed) ;
+  CLHEP::HepRandom::setTheSeed(json.value("seed",0)+1);
 
-	G4RunManager* runManager = new G4RunManager ;
+  G4PhysListFactory* physFactory = new G4PhysListFactory();
 
-	// Detector construction
-	runManager->SetUserInitialization( new SDHCALDetectorConstruction(jsonFileName) ) ;
-
-	// Physics list
-	G4PhysListFactory* physFactory = new G4PhysListFactory() ;
-	runManager->SetUserInitialization( physFactory->GetReferencePhysList(params.physicsList) ) ;
-
-	// Primary generator action
-	runManager->SetUserAction( new SDHCALPrimaryGeneratorAction( jsonFileName ) ) ;
-
-	SDHCALRunAction* runAction = new SDHCALRunAction() ;
-
-	runAction->setLcioFileName( params.outputFileName + G4String(".slcio") ) ;
-	runAction->setRootFileName( params.outputFileName + G4String(".root") ) ;
-
-	runManager->SetUserAction( runAction ) ;
-	runManager->SetUserAction( new SDHCALEventAction(runAction) ) ;
-
-	runManager->SetUserAction( SDHCALSteppingAction::Instance() ) ;
-	runManager->SetUserAction( SDHCALTrackingAction::Instance() ) ;
-	runManager->SetUserAction( SDHCALStackingAction::Instance() ) ;
-
-	SDHCALStackingAction::Instance()->setKillNeutrons(params.killNeutrons) ;
-
-	runManager->Initialize() ;
-	runManager->BeamOn(params.nEvent) ;
-
-	delete runManager ;
-
-	return 0 ;
+  #ifdef G4MULTITHREADED
+    if(json.value("MultiThread",false))
+    {
+      std::unique_ptr<G4MTRunManager> runManagerMT{std::make_unique<G4MTRunManager>()};
+      runManagerMT->SetNumberOfThreads(json.value("NbrThreads",4));
+      // Detector construction
+      runManagerMT->SetUserInitialization(new SDHCALDetectorConstruction(json));
+      // Physics list
+      runManagerMT->SetUserInitialization(physFactory->GetReferencePhysList(json.value("physicsList","FTFP_BERT")));
+      runManagerMT->SetUserInitialization(new SDHCALActionInitialization(json));
+      runManagerMT->Initialize() ;
+      runManagerMT->BeamOn(json.value("nEvents",1));
+    }
+    else
+    {
+  #endif
+      std::unique_ptr<G4RunManager> runManager{std::make_unique<G4RunManager>()};
+      // Detector construction
+      runManager->SetUserInitialization(new SDHCALDetectorConstruction(json));
+      // Physics list
+      runManager->SetUserInitialization(physFactory->GetReferencePhysList(json.value("physicsList","FTFP_BERT")));
+      runManager->SetUserInitialization(new SDHCALActionInitialization(json));
+      runManager->Initialize() ;
+      runManager->BeamOn(json.value("nEvents",1));
+  #ifdef G4MULTITHREADED
+    }
+  #endif
+  return 0 ;
 }
