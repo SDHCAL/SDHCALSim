@@ -1,6 +1,6 @@
-#include "SDHCALPrimaryGeneratorAction.h"
+#include "SDHCALPrimaryGeneratorAction.hpp"
 
-#include "SDHCALDetectorConstruction.h"
+#include "SDHCALDetectorConstruction.hpp"
 
 #include <G4Event.hh>
 #include <G4ParticleGun.hh>
@@ -18,7 +18,6 @@
 #include <cstring>
 #include <iterator>
 
-#include "json.hpp"
 
 #include "MyRandom.h"
 
@@ -33,28 +32,17 @@ SDHCALPrimaryGeneratorAction::SDHCALPrimaryGeneratorAction()
 	gunVec.push_back(new SDHCALGun(opt)) ;
 }
 
-SDHCALPrimaryGeneratorAction::SDHCALPrimaryGeneratorAction( G4String jsonFileName )
+SDHCALPrimaryGeneratorAction::SDHCALPrimaryGeneratorAction(const nlohmann::json& json):m_Json(json)
 {
 	messenger = new SDHCALPrimaryGeneratorActionMessenger(this) ;
 
-	G4cout << "SDHCALPrimaryGeneratorAction::SDHCALPrimaryGeneratorAction( '" << jsonFileName << "' )" << G4endl ;
-
-	if ( jsonFileName == G4String("") )
-	{
-		std::cout << "ERROR : no json file provided" << std::endl ;
-		std::terminate() ;
-	}
-
-	std::ifstream file(jsonFileName) ;
-	auto json = nlohmann::json::parse(file) ;
-
-	if ( !json.count("particuleGuns") )
+	if ( !m_Json.count("particuleGuns") )
 	{
 		G4cout << "ERROR : no gun provided" << G4endl ;
 		std::terminate() ;
 	}
 
-	auto gunList = json.at("particuleGuns") ;
+	auto gunList = m_Json.at("particuleGuns") ;
 
 	for ( const auto& gun : gunList )
 		gunVec.push_back( new SDHCALGun(gun) ) ;

@@ -97,9 +97,9 @@ include(CompilerOptions)
 # to build a batch mode only executable
 #
 
-option(WITH_GEANT4_UIVIS "Build example with Geant4 UI and Vis drivers" ON)
-if(WITH_GEANT4_UIVIS)
-  find_package(Geant4 REQUIRED ui_all vis_all)
+option(WITH_GEANT4_VIS "Build example with Geant4 Vis drivers" ON)
+if(WITH_GEANT4_VIS)
+  find_package(Geant4 REQUIRED vis_all)
 else()
   find_package(Geant4 REQUIRED)
 endif()

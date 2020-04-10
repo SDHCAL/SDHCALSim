@@ -1,5 +1,4 @@
-#ifndef SDHCALPrimaryGeneratorAction_h
-#define SDHCALPrimaryGeneratorAction_h
+#pragma once
 
 #include <G4ParticleGun.hh>
 #include <G4VUserPrimaryGeneratorAction.hh>
@@ -9,11 +8,14 @@
 #include "SDHCALPrimaryGeneratorActionMessenger.h"
 #include "SDHCALGun.h"
 
+#include "json.hpp"
+
+
 class SDHCALPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
 	public :
 		SDHCALPrimaryGeneratorAction() ;
-		SDHCALPrimaryGeneratorAction( G4String jsonFileName ) ;
+		SDHCALPrimaryGeneratorAction(const nlohmann::json& json);
 		virtual ~SDHCALPrimaryGeneratorAction() ;
 
 		void setParticleDefinition(G4String particleName)
@@ -93,8 +95,5 @@ class SDHCALPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 		G4double maxEnergy {} ;
 
 		G4double caloFrontZ {} ;
-
-} ;
-
-
-#endif //SDHCALPrimaryGeneratorAction_h
+  nlohmann::json m_Json{};
+};
