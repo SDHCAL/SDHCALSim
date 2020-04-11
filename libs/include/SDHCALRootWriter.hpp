@@ -5,13 +5,12 @@
 
 #include "G4ThreeVector.hh"
 
-#include <vector>
+#include<vector>
+#include<memory>
 
 class SDHCALRootWriter
 {
 public:
-  SDHCALRootWriter();
-  ~SDHCALRootWriter(){};
   void setFileName(const G4String& name){m_FileName=name;}
   void openFile();
   void closeFile();
@@ -45,7 +44,7 @@ public:
 
 private:
   G4String m_FileName{""};
-  TFile* m_File{nullptr};
+  std::unique_ptr<TFile> m_File{nullptr};
   TTree* m_Tree{nullptr};
 
   int m_EventNumber{0};

@@ -1,12 +1,8 @@
 #include "SDHCALRootWriter.hpp"
 
-SDHCALRootWriter::SDHCALRootWriter()
-{
-}
-
 void SDHCALRootWriter::openFile()
 {
-  m_File=new TFile(m_FileName.c_str(),"RECREATE");
+  m_File=std::make_unique<TFile>(m_FileName.c_str(),"RECREATE");
   m_Tree=new TTree("tree","tree");
   m_Tree->Branch("eventNumber",&m_EventNumber);
   m_Tree->Branch("nHit",&m_NHit);
