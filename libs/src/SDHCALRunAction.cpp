@@ -1,14 +1,12 @@
-#include "SDHCALRunAction.h"
-#include "SDHCALRun.h"
-#include "SDHCALLcioWriter.h"
+#include "SDHCALRunAction.hpp"
+#include "SDHCALRun.hpp"
+#include "SDHCALLcioWriter.hpp"
 
-#include <globals.hh>
-#include <ctime>
-
-//SDHCALRunAction::SDHCALRunAction()
-//	: G4UserRunAction()
-//{
-//}
+SDHCALRunAction::SDHCALRunAction(const nlohmann::json& json):G4UserRunAction(),m_Json(json)
+{
+  setLcioFileName(m_Json.value("outputFileName","output")+G4String(".slcio"));
+  setRootFileName(m_Json.value("outputFileName","output")+G4String(".root"));
+}
 
 G4Run* SDHCALRunAction::GenerateRun()
 {

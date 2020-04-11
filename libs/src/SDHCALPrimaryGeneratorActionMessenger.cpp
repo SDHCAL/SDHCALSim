@@ -1,4 +1,4 @@
-#include "SDHCALPrimaryGeneratorActionMessenger.h"
+#include "SDHCALPrimaryGeneratorActionMessenger.hpp"
 #include "SDHCALPrimaryGeneratorAction.hpp"
 
 #include <G4UIdirectory.hh>

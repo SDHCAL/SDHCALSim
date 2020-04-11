@@ -1,4 +1,4 @@
-#include "SDHCALRPC.h"
+#include "SDHCALRPC.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -25,7 +25,7 @@
 #include <G4RegionStore.hh>
 #include <G4Region.hh>
 
-#include "SDHCALRPCSensitiveDetector.h"
+#include "SDHCALRPCSensitiveDetector.hpp"
 
 std::set<SDHCALRPC*> SDHCALRPC::allTheRPC ;
 

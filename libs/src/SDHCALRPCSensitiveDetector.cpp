@@ -1,4 +1,4 @@
-#include "SDHCALRPCSensitiveDetector.h"
+#include "SDHCALRPCSensitiveDetector.hpp"
 
 #include <G4VProcess.hh>
 #include <G4Track.hh>
@@ -8,7 +8,7 @@
 
 #include <sstream>
 
-#include "SDHCALRPC.h"
+#include "SDHCALRPC.hpp"
 
 std::set<SDHCALRPCSensitiveDetector*> SDHCALRPCSensitiveDetector::sensitiveDetectorVec ;
 

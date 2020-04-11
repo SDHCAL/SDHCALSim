@@ -1,5 +1,4 @@
-#ifndef SDHCALTrackingAction_h
-#define SDHCALTrackingAction_h
+#pragma once
 
 #include <G4ThreeVector.hh>
 #include <G4UserTrackingAction.hh>
@@ -46,8 +45,4 @@ class SDHCALTrackingAction : public G4UserTrackingAction
 		std::map<G4int,PrimaryParticleInfo> primaryTrackMap {} ;
 		std::map<G4int,G4int> linkMap {} ;
 
-} ;
-
-
-
-#endif //SDHCALTrackingAction_h
+};

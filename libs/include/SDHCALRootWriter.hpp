@@ -1,5 +1,4 @@
-#ifndef SDHCALRootWriter_h
-#define SDHCALRootWriter_h
+#pragma once
 
 #include <TFile.h>
 #include <TTree.h>
@@ -84,7 +83,4 @@ class SDHCALRootWriter
 		std::vector<double> stepCosAngle {} ;
 		std::vector<double> stepLength {} ;
 		std::vector<double> stepTime {} ;
-} ;
-
-
-#endif //SDHCALRootWriter_h
+};

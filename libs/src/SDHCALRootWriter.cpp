@@ -1,4 +1,4 @@
-#include "SDHCALRootWriter.h"
+#include "SDHCALRootWriter.hpp"
 
 #include <stdexcept>
 

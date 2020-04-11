@@ -1,5 +1,4 @@
-#ifndef MyRandom_h
-#define MyRandom_h
+#pragma once
 
 #include <stdexcept>
 #include <Randomize.hh>
@@ -54,6 +53,4 @@ class MyRandom
 		virtual ~MyRandom() ;
 
 		std::mt19937_64 generator ;
-} ;
-
-#endif //MyRandom_h
+};

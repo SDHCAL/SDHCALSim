@@ -1,22 +1,22 @@
 set(INCLUDES
     include/SDHCALActionInitialization.hpp
     include/SDHCALPrimaryGeneratorAction.hpp
-    include/SDHCALRPC.h
-    include/SDHCALSteppingAction.h
-    include/SDHCALRootWriter.h
-    include/SDHCALHit.h
-    include/SDHCALLcioWriter.h
-    include/SDHCALPrimaryGeneratorActionMessenger.h
-    include/SDHCALGun.h
-    include/SDHCALRPCSensitiveDetector.h
-    include/MyRandom.h
-    include/SDHCALTrackingAction.h
-    include/SDHCALStackingAction.h
-    include/SDHCALRunAction.h
-    include/SDHCALEventAction.h 
+    include/SDHCALRPC.hpp
+    include/SDHCALSteppingAction.hpp
+    include/SDHCALRootWriter.hpp
+    include/SDHCALHit.hpp
+    include/SDHCALLcioWriter.hpp
+    include/SDHCALPrimaryGeneratorActionMessenger.hpp
+    include/SDHCALGun.hpp
+    include/SDHCALRPCSensitiveDetector.hpp
+    include/MyRandom.hpp
+    include/SDHCALTrackingAction.hpp
+    include/SDHCALStackingAction.hpp
+    include/SDHCALRunAction.hpp
+    include/SDHCALEventAction.hpp
     include/SDHCALDetectorConstruction.hpp 
-    include/SDHCALRun.h
-    include/SDHCALMaterials.h
+    include/SDHCALRun.hpp
+    include/SDHCALMaterials.hpp
     )
     
 set(SRC

@@ -1,4 +1,4 @@
-#include "SDHCALGun.h"
+#include "SDHCALGun.hpp"
 
 #include <G4ParticleTable.hh>
 
@@ -6,7 +6,7 @@
 
 #include <iterator>
 
-#include "MyRandom.h"
+#include "MyRandom.hpp"
 
 SDHCALGun::SDHCALGun()
 	: G4ParticleGun(1) ,

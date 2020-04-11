@@ -11,8 +11,8 @@
 #include <G4Region.hh>
 #include <G4RegionStore.hh>
 
-#include "SDHCALMaterials.h"
-#include "SDHCALRPC.h"
+#include "SDHCALMaterials.hpp"
+#include "SDHCALRPC.hpp"
 
 
 G4double SDHCALDetectorConstruction::sizeX ;

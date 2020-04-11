@@ -1,5 +1,4 @@
-#ifndef SDHCALLcioWriter_h
-#define SDHCALLcioWriter_h
+#pragma once
 
 #include <lcio.h>
 
@@ -21,7 +20,7 @@
 
 #include <string>
 
-#include <SDHCALHit.h>
+#include "SDHCALHit.hpp"
 
 
 class G4Event ;
@@ -61,6 +60,4 @@ class SDHCALLcioWriter
 		std::map<G4int,IMPL::MCParticleImpl*> primaryParticleMap {} ;
 
 		std::string detectorName {} ;
-} ;
-
-#endif //SDHCALLcioWriter_h
+};

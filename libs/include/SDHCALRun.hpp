@@ -1,5 +1,4 @@
-#ifndef SDHCALRun_h
-#define SDHCALRun_h
+#pragma once
 
 #include <globals.hh>
 #include <G4Run.hh>
@@ -14,6 +13,4 @@ class SDHCALRun : public G4Run
 
 	protected :
 
-} ;
-
-#endif //SDHCALRun_h
+};

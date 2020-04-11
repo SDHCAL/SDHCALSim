@@ -1,4 +1,4 @@
-#include "MyRandom.h"
+#include "MyRandom.hpp"
 
 MyRandom* MyRandom::theOneTrueInstance = nullptr ;
 
