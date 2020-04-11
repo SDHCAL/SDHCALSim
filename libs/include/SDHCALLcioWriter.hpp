@@ -1,31 +1,22 @@
 #pragma once
 
-#include <lcio.h>
+#include "lcio.h"
 
-#include <G4Event.hh>
-#include <G4Run.hh>
-#include <G4RunManager.hh>
+#include "G4ThreeVector.hh"
+#include "G4Event.hh"
 
-#include <IO/LCWriter.h>
-#include <IOIMPL/LCFactory.h>
-#include <IMPL/LCEventImpl.h>
-#include <IMPL/SimCalorimeterHitImpl.h>
-#include <IMPL/CalorimeterHitImpl.h>
-#include <IMPL/LCGenericObjectImpl.h>
-#include <IMPL/MCParticleImpl.h>
-#include <IMPL/LCCollectionVec.h>
-#include <IMPL/LCTOOLS.h>
-#include <IMPL/LCFlagImpl.h>
-#include <UTIL/CellIDEncoder.h>
+#include "IO/LCWriter.h"
+#include "IMPL/LCEventImpl.h"
+#include "IMPL/LCCollectionVec.h"
+#include "IMPL/MCParticleImpl.h"
 
-class G4Event;
+#include <memory>
+
 class SDHCALHit;
 
 class SDHCALLcioWriter
 {
 public:
-  SDHCALLcioWriter();
-  ~SDHCALLcioWriter();
   void setFileName(const G4String& name){m_FileName=name;}
   void openFile();
   void closeFile();
@@ -44,8 +35,8 @@ public:
 
 private:
   G4String m_FileName{""};
-  lcio::LCWriter* m_Writer{nullptr};
-  IMPL::LCEventImpl* m_LcEvent{nullptr};
+  std::unique_ptr<lcio::LCWriter> m_Writer{nullptr};
+  std::unique_ptr<IMPL::LCEventImpl> m_LcEvent{nullptr};
   IMPL::LCCollectionVec* m_ParticleCol{nullptr};
   IMPL::LCCollectionVec* m_SimVec{nullptr};
   std::map<G4int,IMPL::MCParticleImpl*> m_PrimaryParticleMap{};

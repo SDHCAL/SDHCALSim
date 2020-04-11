@@ -1,13 +1,16 @@
 #include "SDHCALLcioWriter.hpp"
 #include "SDHCALHit.hpp"
 
-SDHCALLcioWriter::SDHCALLcioWriter()
-{
-}
+#include "G4RunManager.hh"
+#include "G4Run.hh"
+
+#include "IMPL/SimCalorimeterHitImpl.h"
+#include "IMPL/LCFlagImpl.h"
+#include "UTIL/CellIDEncoder.h"
 
 void SDHCALLcioWriter::openFile()
 {
-  m_Writer=lcio::LCFactory::getInstance()->createLCWriter();
+  m_Writer.reset(lcio::LCFactory::getInstance()->createLCWriter());
   m_Writer->setCompressionLevel(2);
   m_Writer->open(m_FileName, EVENT::LCIO::WRITE_NEW);
 }
@@ -18,20 +21,15 @@ void SDHCALLcioWriter::closeFile()
   m_Writer->close();
 }
 
-SDHCALLcioWriter::~SDHCALLcioWriter()
-{
-}
-
 void SDHCALLcioWriter::clear()
 {
-  if(m_LcEvent)delete m_LcEvent;
-  m_LcEvent=nullptr;
+  m_LcEvent.reset(nullptr);
   m_PrimaryParticleMap.clear();
 }
 
 void SDHCALLcioWriter::createLCEvent(const G4Event* event)
 {
-  m_LcEvent=new IMPL::LCEventImpl();
+  m_LcEvent=std::make_unique<IMPL::LCEventImpl>();
   m_LcEvent->setRunNumber(G4RunManager::GetRunManager()->GetCurrentRun()->GetRunID());
   m_LcEvent->setEventNumber(event->GetEventID());
   m_LcEvent->setTimeStamp(0);
@@ -43,7 +41,7 @@ void SDHCALLcioWriter::writeLCEvent()
   m_LcEvent->setWeight(0);
   m_LcEvent->addCollection(m_SimVec,"SDHCAL_Proto_EndCap");
   m_LcEvent->addCollection(m_ParticleCol,"primaryParticles");
-  m_Writer->writeEvent(m_LcEvent);
+  m_Writer->writeEvent(m_LcEvent.get());
 }
 
 void SDHCALLcioWriter::createPrimaryParticles(const G4Event* event)
