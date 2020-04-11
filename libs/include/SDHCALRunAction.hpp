@@ -16,15 +16,13 @@ class SDHCALRunAction : public G4UserRunAction
 public:
   SDHCALRunAction(const nlohmann::json& json);
   virtual ~SDHCALRunAction() = default ;
-  inline void setLcioFileName(const G4String& name) {lcioFileName = name;}
-  inline void setRootFileName(const G4String& name) {rootFileName = name;}
 		G4Run* GenerateRun() ;
 
 		virtual void BeginOfRunAction(const G4Run*) ;
 		virtual void EndOfRunAction(const G4Run*) ;
 
-		inline SDHCALLcioWriter* getWriter() const { return writer ; }
-
+  inline SDHCALLcioWriter* getLcioWriter() const { return m_Lcio;}
+  inline SDHCALRootWriter* getRootWriter() const { return m_Root;}
 
 
 		SDHCALRunAction(const SDHCALRunAction&) = delete ;
@@ -33,9 +31,7 @@ public:
 private:
   SDHCALRunAction() = delete ;
   nlohmann::json m_Json{};
-		SDHCALLcioWriter* writer = nullptr ;
-
-		G4String lcioFileName = "test.slcio" ;
-		G4String rootFileName = "test.root" ;
+  SDHCALLcioWriter* m_Lcio{nullptr};
+  SDHCALRootWriter* m_Root{nullptr};
 };
 
