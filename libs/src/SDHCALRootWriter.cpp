@@ -1,53 +1,40 @@
 #include "SDHCALRootWriter.hpp"
 
-#include <stdexcept>
-
-SDHCALRootWriter* SDHCALRootWriter::instance = nullptr ;
-
 SDHCALRootWriter::SDHCALRootWriter()
 {
-	if (instance)
-		throw std::logic_error("SDHCALRootWriter already exists") ;
-
-	instance = this ;
-
-	file = nullptr ;
-	tree = nullptr ;
 }
 
-void SDHCALRootWriter::createRootFile( std::string fileName )
+void SDHCALRootWriter::openFile()
 {
-	file = new TFile(fileName.c_str() , "RECREATE") ;
-	tree = new TTree("tree" , "tree") ;
-
-	tree->Branch("eventNumber" , &eventNumber) ;
-	tree->Branch("nHit" , &nHit) ;
-	tree->Branch("primaryID" , &primaryID) ;
-	tree->Branch("primaryEnergy" , &primaryEnergy) ;
-	tree->Branch("primaryPos" , &primaryPos , "primaryPos[3]/D") ;
-	tree->Branch("primaryMom" , &primaryMom , "primaryMom[3]/D") ;
-	tree->Branch("depositedEnergy" , &depositedEnergy) ;
-	tree->Branch("depositedEnergyNeutron" , &depositedEnergyNeutron) ;
-	tree->Branch("nNeutrons" , &nNeutrons) ;
-	tree->Branch("nPi0" , &nPi0) ;
-	tree->Branch("leakedEnergy" , &leakedEnergy) ;
-	tree->Branch("emFraction" , &emFraction) ;
-	tree->Branch("computingTime" , &computingTime) ;
-	tree->Branch("stepAngle" , "std::vector<double>" , &stepCosAngle) ;
-	tree->Branch("stepLength" , "std::vector<double>" , &stepLength) ;
-	tree->Branch("stepTime" , "std::vector<double>" , &stepTime) ;
+  m_File=new TFile(m_FileName.c_str(),"RECREATE");
+  m_Tree=new TTree("tree","tree");
+  m_Tree->Branch("eventNumber",&m_EventNumber);
+  m_Tree->Branch("nHit",&m_NHit);
+  m_Tree->Branch("primaryID",&m_PrimaryID);
+  m_Tree->Branch("primaryEnergy",&m_PrimaryEnergy);
+  m_Tree->Branch("primaryPos",&m_PrimaryPos , "primaryPos[3]/D");
+  m_Tree->Branch("primaryMom",&m_PrimaryMom , "primaryMom[3]/D");
+  m_Tree->Branch("depositedEnergy",&m_DepositedEnergy);
+  m_Tree->Branch("depositedEnergyNeutron",&m_DepositedEnergyNeutron);
+  m_Tree->Branch("nNeutrons",&m_NNeutrons);
+  m_Tree->Branch("nPi0",&m_NPi0);
+  m_Tree->Branch("leakedEnergy",&m_LeakedEnergy);
+  m_Tree->Branch("emFraction",&m_EmFraction);
+  m_Tree->Branch("computingTime",&m_ComputingTime);
+  m_Tree->Branch("stepAngle","std::vector<double>",&m_StepCosAngle);
+  m_Tree->Branch("stepLength","std::vector<double>",&m_StepLength);
+  m_Tree->Branch("stepTime","std::vector<double>",&m_StepTime);
 }
 
-void SDHCALRootWriter::closeRootFile()
+void SDHCALRootWriter::closeFile()
 {
-	file->cd() ;
-	tree->Write("tree") ;
-	file->Purge() ;
-	file->Close() ;
+  m_File->cd();
+  m_Tree->Write("m_Tree");
+  m_File->Purge();
+  m_File->Close();
 }
 
 void SDHCALRootWriter::fillTree()
 {
-	tree->Fill() ;
+  m_Tree->Fill();
 }
-

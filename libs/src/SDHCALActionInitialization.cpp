@@ -23,8 +23,6 @@ void SDHCALActionInitialization::Build() const
   // Primary generator action
   SetUserAction(new SDHCALPrimaryGeneratorAction(m_Json));
   SDHCALRunAction* runAction = new SDHCALRunAction(m_Json);
-  runAction->setLcioFileName(m_Json.value("outputFileName","output") + G4String(".slcio"));
-  runAction->setRootFileName(m_Json.value("outputFileName","output") + G4String(".root")) ;
 
   SetUserAction(runAction);
   SetUserAction ( new SDHCALEventAction(runAction) ) ;

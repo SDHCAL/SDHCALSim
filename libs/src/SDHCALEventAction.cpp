@@ -21,7 +21,7 @@ void SDHCALEventAction::BeginOfEventAction(const G4Event* event)
 	SDHCALTrackingAction::Instance()->reset() ;
 	SDHCALStackingAction::Instance()->reset() ;
 
-	SDHCALLcioWriter* lcioWriter = runAction->getWriter() ;
+	SDHCALLcioWriter* lcioWriter = runAction->getLcioWriter() ;
 	lcioWriter->clear() ;
 	lcioWriter->createLCEvent(event) ;
 }
@@ -31,8 +31,8 @@ void SDHCALEventAction::EndOfEventAction(const G4Event* event)
 	G4cout << "-------------------------------------------------------" << G4endl ;
 	G4cout << "Event " << event->GetEventID() << G4endl ;
 
-	SDHCALLcioWriter* lcioWriter = runAction->getWriter() ;
-	SDHCALRootWriter* rootWriter = SDHCALRootWriter::Instance() ;
+	SDHCALLcioWriter* lcioWriter = runAction->getLcioWriter() ;
+	SDHCALRootWriter* rootWriter = runAction->getRootWriter() ;
 
 	G4HCofThisEvent* col = event->GetHCofThisEvent() ;
 
