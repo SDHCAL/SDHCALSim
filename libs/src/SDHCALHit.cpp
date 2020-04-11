@@ -1,10 +1,10 @@
-#include "SDHCALHit.h"
+#include "SDHCALHit.hpp"
 
 #include <G4Step.hh>
 #include <G4TouchableHistory.hh>
-#include "SDHCALTrackingAction.h"
+#include "SDHCALTrackingAction.hpp"
 
-#include "SDHCALRPC.h"
+#include "SDHCALRPC.hpp"
 
 SDHCALHit::SDHCALHit(const G4Step* step , SDHCALRPC* _rpc)
 {

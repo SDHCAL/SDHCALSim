@@ -1,4 +1,4 @@
-#include "SDHCALLcioWriter.h"
+#include "SDHCALLcioWriter.hpp"
 
 SDHCALLcioWriter::SDHCALLcioWriter(std::string fileName)
 {

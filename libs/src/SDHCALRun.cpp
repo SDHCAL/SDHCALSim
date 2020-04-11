@@ -1,4 +1,4 @@
-#include "SDHCALRun.h"
+#include "SDHCALRun.hpp"
 
 SDHCALRun::SDHCALRun()
 {

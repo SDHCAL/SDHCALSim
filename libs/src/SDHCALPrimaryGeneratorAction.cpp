@@ -19,7 +19,7 @@
 #include <iterator>
 
 
-#include "MyRandom.h"
+#include "MyRandom.hpp"
 
 
 SDHCALPrimaryGeneratorAction::SDHCALPrimaryGeneratorAction()

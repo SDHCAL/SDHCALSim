@@ -1,7 +1,7 @@
 #pragma once
 
 #include "G4VUserDetectorConstruction.hh"
-#include "SDHCALSteppingAction.h"
+#include "SDHCALSteppingAction.hpp"
 
 #include "json.hpp"
 

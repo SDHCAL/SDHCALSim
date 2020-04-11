@@ -1,16 +1,15 @@
-#ifndef SDHCALEventAction_h
-#define SDHCALEventAction_h
+#pragma once
 
 #include <G4UserEventAction.hh>
 #include <G4SDManager.hh>
 
-#include "SDHCALRunAction.h"
-#include "SDHCALSteppingAction.h"
-#include "SDHCALTrackingAction.h"
-#include "SDHCALStackingAction.h"
+#include "SDHCALRunAction.hpp"
+#include "SDHCALSteppingAction.hpp"
+#include "SDHCALTrackingAction.hpp"
+#include "SDHCALStackingAction.hpp"
 #include "SDHCALPrimaryGeneratorAction.hpp"
-#include "SDHCALRPCSensitiveDetector.h"
-#include "SDHCALRootWriter.h"
+#include "SDHCALRPCSensitiveDetector.hpp"
+#include "SDHCALRootWriter.hpp"
 
 #include <ctime>
 
@@ -35,6 +34,4 @@ class SDHCALEventAction : public G4UserEventAction
 
 		SDHCALRunAction* runAction {} ;
 
-} ;
-
-#endif //SDHCALEventAction_h
+};

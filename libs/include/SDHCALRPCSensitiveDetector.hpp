@@ -1,5 +1,4 @@
-#ifndef SDHCALRPCSensitiveDetector_h
-#define SDHCALRPCSensitiveDetector_h
+#pragma once
 
 #include <G4VSensitiveDetector.hh>
 #include <G4HCofThisEvent.hh>
@@ -7,7 +6,7 @@
 
 #include <set>
 
-#include "SDHCALHit.h"
+#include "SDHCALHit.hpp"
 
 class G4Step ;
 class G4HCofThisEvent ;
@@ -42,6 +41,4 @@ class SDHCALRPCSensitiveDetector : public G4VSensitiveDetector
 		SDHCALRPC* rpc {} ;
 
 		SDHCALHit* currentHit {} ;
-} ;
-
-#endif //SDHCALRPCSensitiveDetector_h
+};

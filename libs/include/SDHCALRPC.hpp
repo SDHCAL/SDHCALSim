@@ -1,5 +1,4 @@
-#ifndef SDHCALRPC_h
-#define SDHCALRPC_h
+#pragma once
 
 #include <globals.hh>
 #include <G4Material.hh>
@@ -97,6 +96,4 @@ class SDHCALRPC
 
 		G4VPhysicalVolume* physiGasGap {} ;
 
-} ;
-
-#endif //SDHCALRPC_h
+};

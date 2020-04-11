@@ -1,4 +1,4 @@
-#include "SDHCALMaterials.h"
+#include "SDHCALMaterials.hpp"
 
 #include <G4NistManager.hh>
 

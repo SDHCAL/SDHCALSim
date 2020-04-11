@@ -1,4 +1,4 @@
-#include "SDHCALSteppingAction.h"
+#include "SDHCALSteppingAction.hpp"
 #include "SDHCALDetectorConstruction.hpp"
 
 #include <G4Step.hh>

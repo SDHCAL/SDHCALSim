@@ -1,4 +1,4 @@
-#include "SDHCALStackingAction.h"
+#include "SDHCALStackingAction.hpp"
 
 #include <G4Track.hh>
 

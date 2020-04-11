@@ -1,11 +1,10 @@
-#ifndef SDHCALHit_h
-#define SDHCALHit_h
+#pragma once
 
 #include <G4VHit.hh>
 #include <G4ThreeVector.hh>
 #include <G4THitsCollection.hh>
 #include <G4PrimaryParticle.hh>
-#include "SDHCALRPC.h"
+#include "SDHCALRPC.hpp"
 
 class G4Step ;
 
@@ -73,5 +72,3 @@ class SDHCALHit : public G4VHit
 } ;
 
 typedef G4THitsCollection<SDHCALHit> SDHCALHitCollection ;
-
-#endif //SDHCALHit_h

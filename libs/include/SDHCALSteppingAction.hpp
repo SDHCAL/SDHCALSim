@@ -1,5 +1,4 @@
-#ifndef SDHCALSteppingAction_h
-#define SDHCALSteppingAction_h
+#pragma once
 
 #include <G4Step.hh>
 #include <G4UserSteppingAction.hh>
@@ -96,6 +95,4 @@ class SDHCALSteppingAction : public G4UserSteppingAction
 		G4double lastStepTime = 0.0 ;
 
 		std::vector<StepInfo> steps = {} ;
-} ;
-
-#endif //SDHCALSteppingAction_h
+};

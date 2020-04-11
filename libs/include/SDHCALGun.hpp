@@ -1,5 +1,4 @@
-#ifndef SDHCALGun_h
-#define SDHCALGun_h
+#pragma once
 
 #include <G4ParticleGun.hh>
 
@@ -57,7 +56,4 @@ class SDHCALGun : public G4ParticleGun
 		void shootEnergy() ;
 
 		SDHCALGunOptions options ;
-} ;
-
-
-#endif //SDHCALGun_h
+};

@@ -1,5 +1,4 @@
-#ifndef SDHCALStackingAction_h
-#define SDHCALStackingAction_h
+#pragma once
 
 #include <G4UserStackingAction.hh>
 #include <G4UImessenger.hh>
@@ -38,6 +37,4 @@ class SDHCALStackingAction : public G4UserStackingAction
 		std::map<G4int , G4int> nParticlesPerId = {} ;
 
 		G4bool killNeutrons = false ;
-} ;
-
-#endif //LyonStackingAction_h
+};

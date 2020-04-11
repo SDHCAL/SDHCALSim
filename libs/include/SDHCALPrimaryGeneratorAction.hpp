@@ -5,8 +5,8 @@
 
 #include <G4ParticleTable.hh>
 
-#include "SDHCALPrimaryGeneratorActionMessenger.h"
-#include "SDHCALGun.h"
+#include "SDHCALPrimaryGeneratorActionMessenger.hpp"
+#include "SDHCALGun.hpp"
 
 #include "json.hpp"
 

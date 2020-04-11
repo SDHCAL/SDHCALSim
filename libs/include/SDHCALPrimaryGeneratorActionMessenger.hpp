@@ -1,5 +1,4 @@
-#ifndef SDHCALPrimaryGeneratorActionMessenger_h
-#define SDHCALPrimaryGeneratorActionMessenger_h
+#pragma once
 
 #include <G4UImessenger.hh>
 
@@ -46,6 +45,4 @@ class SDHCALPrimaryGeneratorActionMessenger : public G4UImessenger
 		G4UIcmdWithADouble* sigmaEnergyCmd {} ;
 		G4UIcmdWithADouble* minEnergyCmd {} ;
 		G4UIcmdWithADouble* maxEnergyCmd {} ;
-} ;
-
-#endif //SDHCALPrimaryGeneratorActionMessenger_h
+};
