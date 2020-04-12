@@ -6,7 +6,6 @@ set(INCLUDES
     include/SDHCALRootWriter.hpp
     include/SDHCALHit.hpp
     include/SDHCALLcioWriter.hpp
-    include/SDHCALPrimaryGeneratorActionMessenger.hpp
     include/SDHCALGun.hpp
     include/SDHCALRPCSensitiveDetector.hpp
     include/MyRandom.hpp
@@ -27,7 +26,6 @@ set(SRC
     src/SDHCALRootWriter.cpp
     src/SDHCALHit.cpp
     src/SDHCALLcioWriter.cpp
-    src/SDHCALPrimaryGeneratorActionMessenger.cpp
     src/SDHCALGun.cpp
     src/SDHCALRPCSensitiveDetector.cpp
     src/SDHCALTrackingAction.cpp
