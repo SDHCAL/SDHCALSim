@@ -5,7 +5,6 @@
 
 #include <G4ParticleTable.hh>
 
-#include "SDHCALPrimaryGeneratorActionMessenger.hpp"
 #include "SDHCALGun.hpp"
 
 #include "json.hpp"
@@ -59,7 +58,6 @@ class SDHCALPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 		void operator=(const SDHCALPrimaryGeneratorAction&) = delete ;
 
 	protected :
-		SDHCALPrimaryGeneratorActionMessenger* messenger {} ;
 
 		std::vector<SDHCALGun*> gunVec {} ;
 

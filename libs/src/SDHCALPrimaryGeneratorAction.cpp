@@ -25,7 +25,6 @@
 SDHCALPrimaryGeneratorAction::SDHCALPrimaryGeneratorAction()
 	: G4VUserPrimaryGeneratorAction()
 {
-	messenger = new SDHCALPrimaryGeneratorActionMessenger(this) ;
 
 	SDHCALGunOptions opt ;
 	opt.particleName = "proton" ;
@@ -34,7 +33,6 @@ SDHCALPrimaryGeneratorAction::SDHCALPrimaryGeneratorAction()
 
 SDHCALPrimaryGeneratorAction::SDHCALPrimaryGeneratorAction(const nlohmann::json& json):m_Json(json)
 {
-	messenger = new SDHCALPrimaryGeneratorActionMessenger(this) ;
 
 	if ( !m_Json.count("particuleGuns") )
 	{
@@ -50,7 +48,6 @@ SDHCALPrimaryGeneratorAction::SDHCALPrimaryGeneratorAction(const nlohmann::json&
 
 SDHCALPrimaryGeneratorAction::~SDHCALPrimaryGeneratorAction()
 {
-	delete messenger ;
 
 	for ( const auto& gun : gunVec )
 		delete gun ;
