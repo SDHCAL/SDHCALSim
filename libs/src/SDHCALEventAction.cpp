@@ -1,15 +1,16 @@
 #include "SDHCALEventAction.hpp"
 
-#include "SDHCALRun.hpp"
+#include "G4RunManager.hh"
 
-#include <G4RunManager.hh>
+#include "SDHCALRunAction.hpp"
+#include "SDHCALSteppingAction.hpp"
+#include "SDHCALTrackingAction.hpp"
+#include "SDHCALStackingAction.hpp"
+#include "SDHCALPrimaryGeneratorAction.hpp"
+#include "SDHCALHit.hpp"
 
-SDHCALEventAction::SDHCALEventAction(SDHCALRunAction* _runAction)
-	: G4UserEventAction()
+SDHCALEventAction::SDHCALEventAction(SDHCALRunAction* runAction):G4UserEventAction(),m_RunAction(runAction)
 {
-	runAction = _runAction ;
-	nEventsProcessed = 0 ;
-	averageTime = 0 ;
 }
 
 
@@ -21,7 +22,7 @@ void SDHCALEventAction::BeginOfEventAction(const G4Event* event)
 	SDHCALTrackingAction::Instance()->reset() ;
 	SDHCALStackingAction::Instance()->reset() ;
 
-	SDHCALLcioWriter* lcioWriter = runAction->getLcioWriter() ;
+	SDHCALLcioWriter* lcioWriter = m_RunAction->getLcioWriter() ;
 	lcioWriter->clear() ;
 	lcioWriter->createLCEvent(event) ;
 }
@@ -31,8 +32,8 @@ void SDHCALEventAction::EndOfEventAction(const G4Event* event)
 	G4cout << "-------------------------------------------------------" << G4endl ;
 	G4cout << "Event " << event->GetEventID() << G4endl ;
 
-	SDHCALLcioWriter* lcioWriter = runAction->getLcioWriter() ;
-	SDHCALRootWriter* rootWriter = runAction->getRootWriter() ;
+	SDHCALLcioWriter* lcioWriter = m_RunAction->getLcioWriter() ;
+	SDHCALRootWriter* rootWriter = m_RunAction->getRootWriter() ;
 
 	G4HCofThisEvent* col = event->GetHCofThisEvent() ;
 
@@ -51,7 +52,7 @@ void SDHCALEventAction::EndOfEventAction(const G4Event* event)
 	G4RunManager* runManager = G4RunManager::GetRunManager() ;
 	const SDHCALPrimaryGeneratorAction* anAction = dynamic_cast<const SDHCALPrimaryGeneratorAction*>( runManager->GetUserPrimaryGeneratorAction() ) ;
 
-	SDHCALGun* gun = anAction->getGunVec().at(0) ;
+	std::shared_ptr<SDHCALGun> gun = anAction->getGunVec().at(0) ;
 
 	G4double primaryEnergy = gun->GetParticleEnergy()/CLHEP::GeV ;
 	G4ThreeVector primaryMom = gun->GetParticleMomentumDirection() ;
