@@ -8,26 +8,11 @@
 
 #include "MyRandom.hpp"
 
-SDHCALGun::SDHCALGun()
-	: G4ParticleGun(1) ,
-	  options()
+SDHCALGun::SDHCALGun(nlohmann::json json):G4ParticleGun(1)
 {
-}
-
-SDHCALGun::SDHCALGun(const SDHCALGunOptions& opt)
-	: G4ParticleGun(1) ,
-	  options(opt)
-{
-}
-
-SDHCALGun::SDHCALGun(nlohmann::json json)
-	: G4ParticleGun(1) ,
-	  options()
-{
-	G4cout << "SDHCALGun::SDHCALGun()" << G4endl ;
-
-	if ( json.count("particleName") )
-		options.particleName = json.at("particleName").get<G4String>() ;
+  G4cout << "SDHCALGun::SDHCALGun()" << G4endl ;
+  if ( json.count("particleName") )
+		particleName = json.at("particleName").get<G4String>() ;
 
 	if ( json.count("energy") )
 	{
@@ -37,11 +22,11 @@ SDHCALGun::SDHCALGun(nlohmann::json json)
 		if ( !energyParam.count("option") )
 			G4cout << "WARNING : energy option not provided, assume fixed" << G4endl ;
 		else
-			options.gunOptionEnergyDistribution = energyParam.at("option").get<G4String>() ;
+			gunOptionEnergyDistribution = energyParam.at("option").get<G4String>() ;
 
 
-		if ( options.gunOptionEnergyDistribution == "uniform"
-			 || options.gunOptionEnergyDistribution == "forNN" )
+		if (gunOptionEnergyDistribution == "uniform"
+			 || gunOptionEnergyDistribution == "forNN" )
 		{
 			if ( !energyParam.count("min") || !energyParam.count("max") )
 			{
@@ -49,11 +34,11 @@ SDHCALGun::SDHCALGun(nlohmann::json json)
 				std::terminate() ;
 			}
 
-			options.minEnergy = energyParam.at("min").get<G4double>() * CLHEP::GeV ;
-			options.maxEnergy = energyParam.at("max").get<G4double>() * CLHEP::GeV ;
+			minEnergy = energyParam.at("min").get<G4double>() * CLHEP::GeV ;
+			maxEnergy = energyParam.at("max").get<G4double>() * CLHEP::GeV ;
 
-			assert ( options.minEnergy>0 && options.maxEnergy>0 ) ;
-			assert ( options.minEnergy < options.maxEnergy ) ;
+			assert ( minEnergy>0 && maxEnergy>0 ) ;
+			assert ( minEnergy < maxEnergy ) ;
 
 		}
 		else
@@ -61,17 +46,17 @@ SDHCALGun::SDHCALGun(nlohmann::json json)
 			if ( !energyParam.count("value") )
 				G4cout << "WARNING : energy value not provided, assume 30GeV" << G4endl ;
 			else
-				options.particleEnergy = energyParam.at("value").get<G4double>() * CLHEP::GeV ;
+				particleEnergy = energyParam.at("value").get<G4double>() * CLHEP::GeV ;
 
 
-			if ( options.gunOptionEnergyDistribution == "gaus" )
+			if ( gunOptionEnergyDistribution == "gaus" )
 			{
 				if ( !energyParam.count("sigma") )
 					G4cout << "WARNING : energy sigma not provided, assume 0.1GeV" << G4endl ;
 
-				options.sigmaEnergy = energyParam.at("sigma").get<G4double>() * CLHEP::GeV ;
+				sigmaEnergy = energyParam.at("sigma").get<G4double>() * CLHEP::GeV ;
 			}
-			else if ( options.gunOptionEnergyDistribution != "fixed" )
+			else if ( gunOptionEnergyDistribution != "fixed" )
 			{
 				G4cout << "ERROR : energy option " << energyParam.at("option") << " unknown" << G4endl ;
 				std::terminate() ;
@@ -82,9 +67,9 @@ SDHCALGun::SDHCALGun(nlohmann::json json)
 
 	if ( json.count("cosmic") )
 	{
-		options.cosmicGun = json.at("cosmic").get<G4bool>() ;
+		cosmicGun = json.at("cosmic").get<G4bool>() ;
 
-		if ( options.cosmicGun )
+		if ( cosmicGun )
 			return ;
 	}
 
@@ -94,37 +79,37 @@ SDHCALGun::SDHCALGun(nlohmann::json json)
 		auto vertexParam = json.at("vertex") ;
 
 		if ( vertexParam.count("time") )
-			options.time = vertexParam.at("time").get<G4double>() * CLHEP::ns ;
+			m_Time = vertexParam.at("time").get<G4double>() * CLHEP::ns ;
 
 
 		if ( !vertexParam.count("option") )
 			G4cout << "WARNING : position option not provided, assume fixed" << G4endl ;
 		else
-			options.gunOptionPosition = vertexParam.at("option").get<G4String>() ;
+			gunOptionPosition = vertexParam.at("option").get<G4String>() ;
 
 		if ( vertexParam.count("position") )
 		{
 			auto pos = vertexParam.at("position") ;
-			options.meanPositionX = pos.at("x").get<G4double>() * CLHEP::mm ;
-			options.meanPositionY = pos.at("y").get<G4double>() * CLHEP::mm ;
-			options.meanPositionZ = pos.at("z").get<G4double>() * CLHEP::mm ;
+			meanPositionX = pos.at("x").get<G4double>() * CLHEP::mm ;
+			meanPositionY = pos.at("y").get<G4double>() * CLHEP::mm ;
+			meanPositionZ = pos.at("z").get<G4double>() * CLHEP::mm ;
 		}
 
-		if ( options.gunOptionPosition == "gaus" )
+		if ( gunOptionPosition == "gaus" )
 		{
 			if ( !vertexParam.count("sigma") )
 				G4cout << "WARNING : position sigma not provided, assume 1mm" << G4endl ;
 
-			options.sigmaPosition = vertexParam.at("sigma").get<G4double>() * CLHEP::mm ;
+			sigmaPosition = vertexParam.at("sigma").get<G4double>() * CLHEP::mm ;
 		}
-		else if ( options.gunOptionPosition == "uniform" )
+		else if ( gunOptionPosition == "uniform" )
 		{
 			if ( !vertexParam.count("delta") )
 				G4cout << "WARNING : position delta not provided, assume 0mm" << G4endl ;
 
-			options.uniformMaxPosition = vertexParam.at("delta").get<G4double>() * CLHEP::mm ;
+			uniformMaxPosition = vertexParam.at("delta").get<G4double>() * CLHEP::mm ;
 		}
-		else if ( options.gunOptionPosition != "fixed" )
+		else if ( gunOptionPosition != "fixed" )
 		{
 			G4cout << "ERROR : energy option " << vertexParam.at("option") << " unknown" << G4endl ;
 			std::terminate() ;
@@ -139,23 +124,23 @@ SDHCALGun::SDHCALGun(nlohmann::json json)
 		if ( !momentumParam.count("option") )
 			G4cout << "WARNING : momentum option not provided, assume fixed" << G4endl ;
 		else
-			options.gunOptionMomentum = momentumParam.at("option").get<G4String>() ;
+			gunOptionMomentum = momentumParam.at("option").get<G4String>() ;
 
 		if ( momentumParam.count("direction") )
 		{
 			auto pos = momentumParam.at("direction") ;
-			options.momentumPhi = pos.at("phi").get<G4double>() ;
-			options.momentumTheta = pos.at("theta").get<G4double>() ;
+			momentumPhi = pos.at("phi").get<G4double>() ;
+			momentumTheta = pos.at("theta").get<G4double>() ;
 		}
 
-		if ( options.gunOptionMomentum == "gaus" )
+		if (gunOptionMomentum == "gaus" )
 		{
 			if ( !momentumParam.count("sigma") )
 				G4cout << "WARNING : momentum sigma not provided, assume 0.1" << G4endl ;
 
-			options.gaussianMomentumSigma = momentumParam.at("sigma").get<G4double>() ;
+			gaussianMomentumSigma = momentumParam.at("sigma").get<G4double>() ;
 		}
-		else if ( options.gunOptionMomentum != "fixed" )
+		else if ( gunOptionMomentum != "fixed" )
 		{
 			G4cout << "ERROR : momentum option " << momentumParam.at("option") << " unknown" << G4endl ;
 			std::terminate() ;
@@ -165,9 +150,9 @@ SDHCALGun::SDHCALGun(nlohmann::json json)
 
 void SDHCALGun::generatePrimary(G4Event* event)
 {
-	SetParticleDefinition( G4ParticleTable::GetParticleTable()->FindParticle( options.particleName ) ) ;
+	SetParticleDefinition( G4ParticleTable::GetParticleTable()->FindParticle( particleName ) ) ;
 
-	if ( options.cosmicGun )
+	if ( cosmicGun )
 		shootForCosmic() ;
 	else
 	{
@@ -176,7 +161,7 @@ void SDHCALGun::generatePrimary(G4Event* event)
 	}
 	shootEnergy() ;
 
-	SetParticleTime( options.time ) ;
+	SetParticleTime( m_Time ) ;
 
 	GeneratePrimaryVertex(event) ;
 }
@@ -190,25 +175,25 @@ void SDHCALGun::shootPosition()
 
 	MyRandom* rand = MyRandom::Instance() ;
 
-	if ( options.gunOptionPosition == G4String("fixed") )
+	if ( gunOptionPosition == G4String("fixed") )
 	{
-		X = options.meanPositionX * CLHEP::mm ;
-		Y = options.meanPositionY * CLHEP::mm ;
-		Z = options.meanPositionZ * CLHEP::mm ;
+		X = meanPositionX * CLHEP::mm ;
+		Y = meanPositionY * CLHEP::mm ;
+		Z = meanPositionZ * CLHEP::mm ;
 	}
-	else if ( options.gunOptionPosition == G4String("uniform") )
+	else if ( gunOptionPosition == G4String("uniform") )
 	{
-		X = rand->Uniform(options.meanPositionX - options.uniformMaxPosition , options.meanPositionX + options.uniformMaxPosition) * CLHEP::mm ;
-		Y = rand->Uniform(options.meanPositionY - options.uniformMaxPosition , options.meanPositionY + options.uniformMaxPosition) * CLHEP::mm ;
-		Z = options.meanPositionZ * CLHEP::mm ;
+		X = rand->Uniform(meanPositionX - uniformMaxPosition , meanPositionX + uniformMaxPosition) * CLHEP::mm ;
+		Y = rand->Uniform(meanPositionY - uniformMaxPosition , meanPositionY + uniformMaxPosition) * CLHEP::mm ;
+		Z = meanPositionZ * CLHEP::mm ;
 	}
-	else if ( options.gunOptionPosition == G4String("gaus") )
+	else if ( gunOptionPosition == G4String("gaus") )
 	{
-		X = rand->Gaus(options.meanPositionX , options.sigmaPosition) * CLHEP::mm ;
-		Y = rand->Gaus(options.meanPositionY , options.sigmaPosition) * CLHEP::mm ;
-		Z = options.meanPositionZ * CLHEP::mm ;
+		X = rand->Gaus(meanPositionX , sigmaPosition) * CLHEP::mm ;
+		Y = rand->Gaus(meanPositionY , sigmaPosition) * CLHEP::mm ;
+		Z = meanPositionZ * CLHEP::mm ;
 	}
-	else if ( options.gunOptionPosition == G4String("cosmic") )
+	else if ( gunOptionPosition == G4String("cosmic") )
 	{
 		G4cout << " ERROR : cosmic not in shootPosition()" << G4endl ;
 		throw ;
@@ -224,18 +209,18 @@ void SDHCALGun::shootPosition()
 void SDHCALGun::shootMomentum()
 {
 	double X , Y , Z ;
-	X = std::cos(options.momentumPhi)*std::sin(options.momentumTheta) ;
-	Y = std::sin(options.momentumPhi)*std::sin(options.momentumTheta) ;
-	Z = std::cos(options.momentumTheta) ;
+	X = std::cos(momentumPhi)*std::sin(momentumTheta) ;
+	Y = std::sin(momentumPhi)*std::sin(momentumTheta) ;
+	Z = std::cos(momentumTheta) ;
 
 	MyRandom* rand = MyRandom::Instance() ;
-	if ( options.gunOptionMomentum == G4String("fixed") )
+	if (gunOptionMomentum == G4String("fixed") )
 	{
 	}
-	else if ( options.gunOptionMomentum == G4String("gaus") )
+	else if (gunOptionMomentum == G4String("gaus") )
 	{
 		double phi = rand->Uniform(0.0 , 2*M_PI) ;
-		double theta = rand->Gaus(0.0 , options.gaussianMomentumSigma) ;
+		double theta = rand->Gaus(0.0 , gaussianMomentumSigma) ;
 		if (theta < 0)
 		{
 			theta = -theta ;
@@ -289,33 +274,33 @@ void SDHCALGun::shootForCosmic() //HardCoded
 
 void SDHCALGun::shootEnergy()
 {
-	if ( options.gunOptionEnergyDistribution == G4String("fixed") )
+	if ( gunOptionEnergyDistribution == G4String("fixed") )
 	{
-		SetParticleEnergy( options.particleEnergy ) ;
+		SetParticleEnergy( particleEnergy ) ;
 		return ;
 	}
 
-	double shoot = options.particleEnergy ;
+	double shoot = particleEnergy ;
 	MyRandom* rand = MyRandom::Instance() ;
-	if ( options.gunOptionEnergyDistribution == G4String("gaus") )
+	if ( gunOptionEnergyDistribution == G4String("gaus") )
 	{
-		shoot = rand->Gaus(options.particleEnergy , options.sigmaEnergy) ;
+		shoot = rand->Gaus(particleEnergy , sigmaEnergy) ;
 		if ( shoot < 0 )
 			shoot = -shoot ;
 	}
-	else if ( options.gunOptionEnergyDistribution == G4String("uniform") )
+	else if ( gunOptionEnergyDistribution == G4String("uniform") )
 	{
-		shoot = rand->Uniform(options.minEnergy , options.maxEnergy) ;
+		shoot = rand->Uniform(minEnergy , maxEnergy) ;
 	}
-	else if ( options.gunOptionEnergyDistribution == G4String("forNN") ) //shoot in 1/x distrbution
+	else if ( gunOptionEnergyDistribution == G4String("forNN") ) //shoot in 1/x distrbution
 	{
-		double I = std::log(options.maxEnergy/options.minEnergy) ;
+		double I = std::log(maxEnergy/minEnergy) ;
 		double x = rand->Uniform(0.0 , 1.0) ;
-		shoot = options.minEnergy * std::exp(x*I) ;
+		shoot = minEnergy * std::exp(x*I) ;
 	}
 	else
 	{
-		G4cout << "EnergyDistribution option " << options.gunOptionEnergyDistribution << " unknown : put to defaut (50 GeV)" << G4endl ;
+		G4cout << "EnergyDistribution option " << gunOptionEnergyDistribution << " unknown : put to defaut (50 GeV)" << G4endl ;
 	}
 
 	SetParticleEnergy( shoot ) ;
