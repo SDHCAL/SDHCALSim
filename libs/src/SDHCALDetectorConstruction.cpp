@@ -49,12 +49,12 @@ G4VPhysicalVolume* SDHCALDetectorConstruction::Construct()
 	G4double worldSize = 10*CLHEP::m ;
 	buildSDHCALMaterials() ;
 
-	G4NistManager* man = G4NistManager::Instance() ;
-	G4Material* defaultMaterial = man->FindOrBuildMaterial("G4_Galactic") ;
-	G4Material* airMaterial = man->FindOrBuildMaterial("G4_AIR") ;
+  G4NistManager* man = G4NistManager::Instance();
+  G4Material* defaultMaterial = man->FindOrBuildMaterial("G4_Galactic");
+  G4Material* airMaterial = man->FindOrBuildMaterial("G4_AIR");
 	G4Material* absorberMaterial = G4Material::GetMaterial("SDHCAL_Steel304L" , true) ;
-	if ( oldConfig ) //to reproduce old results
-		absorberMaterial = G4Material::GetMaterial("SDHCAL_Steel304L_Old" , true) ;
+  //to reproduce old results
+  if ( oldConfig ) absorberMaterial = G4Material::GetMaterial("SDHCAL_Steel304L_Old" , true) ;
 
 
 	// World
