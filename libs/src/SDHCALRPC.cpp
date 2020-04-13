@@ -27,7 +27,6 @@
 
 #include "SDHCALRPCSensitiveDetector.hpp"
 
-std::set<SDHCALRPC*> SDHCALRPC::allTheRPC ;
 
 SDHCALRPC* SDHCALRPC::buildStandardRPC(G4int _id , G4int _nPadX , G4int _nPadY , G4double _cellSize)
 {
@@ -111,13 +110,6 @@ SDHCALRPC::SDHCALRPC(G4int _id , const SDHCALRPCGeom& _geom)
 	}
 
 	build(_geom) ;
-
-	allTheRPC.insert(this) ;
-}
-SDHCALRPC::~SDHCALRPC()
-{
-	std::set<SDHCALRPC*>::iterator it = allTheRPC.find(this) ;
-	allTheRPC.erase(it) ;
 }
 
 void SDHCALRPC::build(const SDHCALRPCGeom& _geom)
