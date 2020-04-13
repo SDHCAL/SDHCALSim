@@ -9,7 +9,7 @@
 #include "SDHCALPrimaryGeneratorAction.hpp"
 #include "SDHCALHit.hpp"
 
-SDHCALEventAction::SDHCALEventAction(SDHCALRunAction* runAction,SDHCALSteppingAction* steppingAction,SDHCALStackingAction* stackingAction):G4UserEventAction(),m_RunAction(runAction),m_SteppingAction(steppingAction),m_StackingAction(stackingAction)
+SDHCALEventAction::SDHCALEventAction(SDHCALRunAction* runAction,SDHCALSteppingAction* steppingAction,SDHCALStackingAction* stackingAction,SDHCALTrackingAction* trackingAction):G4UserEventAction(),m_RunAction(runAction),m_SteppingAction(steppingAction),m_StackingAction(stackingAction),m_TrackingAction(trackingAction)
 {
 }
 
@@ -18,7 +18,7 @@ void SDHCALEventAction::BeginOfEventAction(const G4Event* event)
 {
   beginClock = clock() ;
   m_SteppingAction->reset();
-  SDHCALTrackingAction::Instance()->reset() ;
+  m_TrackingAction->reset();
   m_StackingAction->reset();
 
   SDHCALLcioWriter* lcioWriter = m_RunAction->getLcioWriter() ;
@@ -42,8 +42,14 @@ void SDHCALEventAction::EndOfEventAction(const G4Event* event)
 		SDHCALHitCollection* hCol = dynamic_cast<SDHCALHitCollection*>( col->GetHC(i) ) ;
 		std::vector<SDHCALHit*> hitVec = *( hCol->GetVector() ) ;
 		hits.insert(hits.end() , hitVec.begin() , hitVec.end() ) ;
+    
 	}
 
+	for(std::size_t i=0;i!=hits.size();++i)
+  {
+    hits[i]->setPrimaryID(m_TrackingAction->getPrimaryParent(hits[i]->getTrackID()));
+  }
+	
 	lcioWriter->createPrimaryParticles(event) ;
 
 	lcioWriter->createSimCalorimeterHits(hits) ;
