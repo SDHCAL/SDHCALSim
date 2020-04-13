@@ -3,20 +3,8 @@
 
 #include <G4Track.hh>
 
-#include <stdexcept>
 
-SDHCALTrackingAction* SDHCALTrackingAction::instance = nullptr ;
-
-SDHCALTrackingAction::SDHCALTrackingAction()
-	: G4UserTrackingAction()
-{
-	if (instance)
-		throw std::logic_error("SDHCALTrackingAction already exists") ;
-
-	instance = this ;
-
-	G4cout << "Create SDHCALTrackingAction" << G4endl ;
-}
+SDHCALTrackingAction::SDHCALTrackingAction(): G4UserTrackingAction(){}
 
 void SDHCALTrackingAction::reset()
 {
@@ -36,9 +24,9 @@ void SDHCALTrackingAction::PreUserTrackingAction(const G4Track* track)
 	}
 }
 
-G4int SDHCALTrackingAction::getPrimaryParent(const G4Track* track) const
+G4int SDHCALTrackingAction::getPrimaryParent(const G4int& trackID) const
 {
-	G4int parent = track->GetTrackID() ;
+	G4int parent = trackID;
 
 	while ( true )
 	{

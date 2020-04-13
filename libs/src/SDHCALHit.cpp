@@ -2,7 +2,6 @@
 
 #include <G4Step.hh>
 #include <G4TouchableHistory.hh>
-#include "SDHCALTrackingAction.hpp"
 
 #include "SDHCALRPC.hpp"
 
@@ -29,7 +28,9 @@ SDHCALHit::SDHCALHit(const G4Step* step , SDHCALRPC* _rpc)
 	charge = step->GetTrack()->GetDynamicParticle()->GetCharge() ;
 	trackStatus = step->GetTrack()->GetTrackStatus() ;
 
-	primaryID = SDHCALTrackingAction::Instance()->getPrimaryParent( step->GetTrack() ) ;
+ // std::cout<<"LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL"<<primaryID<<std::endl;
+  
+
 
 	//I , J and coordInPad are computed when hit is finalized
 }

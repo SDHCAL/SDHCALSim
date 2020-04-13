@@ -29,10 +29,12 @@ void SDHCALActionInitialization::Build() const
   
   SDHCALSteppingAction* steppingAction=new SDHCALSteppingAction();
   SetUserAction(steppingAction);
-  SetUserAction ( SDHCALTrackingAction::Instance() ) ;
+  
+  SDHCALTrackingAction* trackingAction=new SDHCALTrackingAction();
+  SetUserAction(trackingAction);
   
   SDHCALStackingAction* stackingAction=new SDHCALStackingAction(m_Json);
   SetUserAction(stackingAction);
   
-  SetUserAction(new SDHCALEventAction(runAction,steppingAction,stackingAction));
+  SetUserAction(new SDHCALEventAction(runAction,steppingAction,stackingAction,trackingAction));
 }
