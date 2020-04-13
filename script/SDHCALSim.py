@@ -30,16 +30,16 @@ class Particle :
 
 
 class Params :
-	def __init__(self) :
-		self.physicsList = "FTFP_BERT"
-
-		self.nEvent = 100
-		self.seed = 0
-		self.particleList = []
-		self.rpcType = "normal"
-		self.oldConfig = False
-		self.outputFileName = "output"
-		self.killNeutrons = False
+  def __init__(self) :
+    self.MultiThread = True
+    self.physicsList = "FTFP_BERT"
+    self.nEvent = 100
+    self.seed = 0
+    self.particleList = []
+    self.rpcType = "normal"
+    self.oldConfig = False
+    self.outputFileName = "output"
+    self.killNeutrons = False
 
 
 
@@ -59,53 +59,57 @@ def particleConfig(particle) :
 
 def launch(a) :
 
-	pid = os.getpid()
-	jsonFileName = str(pid) + '.json'
-	
-	oldConfigBool = "false"
-	if a.oldConfig :
-		oldConfigBool = "true"
+  pid = os.getpid()
+  jsonFileName = str(pid) + '.json'
 
-	killNeutronsBool = "false"
-	if a.killNeutrons :
-		killNeutronsBool = "true"	
+  oldConfigBool = "false"
+  if a.oldConfig :
+    oldConfigBool = "true"
 
-	jsonFileContent = '''
-	{
-		"outputFileName" : "'''+ a.outputFileName +'''",
-		"physicsList" : "'''+ a.physicsList +'''",
-		"nEvents" : '''+ str(a.nEvent) +''',
-		"seed" : '''+ str(a.seed) +''',
-		"killNeutrons" : ''' + killNeutronsBool + ''',
-		
-		"detectorConfig" :
-		{
-			"rpcType" : "'''+ a.rpcType +'''",
-			"oldConfig" : ''' + oldConfigBool + '''
-		},
+  killNeutronsBool = "false"
+  if a.killNeutrons : 
+    killNeutronsBool = "true"
+  
+  MultiThreadBool = "false"
+  if a.MultiThread : 
+    MultiThreadBool = "true"
 
-		"particuleGuns" :
-		['''
+  jsonFileContent = '''
+  {
+    "outputFileName" : "'''+ a.outputFileName +'''",
+    "physicsList" : "'''+ a.physicsList +'''",
+    "nEvents" : '''+ str(a.nEvent) +''',
+    "seed" : '''+ str(a.seed) +''',
+    "killNeutrons" : ''' + killNeutronsBool + ''',
+    "MultiThread" : ''' + MultiThreadBool + ''',
+    "detectorConfig" :
+    {
+      "rpcType" : "'''+ a.rpcType +'''",
+      "oldConfig" : ''' + oldConfigBool + '''
+    },
 
-
-	for particle in a.particleList[:-1] :
-		jsonFileContent = jsonFileContent + particleConfig(particle) + ','
-
-	jsonFileContent = jsonFileContent + particleConfig(a.particleList[-1])
+    "particuleGuns" :
+    ['''
 
 
-	jsonFileContent = jsonFileContent + '''
-		]
-	}'''
+  for particle in a.particleList[:-1] :
+    jsonFileContent = jsonFileContent + particleConfig(particle) + ','
+
+  jsonFileContent = jsonFileContent + particleConfig(a.particleList[-1])
 
 
-	jsonFile = open(jsonFileName , 'w')
-	jsonFile.write(jsonFileContent)
-	jsonFile.close()
+  jsonFileContent = jsonFileContent + '''
+    ]
+  }'''
 
 
-	simuExe = os.environ["SIMEXE"]
+  jsonFile = open(jsonFileName , 'w')
+  jsonFile.write(jsonFileContent)
+  jsonFile.close()
 
-	os.system(simuExe + ' ' + jsonFileName)
 
-	os.system('rm ' + jsonFileName)
+  simuExe = os.environ["SIMEXE"]
+
+  os.system(simuExe + ' ' + jsonFileName)
+
+  os.system('rm ' + jsonFileName)
