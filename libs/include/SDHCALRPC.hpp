@@ -40,7 +40,7 @@ class SDHCALRPC
 
 	public :
 		SDHCALRPC(G4int _id , const SDHCALRPCGeom& _geom) ;
-		virtual ~SDHCALRPC() ;
+		virtual ~SDHCALRPC()=default;
 
 		G4LogicalVolume* getLogicRPC() { return logicRPC ; }
 		G4VPhysicalVolume* getPhysicRPC() { return physicRPC ; }
@@ -71,8 +71,7 @@ class SDHCALRPC
 		SDHCALRPC(const SDHCALRPC&) = delete ;
 		void operator=(const SDHCALRPC&) = delete ;
 
-	protected :
-		static std::set<SDHCALRPC*> allTheRPC ;
+private:
 
 		virtual void build(const SDHCALRPCGeom& _geom) ;
 
