@@ -52,17 +52,17 @@ int main(int argc , char** argv)
   CLHEP::HepRandom::setTheSeed(json.value("seed",0)+1);
 
   G4PhysListFactory* physFactory = new G4PhysListFactory();
-
+  SDHCALDetectorConstruction* detectorConstruction=new SDHCALDetectorConstruction(json);
   #ifdef G4MULTITHREADED
     if(json.value("MultiThread",false))
     {
       std::unique_ptr<G4MTRunManager> runManagerMT{std::make_unique<G4MTRunManager>()};
       runManagerMT->SetNumberOfThreads(json.value("NbrThreads",4));
       // Detector construction
-      runManagerMT->SetUserInitialization(new SDHCALDetectorConstruction(json));
+      runManagerMT->SetUserInitialization(detectorConstruction);
       // Physics list
       runManagerMT->SetUserInitialization(physFactory->GetReferencePhysList(json.value("physicsList","FTFP_BERT")));
-      runManagerMT->SetUserInitialization(new SDHCALActionInitialization(json));
+      runManagerMT->SetUserInitialization(new SDHCALActionInitialization(json,detectorConstruction));
       runManagerMT->Initialize() ;
       runManagerMT->BeamOn(json.value("nEvents",1));
     }
@@ -71,10 +71,10 @@ int main(int argc , char** argv)
   #endif
       std::unique_ptr<G4RunManager> runManager{std::make_unique<G4RunManager>()};
       // Detector construction
-      runManager->SetUserInitialization(new SDHCALDetectorConstruction(json));
+      runManager->SetUserInitialization(detectorConstruction);
       // Physics list
       runManager->SetUserInitialization(physFactory->GetReferencePhysList(json.value("physicsList","FTFP_BERT")));
-      runManager->SetUserInitialization(new SDHCALActionInitialization(json));
+      runManager->SetUserInitialization(new SDHCALActionInitialization(json,detectorConstruction));
       runManager->Initialize() ;
       runManager->BeamOn(json.value("nEvents",1));
   #ifdef G4MULTITHREADED

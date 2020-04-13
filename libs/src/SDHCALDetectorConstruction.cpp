@@ -15,9 +15,6 @@
 #include "SDHCALRPC.hpp"
 
 
-G4double SDHCALDetectorConstruction::sizeX ;
-G4double SDHCALDetectorConstruction::sizeZ ;
-
 SDHCALDetectorConstruction::SDHCALDetectorConstruction(const nlohmann::json& json):m_Json(json)
 {
 	if (m_Json.count("detectorConfig") )
@@ -46,14 +43,9 @@ SDHCALDetectorConstruction::SDHCALDetectorConstruction(const nlohmann::json& jso
 
 G4VPhysicalVolume* SDHCALDetectorConstruction::Construct()
 {
-	G4int nLayers = 48 ;
-	G4int nPadX = 96 ;
-	G4int nPadY = 96 ;
-	G4double padSize = 10.408*CLHEP::mm ;
 
-	G4double caloSizeX = nPadX*padSize ;
-	G4double caloSizeY = nPadY*padSize ;
-
+	G4double caloSizeX = {nPadX*padSizeX} ;
+	G4double caloSizeY = {nPadY*padSizeY} ;
 	G4double worldSize = 10*CLHEP::m ;
 	buildSDHCALMaterials() ;
 
@@ -76,12 +68,12 @@ G4VPhysicalVolume* SDHCALDetectorConstruction::Construct()
 		if ( rpcType == kNormalRPC )
 		{
 			if ( oldConfig )
-				rpcVec.push_back( SDHCALRPC::buildOldStandardRPC(i , nPadX , nPadY , padSize) ) ;
+				rpcVec.push_back( SDHCALRPC::buildOldStandardRPC(i , nPadX , nPadY , padSizeX) ) ;
 			else
-				rpcVec.push_back( SDHCALRPC::buildStandardRPC(i , nPadX , nPadY , padSize) ) ;		
+				rpcVec.push_back( SDHCALRPC::buildStandardRPC(i , nPadX , nPadY , padSizeX) ) ;		
 		}
 		else if ( rpcType == kWithScintillatorRPC )
-			rpcVec.push_back( SDHCALRPC::buildWithScintillatorRPC(i , nPadX , nPadY , padSize) ) ;
+			rpcVec.push_back( SDHCALRPC::buildWithScintillatorRPC(i , nPadX , nPadY , padSizeX) ) ;
 	}
 
 	G4double RPCSizeZ = rpcVec.at(0)->getSizeZ() ;
@@ -92,11 +84,7 @@ G4VPhysicalVolume* SDHCALDetectorConstruction::Construct()
 	if ( oldConfig ) //to reproduce old results
 		airGapSizeZ = 0*CLHEP::mm ;
 
-	G4double caloSizeZ = nLayers*( absorberStructureSizeZ + 2*airGapSizeZ + RPCSizeZ ) ;
-
-	sizeX = caloSizeX ;
-	sizeZ = caloSizeZ ;
-
+	caloSizeZ = nLayers*( absorberStructureSizeZ + 2*airGapSizeZ + RPCSizeZ ) ;
 	//calorimeter volume
 	G4Box* solidCalorimeter = new G4Box("Calorimeter" , caloSizeX/2 , caloSizeY/2 , caloSizeZ/2) ;
 	G4LogicalVolume* logicCalorimeter = new G4LogicalVolume(solidCalorimeter , airMaterial , "Calorimeter") ;

@@ -18,13 +18,21 @@ public :
   ~SDHCALDetectorConstruction() = default ;
 
   G4VPhysicalVolume* Construct() ;
-
-  static G4double sizeX ;
-  static G4double sizeZ ;
+  G4double getCaloSizeX(){return caloSizeX;}
+  G4double getCaloSizeY(){return caloSizeY;}
+  G4double getCaloSizeZ(){return caloSizeZ;}
 
 protected :
   RPCType rpcType = kNormalRPC ;
   G4bool oldConfig = false ;
   nlohmann::json m_Json{};
+  	G4int nLayers = 48 ;
+	G4int nPadX = 96 ;
+	G4int nPadY = 96 ;
+	G4double padSizeX = 10.408*CLHEP::mm ;
+  G4double padSizeY = 10.408*CLHEP::mm ;
+	G4double caloSizeX = {nPadX*padSizeX} ;
+	G4double caloSizeY = {nPadY*padSizeY} ;
+  G4double caloSizeZ ={0.0};
 };
 

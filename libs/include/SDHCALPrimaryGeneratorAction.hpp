@@ -8,10 +8,12 @@
 
 #include<memory>
 
+class SDHCALDetectorConstruction;
+
 class SDHCALPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
 public:
-  SDHCALPrimaryGeneratorAction(const nlohmann::json& json);
+  SDHCALPrimaryGeneratorAction(const nlohmann::json& json,SDHCALDetectorConstruction* detector);
   virtual ~SDHCALPrimaryGeneratorAction()=default;
   void print() const;
   virtual void GeneratePrimaries(G4Event* event);

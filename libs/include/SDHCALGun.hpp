@@ -4,15 +4,18 @@
 
 #include "json.hpp"
 
+class SDHCALDetectorConstruction;
+
 class SDHCALGun : public G4ParticleGun
 {
 public:
   SDHCALGun()=default;
-  SDHCALGun(nlohmann::json json) ;
+  SDHCALGun(nlohmann::json json,SDHCALDetectorConstruction*) ;
   ~SDHCALGun() = default ;
   void generatePrimary(G4Event* event) ;
 
 private:
+  SDHCALDetectorConstruction* m_Detector{nullptr};
   void shootPosition();
   void shootMomentum();
   void shootForCosmic();
