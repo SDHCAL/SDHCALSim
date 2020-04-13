@@ -58,6 +58,7 @@ int main(int argc , char** argv)
     {
       std::unique_ptr<G4MTRunManager> runManagerMT{std::make_unique<G4MTRunManager>()};
       runManagerMT->SetNumberOfThreads(json.value("NbrThreads",4));
+      G4cout<<"**** Geant4 running in MultiThread mode ("<<json.value("NbrThreads",4)<<" threads)*****"<<G4endl;
       // Detector construction
       runManagerMT->SetUserInitialization(detectorConstruction);
       // Physics list
