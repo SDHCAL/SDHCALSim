@@ -10,7 +10,6 @@
 
 #include "SDHCALRPC.hpp"
 
-std::set<SDHCALRPCSensitiveDetector*> SDHCALRPCSensitiveDetector::sensitiveDetectorVec ;
 
 SDHCALRPCSensitiveDetector::SDHCALRPCSensitiveDetector(G4String name , SDHCALRPC* _rpc)
 	: G4VSensitiveDetector(name)
@@ -19,13 +18,6 @@ SDHCALRPCSensitiveDetector::SDHCALRPCSensitiveDetector(G4String name , SDHCALRPC
 	ID = rpc->getID() ;
 	std::stringstream colName ; colName << "HitsRPC" << ID ;
 	collectionName.insert( colName.str() ) ;
-
-	sensitiveDetectorVec.insert(this) ;
-}
-SDHCALRPCSensitiveDetector::~SDHCALRPCSensitiveDetector()
-{
-	std::set<SDHCALRPCSensitiveDetector*>::iterator it = sensitiveDetectorVec.find(this) ;
-	sensitiveDetectorVec.erase(it) ;
 }
 
 void SDHCALRPCSensitiveDetector::Initialize(G4HCofThisEvent* HCE)
