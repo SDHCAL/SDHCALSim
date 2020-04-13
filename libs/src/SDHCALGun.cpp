@@ -4,11 +4,12 @@
 
 #include <iterator>
 
-#include "MyRandom.hpp"
 #include "SDHCALDetectorConstruction.hpp"
+#include "Randomize.hh"
 
 SDHCALGun::SDHCALGun(nlohmann::json json,SDHCALDetectorConstruction* detector):G4ParticleGun(1),m_Detector(detector)
 {
+  m_Rand.setSeed(CLHEP::HepRandom::getTheSeed());
   G4cout << "SDHCALGun::SDHCALGun()" << G4endl ;
   if ( json.count("particleName") )
 		particleName = json.at("particleName").get<G4String>() ;
@@ -172,8 +173,6 @@ void SDHCALGun::shootPosition()
 	Y = 0.0*CLHEP::m ;
 	Z = -20*CLHEP::mm ;
 
-	MyRandom* rand = MyRandom::Instance() ;
-
 	if ( gunOptionPosition == G4String("fixed") )
 	{
 		X = meanPositionX * CLHEP::mm ;
@@ -182,14 +181,14 @@ void SDHCALGun::shootPosition()
 	}
 	else if ( gunOptionPosition == G4String("uniform") )
 	{
-		X = rand->Uniform(meanPositionX - uniformMaxPosition , meanPositionX + uniformMaxPosition) * CLHEP::mm ;
-		Y = rand->Uniform(meanPositionY - uniformMaxPosition , meanPositionY + uniformMaxPosition) * CLHEP::mm ;
+		X = m_Rand.Uniform(meanPositionX - uniformMaxPosition , meanPositionX + uniformMaxPosition) * CLHEP::mm ;
+		Y = m_Rand.Uniform(meanPositionY - uniformMaxPosition , meanPositionY + uniformMaxPosition) * CLHEP::mm ;
 		Z = meanPositionZ * CLHEP::mm ;
 	}
 	else if ( gunOptionPosition == G4String("gaus") )
 	{
-		X = rand->Gaus(meanPositionX , sigmaPosition) * CLHEP::mm ;
-		Y = rand->Gaus(meanPositionY , sigmaPosition) * CLHEP::mm ;
+		X = m_Rand.Gaus(meanPositionX , sigmaPosition) * CLHEP::mm ;
+		Y = m_Rand.Gaus(meanPositionY , sigmaPosition) * CLHEP::mm ;
 		Z = meanPositionZ * CLHEP::mm ;
 	}
 	else if ( gunOptionPosition == G4String("cosmic") )
@@ -212,14 +211,13 @@ void SDHCALGun::shootMomentum()
 	Y = std::sin(momentumPhi)*std::sin(momentumTheta) ;
 	Z = std::cos(momentumTheta) ;
 
-	MyRandom* rand = MyRandom::Instance() ;
 	if (gunOptionMomentum == G4String("fixed") )
 	{
 	}
 	else if (gunOptionMomentum == G4String("gaus") )
 	{
-		double phi = rand->Uniform(0.0 , 2*M_PI) ;
-		double theta = rand->Gaus(0.0 , gaussianMomentumSigma) ;
+		double phi = m_Rand.Uniform(0.0 , 2*M_PI) ;
+		double theta = m_Rand.Gaus(0.0 , gaussianMomentumSigma) ;
 		if (theta < 0)
 		{
 			theta = -theta ;
@@ -245,19 +243,18 @@ void SDHCALGun::shootMomentum()
 
 void SDHCALGun::shootForCosmic() //HardCoded
 {
-	MyRandom* rand = MyRandom::Instance() ;
 
 	double sizeZ = m_Detector->getCaloSizeZ() ;
 	double sizeX = m_Detector->getCaloSizeX() ;
   double sizeY = m_Detector->getCaloSizeY() ;
 	double circleRadius = ( std::sqrt( sizeZ*sizeZ + 2.0*sizeX*sizeX ) + 10 ) * CLHEP::mm ;
 
-	double aX = rand->Uniform(-0.5*sizeX , 0.5*sizeX) * CLHEP::mm ;
-	double aY = rand->Uniform(-0.5*sizeY , 0.5*sizeY) * CLHEP::mm ;
-	double aZ = rand->Uniform(0.0 , sizeZ) * CLHEP::mm ;
+	double aX = m_Rand.Uniform(-0.5*sizeX , 0.5*sizeX) * CLHEP::mm ;
+	double aY = m_Rand.Uniform(-0.5*sizeY , 0.5*sizeY) * CLHEP::mm ;
+	double aZ = m_Rand.Uniform(0.0 , sizeZ) * CLHEP::mm ;
 
-	double phi = rand->Uniform(0.0 , 2.0*M_PI) ;
-	double theta = acos( rand->Uniform(-1.0 , 1.0) ) ;
+	double phi = m_Rand.Uniform(0.0 , 2.0*M_PI) ;
+	double theta = acos( m_Rand.Uniform(-1.0 , 1.0) ) ;
 
 	double X = aX + circleRadius*std::cos(phi)*std::sin(theta) ;
 	double Y = aY + circleRadius*std::sin(phi)*std::sin(theta) ;
@@ -280,21 +277,20 @@ void SDHCALGun::shootEnergy()
 	}
 
 	double shoot = particleEnergy ;
-	MyRandom* rand = MyRandom::Instance() ;
 	if ( gunOptionEnergyDistribution == G4String("gaus") )
 	{
-		shoot = rand->Gaus(particleEnergy , sigmaEnergy) ;
+		shoot = m_Rand.Gaus(particleEnergy , sigmaEnergy) ;
 		if ( shoot < 0 )
 			shoot = -shoot ;
 	}
 	else if ( gunOptionEnergyDistribution == G4String("uniform") )
 	{
-		shoot = rand->Uniform(minEnergy , maxEnergy) ;
+		shoot = m_Rand.Uniform(minEnergy , maxEnergy) ;
 	}
 	else if ( gunOptionEnergyDistribution == G4String("forNN") ) //shoot in 1/x distrbution
 	{
 		double I = std::log(maxEnergy/minEnergy) ;
-		double x = rand->Uniform(0.0 , 1.0) ;
+		double x = m_Rand.Uniform(0.0 , 1.0) ;
 		shoot = minEnergy * std::exp(x*I) ;
 	}
 	else

@@ -4,6 +4,8 @@
 
 #include "json.hpp"
 
+#include "MyRandom.hpp"
+
 class SDHCALDetectorConstruction;
 
 class SDHCALGun : public G4ParticleGun
@@ -46,4 +48,5 @@ private:
   G4double momentumPhi{0};
 
   G4double m_Time{0*CLHEP::ns};
+  MyRandom m_Rand;
 };

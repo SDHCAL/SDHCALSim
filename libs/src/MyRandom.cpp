@@ -1,8 +1,8 @@
 #include "MyRandom.hpp"
 
-MyRandom* MyRandom::theOneTrueInstance = nullptr ;
-
-MyRandom::~MyRandom()
+void MyRandom::setSeed(const unsigned int& seed)
 {
-	theOneTrueInstance = nullptr ;
+  m_Generator.seed(seed);
 }
+
+
