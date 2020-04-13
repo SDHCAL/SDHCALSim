@@ -22,7 +22,8 @@ void SDHCALActionInitialization::BuildForMaster() const
 void SDHCALActionInitialization::Build() const
 {
   // Primary generator action
-  SetUserAction(new SDHCALPrimaryGeneratorAction(m_Json,m_Detector));
+  SDHCALPrimaryGeneratorAction* primaryGeneratorAction=new SDHCALPrimaryGeneratorAction(m_Json,m_Detector);
+  SetUserAction(primaryGeneratorAction);
   
   SDHCALRunAction* runAction = new SDHCALRunAction(m_Json);
   SetUserAction(runAction);
@@ -36,5 +37,5 @@ void SDHCALActionInitialization::Build() const
   SDHCALStackingAction* stackingAction=new SDHCALStackingAction(m_Json);
   SetUserAction(stackingAction);
   
-  SetUserAction(new SDHCALEventAction(runAction,steppingAction,stackingAction,trackingAction));
+  SetUserAction(new SDHCALEventAction(runAction,steppingAction,stackingAction,trackingAction,primaryGeneratorAction));
 }

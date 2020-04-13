@@ -8,11 +8,12 @@ class SDHCALRunAction;
 class SDHCALSteppingAction;
 class SDHCALStackingAction;
 class SDHCALTrackingAction;
+class SDHCALPrimaryGeneratorAction;
 
 class SDHCALEventAction : public G4UserEventAction
 {
 public :
-  SDHCALEventAction(SDHCALRunAction*,SDHCALSteppingAction*,SDHCALStackingAction*,SDHCALTrackingAction*);
+  SDHCALEventAction(SDHCALRunAction*,SDHCALSteppingAction*,SDHCALStackingAction*,SDHCALTrackingAction*,SDHCALPrimaryGeneratorAction*);
   virtual ~SDHCALEventAction() = default ;
 
   virtual void BeginOfEventAction(const G4Event* event) ;
@@ -26,4 +27,5 @@ private :
   SDHCALSteppingAction* m_SteppingAction{nullptr};
   SDHCALStackingAction* m_StackingAction{nullptr};
   SDHCALTrackingAction* m_TrackingAction{nullptr};
+  SDHCALPrimaryGeneratorAction* m_PrimaryGeneratorAction{nullptr};
 };

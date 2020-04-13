@@ -9,7 +9,7 @@
 #include "SDHCALPrimaryGeneratorAction.hpp"
 #include "SDHCALHit.hpp"
 
-SDHCALEventAction::SDHCALEventAction(SDHCALRunAction* runAction,SDHCALSteppingAction* steppingAction,SDHCALStackingAction* stackingAction,SDHCALTrackingAction* trackingAction):G4UserEventAction(),m_RunAction(runAction),m_SteppingAction(steppingAction),m_StackingAction(stackingAction),m_TrackingAction(trackingAction)
+SDHCALEventAction::SDHCALEventAction(SDHCALRunAction* runAction,SDHCALSteppingAction* steppingAction,SDHCALStackingAction* stackingAction,SDHCALTrackingAction* trackingAction,SDHCALPrimaryGeneratorAction* primaryGeneratorAction ):G4UserEventAction(),m_RunAction(runAction),m_SteppingAction(steppingAction),m_StackingAction(stackingAction),m_TrackingAction(trackingAction),m_PrimaryGeneratorAction(primaryGeneratorAction)
 {
 }
 
@@ -54,10 +54,7 @@ void SDHCALEventAction::EndOfEventAction(const G4Event* event)
 
 	lcioWriter->createSimCalorimeterHits(hits) ;
 
-	G4RunManager* runManager = G4RunManager::GetRunManager() ;
-	const SDHCALPrimaryGeneratorAction* anAction = dynamic_cast<const SDHCALPrimaryGeneratorAction*>( runManager->GetUserPrimaryGeneratorAction() ) ;
-
-	std::shared_ptr<SDHCALGun> gun = anAction->getGunVec().at(0) ;
+	std::shared_ptr<SDHCALGun> gun = m_PrimaryGeneratorAction->getGunVec().at(0) ;
 
 	G4double primaryEnergy = gun->GetParticleEnergy()/CLHEP::GeV ;
 	G4ThreeVector primaryMom = gun->GetParticleMomentumDirection() ;
@@ -70,7 +67,7 @@ void SDHCALEventAction::EndOfEventAction(const G4Event* event)
 	lcioWriter->setValue("ParticleEnergy" , primaryEnergy) ;
 
 
-	anAction->print() ;
+	m_PrimaryGeneratorAction->print() ;
 	G4cout << G4endl ;
 
 	m_SteppingAction->processSteps() ;
