@@ -23,14 +23,16 @@ void SDHCALActionInitialization::Build() const
 {
   // Primary generator action
   SetUserAction(new SDHCALPrimaryGeneratorAction(m_Json,m_Detector));
+  
   SDHCALRunAction* runAction = new SDHCALRunAction(m_Json);
-
   SetUserAction(runAction);
-  SetUserAction ( new SDHCALEventAction(runAction) ) ;
-
-  SetUserAction ( SDHCALSteppingAction::Instance() ) ;
+  
+  SDHCALSteppingAction* steppingAction=new SDHCALSteppingAction();
+  SetUserAction(steppingAction);
   SetUserAction ( SDHCALTrackingAction::Instance() ) ;
   SetUserAction ( SDHCALStackingAction::Instance() ) ;
 
   SDHCALStackingAction::Instance()->setKillNeutrons(m_Json.value("killNeutrons",false));
+  
+  SetUserAction(new SDHCALEventAction(runAction,steppingAction));
 }

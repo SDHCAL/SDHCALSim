@@ -1,9 +1,9 @@
 #pragma once
 
 #include "G4VUserDetectorConstruction.hh"
-#include "SDHCALSteppingAction.hpp"
 
 #include "json.hpp"
+#include "CLHEP/Units/SystemOfUnits.h"
 
 enum RPCType
 {
@@ -26,13 +26,13 @@ protected :
   RPCType rpcType = kNormalRPC ;
   G4bool oldConfig = false ;
   nlohmann::json m_Json{};
-  	G4int nLayers = 48 ;
-	G4int nPadX = 96 ;
-	G4int nPadY = 96 ;
-	G4double padSizeX = 10.408*CLHEP::mm ;
+  G4int nLayers = 48 ;
+  G4int nPadX = 96 ;
+  G4int nPadY = 96 ;
+  G4double padSizeX = 10.408*CLHEP::mm ;
   G4double padSizeY = 10.408*CLHEP::mm ;
-	G4double caloSizeX = {nPadX*padSizeX} ;
-	G4double caloSizeY = {nPadY*padSizeY} ;
+  G4double caloSizeX = {nPadX*padSizeX} ;
+  G4double caloSizeY = {nPadY*padSizeY} ;
   G4double caloSizeZ ={0.0};
 };
 

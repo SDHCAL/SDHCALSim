@@ -13,17 +13,10 @@
 #include <G4Box.hh>
 #include <g4root.hh>
 
-SDHCALSteppingAction* SDHCALSteppingAction::instance = nullptr ;
-
-SDHCALSteppingAction::SDHCALSteppingAction()
-	: G4UserSteppingAction()
+SDHCALSteppingAction::SDHCALSteppingAction(): G4UserSteppingAction()
 {
-	if (instance)
-		throw std::logic_error("SDHCALSteppingAction already exists") ;
-
-	G4cout << "Create SDHCALSteppingAction" << G4endl ;
-
-	instance = this ;
+  G4Region* regionCalor = G4RegionStore::GetInstance()->FindOrCreateRegion("RegionCalorimeter");
+  setInterestedRegion(regionCalor);
 }
 
 void SDHCALSteppingAction::UserSteppingAction(const G4Step* step)
