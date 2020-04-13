@@ -9,7 +9,7 @@
 #include "SDHCALPrimaryGeneratorAction.hpp"
 #include "SDHCALHit.hpp"
 
-SDHCALEventAction::SDHCALEventAction(SDHCALRunAction* runAction,SDHCALSteppingAction* steppingAction):G4UserEventAction(),m_RunAction(runAction),m_SteppingAction(steppingAction)
+SDHCALEventAction::SDHCALEventAction(SDHCALRunAction* runAction,SDHCALSteppingAction* steppingAction,SDHCALStackingAction* stackingAction):G4UserEventAction(),m_RunAction(runAction),m_SteppingAction(steppingAction),m_StackingAction(stackingAction)
 {
 }
 
@@ -19,7 +19,7 @@ void SDHCALEventAction::BeginOfEventAction(const G4Event* event)
   beginClock = clock() ;
   m_SteppingAction->reset();
   SDHCALTrackingAction::Instance()->reset() ;
-  SDHCALStackingAction::Instance()->reset() ;
+  m_StackingAction->reset();
 
   SDHCALLcioWriter* lcioWriter = m_RunAction->getLcioWriter() ;
   lcioWriter->clear() ;
@@ -84,7 +84,7 @@ void SDHCALEventAction::EndOfEventAction(const G4Event* event)
 	lcioWriter->setValue("LeakedEnergy" , leakedEnergy ) ;
 	lcioWriter->setValue("EMFraction" , emFraction ) ;
 
-	const auto& nParticlesPerIDMap = SDHCALStackingAction::Instance()->getNumberOfParticlesPerID() ;
+	const auto& nParticlesPerIDMap = m_StackingAction->getNumberOfParticlesPerID() ;
 	G4int nNeutrons = 0 ;
 	G4int nPi0 = 0 ;
 
