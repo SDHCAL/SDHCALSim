@@ -14,8 +14,6 @@
 class G4LogicalVolume ;
 class G4Region ;
 
-class LyonDetectorConstruction ;
-
 struct StepInfo
 {
 	G4double energyDeposited {} ;
@@ -26,35 +24,19 @@ struct StepInfo
 	G4StepStatus stepStatus {} ;
 	G4int particleID {} ;
 	G4bool isLeaving {} ;
-} ;
+};
 
 class SDHCALSteppingAction : public G4UserSteppingAction
 {
-	//singleton stuff
-		static SDHCALSteppingAction* instance ;
-	protected :
-		SDHCALSteppingAction() ;
-		static void initInstance() { new SDHCALSteppingAction ; }
-		virtual ~SDHCALSteppingAction() { instance = nullptr ; }
-	public :
-		static SDHCALSteppingAction* Instance()
-		{
-			if ( !instance )
-				initInstance() ;
-			return instance ;
-		}
-
-
-
-	public :
-
+public:
+  SDHCALSteppingAction() ;
+  virtual ~SDHCALSteppingAction(){}
 		virtual void UserSteppingAction(const G4Step* step) ;
 
 		void reset() ;
 		void processSteps() ;
 
 		inline void setInterestedRegion(G4Region* region) { interestedRegion = region ; }
-		inline void setPhysicalVolume(G4VPhysicalVolume* volume) { calorimeter = volume ; }
 
 		G4double getDepositedEnergy() const { return depositedEnergy ; }
 		G4double getLeakedEnergy() const { return leakedEnergy ; }
@@ -77,9 +59,8 @@ class SDHCALSteppingAction : public G4UserSteppingAction
 		SDHCALSteppingAction(const SDHCALSteppingAction&) = delete ;
 		void operator=(const SDHCALSteppingAction&) = delete ;
 
-	private :
-		G4Region* interestedRegion = nullptr ;
-		G4VPhysicalVolume* calorimeter = nullptr ;
+private:
+  G4Region* interestedRegion{nullptr};
 
 		G4double depositedEnergy = 0.0 ;
 		G4double leakedEnergy = 0.0 ;
@@ -94,5 +75,5 @@ class SDHCALSteppingAction : public G4UserSteppingAction
 
 		G4double lastStepTime = 0.0 ;
 
-		std::vector<StepInfo> steps = {} ;
+  std::vector<StepInfo> steps = {} ;
 };

@@ -9,22 +9,21 @@
 #include "SDHCALPrimaryGeneratorAction.hpp"
 #include "SDHCALHit.hpp"
 
-SDHCALEventAction::SDHCALEventAction(SDHCALRunAction* runAction):G4UserEventAction(),m_RunAction(runAction)
+SDHCALEventAction::SDHCALEventAction(SDHCALRunAction* runAction,SDHCALSteppingAction* steppingAction):G4UserEventAction(),m_RunAction(runAction),m_SteppingAction(steppingAction)
 {
 }
 
 
 void SDHCALEventAction::BeginOfEventAction(const G4Event* event)
 {
-	beginClock = clock() ;
+  beginClock = clock() ;
+  m_SteppingAction->reset();
+  SDHCALTrackingAction::Instance()->reset() ;
+  SDHCALStackingAction::Instance()->reset() ;
 
-	SDHCALSteppingAction::Instance()->reset() ;
-	SDHCALTrackingAction::Instance()->reset() ;
-	SDHCALStackingAction::Instance()->reset() ;
-
-	SDHCALLcioWriter* lcioWriter = m_RunAction->getLcioWriter() ;
-	lcioWriter->clear() ;
-	lcioWriter->createLCEvent(event) ;
+  SDHCALLcioWriter* lcioWriter = m_RunAction->getLcioWriter() ;
+  lcioWriter->clear() ;
+  lcioWriter->createLCEvent(event) ;
 }
 
 void SDHCALEventAction::EndOfEventAction(const G4Event* event)
@@ -68,13 +67,12 @@ void SDHCALEventAction::EndOfEventAction(const G4Event* event)
 	anAction->print() ;
 	G4cout << G4endl ;
 
-	SDHCALSteppingAction* steppingAction = SDHCALSteppingAction::Instance() ;
-	steppingAction->processSteps() ;
+	m_SteppingAction->processSteps() ;
 
-	G4double depositedEnergy = steppingAction->getDepositedEnergy()/CLHEP::GeV ;
-	G4double leakedEnergy = steppingAction->getLeakedEnergy()/CLHEP::GeV ;
-	G4double emFraction = steppingAction->getEMFraction() ;
-	G4double depositedEnergyNeutron = steppingAction->getDepositedEnergyPerParticleType()[2112]/CLHEP::GeV ;
+	G4double depositedEnergy = m_SteppingAction->getDepositedEnergy()/CLHEP::GeV ;
+	G4double leakedEnergy = m_SteppingAction->getLeakedEnergy()/CLHEP::GeV ;
+	G4double emFraction = m_SteppingAction->getEMFraction() ;
+	G4double depositedEnergyNeutron = m_SteppingAction->getDepositedEnergyPerParticleType()[2112]/CLHEP::GeV ;
 
 	G4cout << "Deposited energy : " << depositedEnergy << " GeV" << G4endl ;
 	G4cout << "Leaked energy : " << leakedEnergy << " GeV" << G4endl ;
