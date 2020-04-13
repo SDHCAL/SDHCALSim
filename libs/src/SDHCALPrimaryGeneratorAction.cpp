@@ -1,6 +1,6 @@
 #include "SDHCALPrimaryGeneratorAction.hpp"
 
-SDHCALPrimaryGeneratorAction::SDHCALPrimaryGeneratorAction(const nlohmann::json& json):m_Json(json)
+SDHCALPrimaryGeneratorAction::SDHCALPrimaryGeneratorAction(const nlohmann::json& json,SDHCALDetectorConstruction* detector):m_Json(json)
 {
   if(!m_Json.count("particuleGuns"))
   {
@@ -8,7 +8,7 @@ SDHCALPrimaryGeneratorAction::SDHCALPrimaryGeneratorAction(const nlohmann::json&
     std::exit(-1);
   }
   auto gunList = m_Json.at("particuleGuns");
-  for(const auto& gun:gunList) m_GunVec.push_back(std::make_shared<SDHCALGun>(gun));
+  for(const auto& gun:gunList) m_GunVec.push_back(std::make_shared<SDHCALGun>(gun,detector));
 }
 
 void SDHCALPrimaryGeneratorAction::GeneratePrimaries(G4Event* event)

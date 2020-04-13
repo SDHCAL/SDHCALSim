@@ -7,15 +7,18 @@
 
 #include "json.hpp"
 
+class SDHCALDetectorConstruction;
+
 class SDHCALActionInitialization : public G4VUserActionInitialization
 {
 public:
-  SDHCALActionInitialization(const nlohmann::json&);
+  SDHCALActionInitialization(const nlohmann::json&,SDHCALDetectorConstruction*);
   virtual void BuildForMaster() const;
   virtual void Build() const;
 private:
   SDHCALActionInitialization()=delete;
   virtual ~SDHCALActionInitialization();
   nlohmann::json m_Json{};
+  SDHCALDetectorConstruction* m_Detector{nullptr};
 };
 

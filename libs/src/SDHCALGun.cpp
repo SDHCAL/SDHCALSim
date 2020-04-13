@@ -2,13 +2,12 @@
 
 #include <G4ParticleTable.hh>
 
-#include "SDHCALDetectorConstruction.hpp"
-
 #include <iterator>
 
 #include "MyRandom.hpp"
+#include "SDHCALDetectorConstruction.hpp"
 
-SDHCALGun::SDHCALGun(nlohmann::json json):G4ParticleGun(1)
+SDHCALGun::SDHCALGun(nlohmann::json json,SDHCALDetectorConstruction* detector):G4ParticleGun(1),m_Detector(detector)
 {
   G4cout << "SDHCALGun::SDHCALGun()" << G4endl ;
   if ( json.count("particleName") )
@@ -248,13 +247,13 @@ void SDHCALGun::shootForCosmic() //HardCoded
 {
 	MyRandom* rand = MyRandom::Instance() ;
 
-	double sizeZ = SDHCALDetectorConstruction::sizeZ ;
-	double sizeX = SDHCALDetectorConstruction::sizeX ;
-
+	double sizeZ = m_Detector->getCaloSizeZ() ;
+	double sizeX = m_Detector->getCaloSizeX() ;
+  double sizeY = m_Detector->getCaloSizeY() ;
 	double circleRadius = ( std::sqrt( sizeZ*sizeZ + 2.0*sizeX*sizeX ) + 10 ) * CLHEP::mm ;
 
 	double aX = rand->Uniform(-0.5*sizeX , 0.5*sizeX) * CLHEP::mm ;
-	double aY = rand->Uniform(-0.5*sizeX , 0.5*sizeX) * CLHEP::mm ;
+	double aY = rand->Uniform(-0.5*sizeY , 0.5*sizeY) * CLHEP::mm ;
 	double aZ = rand->Uniform(0.0 , sizeZ) * CLHEP::mm ;
 
 	double phi = rand->Uniform(0.0 , 2.0*M_PI) ;
