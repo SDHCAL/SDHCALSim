@@ -30,9 +30,9 @@ void SDHCALActionInitialization::Build() const
   SDHCALSteppingAction* steppingAction=new SDHCALSteppingAction();
   SetUserAction(steppingAction);
   SetUserAction ( SDHCALTrackingAction::Instance() ) ;
-  SetUserAction ( SDHCALStackingAction::Instance() ) ;
-
-  SDHCALStackingAction::Instance()->setKillNeutrons(m_Json.value("killNeutrons",false));
   
-  SetUserAction(new SDHCALEventAction(runAction,steppingAction));
+  SDHCALStackingAction* stackingAction=new SDHCALStackingAction(m_Json);
+  SetUserAction(stackingAction);
+  
+  SetUserAction(new SDHCALEventAction(runAction,steppingAction,stackingAction));
 }

@@ -1,30 +1,15 @@
 #include "SDHCALStackingAction.hpp"
 
-#include <G4Track.hh>
-
-SDHCALStackingAction* SDHCALStackingAction::instance = nullptr ;
-
-SDHCALStackingAction::SDHCALStackingAction()
-	: G4UserStackingAction()
+SDHCALStackingAction::SDHCALStackingAction(const nlohmann::json& json):G4UserStackingAction(),m_Json(json)
 {
-	if (instance)
-		throw std::logic_error("SDHCALStackingAction already exists") ;
-
-	instance = this ;
-
-	G4cout << "Create SDHCALStackingAction" << G4endl ;
+  m_KillNeutrons=m_Json.value("killNeutrons",false);
 }
 
 G4ClassificationOfNewTrack SDHCALStackingAction::ClassifyNewTrack(const G4Track* track)
 {
-	nParticlesPerId[ track->GetDefinition()->GetPDGEncoding() ]++ ;
-
-	if ( !killNeutrons )
-		return fUrgent ;
-
-	if ( track->GetDefinition()->GetPDGEncoding() == 2112 )
-		return fKill ;
-
-	return fUrgent ;
+  nParticlesPerId[ track->GetDefinition()->GetPDGEncoding() ]++;
+  if(!m_KillNeutrons)return fUrgent;
+  if(track->GetDefinition()->GetPDGEncoding()==2112) return fKill;
+  return fUrgent;
 }
 
