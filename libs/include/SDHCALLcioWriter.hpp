@@ -35,7 +35,7 @@ public:
 
 private:
   G4String m_FileName{""};
-  static lcio::LCWriter* m_Writer;
+  static std::unique_ptr<lcio::LCWriter> m_Writer;
   static G4ThreadLocal IMPL::LCEventImpl* m_LcEvent;
   static G4ThreadLocal std::map<G4int,IMPL::MCParticleImpl*> m_PrimaryParticleMap;
   static G4ThreadLocal IMPL::LCCollectionVec* m_ParticleCol;

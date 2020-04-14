@@ -14,12 +14,12 @@ G4ThreadLocal std::map<G4int,IMPL::MCParticleImpl*> SDHCALLcioWriter::m_PrimaryP
 G4ThreadLocal IMPL::LCCollectionVec* SDHCALLcioWriter::m_ParticleCol=nullptr;
 G4ThreadLocal IMPL::LCCollectionVec* SDHCALLcioWriter::m_SimVec=nullptr;
 
-lcio::LCWriter* SDHCALLcioWriter::m_Writer=nullptr;
+std::unique_ptr<lcio::LCWriter> SDHCALLcioWriter::m_Writer{nullptr};
 G4String SDHCALLcioWriter::m_DetectorName="";
 
 void SDHCALLcioWriter::openFile()
 {
-  m_Writer=lcio::LCFactory::getInstance()->createLCWriter();
+  m_Writer.reset(lcio::LCFactory::getInstance()->createLCWriter());
   m_Writer->setCompressionLevel(2);
   m_Writer->open(m_FileName, EVENT::LCIO::WRITE_NEW);
 }
