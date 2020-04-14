@@ -1,16 +1,10 @@
 #pragma once
 
-#include <globals.hh>
-#include <G4Run.hh>
-
-class G4Event ;
+#include "G4Run.hh"
 
 class SDHCALRun : public G4Run
 {
-	public :
-		SDHCALRun() ;
-		virtual ~SDHCALRun() ;
-
-	protected :
-
+public:
+  SDHCALRun();
+  virtual ~SDHCALRun();
 };
