@@ -1,79 +1,58 @@
 #pragma once
 
-#include <G4Step.hh>
-#include <G4UserSteppingAction.hh>
-#include <G4ThreeVector.hh>
-#include <G4RegionStore.hh>
-#include <G4VPhysicalVolume.hh>
-#include <G4AffineTransform.hh>
-#include <globals.hh>
+#include "G4Step.hh"
+#include "G4UserSteppingAction.hh"
+#include "G4Region.hh"
+#include "G4ThreeVector.hh"
 
 #include <vector>
 #include <map>
 
-class G4LogicalVolume ;
-class G4Region ;
-
-struct StepInfo
+class StepInfo
 {
-	G4double energyDeposited {} ;
-	G4double time {} ;
-	G4ThreeVector preStepPoint {} ;
-	G4ThreeVector postStepPoint {} ;
-	G4double leakingEnergy {} ;
-	G4StepStatus stepStatus {} ;
-	G4int particleID {} ;
-	G4bool isLeaving {} ;
+public:
+  G4double m_EnergyDeposited{0.};
+  G4double m_Time{0.};
+  G4ThreeVector m_PreStepPoint{0.,0.,0.};
+  G4ThreeVector m_PostStepPoint{0.,0.,0.};
+  G4double m_LeakingEnergy{0.};
+  G4StepStatus m_StepStatus{};
+  G4int m_ParticleID{0};
+  G4bool m_IsLeaving{false};
 };
 
 class SDHCALSteppingAction : public G4UserSteppingAction
 {
 public:
-  SDHCALSteppingAction() ;
-  virtual ~SDHCALSteppingAction(){}
-		virtual void UserSteppingAction(const G4Step* step) ;
+  SDHCALSteppingAction();
+  virtual ~SDHCALSteppingAction()=default;
+  virtual void UserSteppingAction(const G4Step* step);
 
-		void reset() ;
-		void processSteps() ;
+  void reset();
+  void processSteps();
 
-		inline void setInterestedRegion(G4Region* region) { interestedRegion = region ; }
+  G4double getDepositedEnergy() const { return depositedEnergy ; }
+  G4double getLeakedEnergy() const { return leakedEnergy ; }
 
-		G4double getDepositedEnergy() const { return depositedEnergy ; }
-		G4double getLeakedEnergy() const { return leakedEnergy ; }
+  G4double getEMFraction() const;
+  std::map<G4int , G4double> getDepositedEnergyPerParticleType() const { return depositedEnergyPerParticleType; }
+  std::map<G4int , G4double> getLeakedEnergyPerParticleType() const { return leakedEnergyPerParticleType ; }
 
-		G4double getEMFraction() const ;
+  void PrintTableauEnergie();
+  void PrintTableauLeakEnergie();
 
-		G4double GetSideLeakEnergy() const { return sideleakEnergy ; }
-		G4double GetFrontLeakEnergy() const { return frontleakEnergy ; }
-		G4double GetRearLeakEnergy() const { return rearleakEnergy ; }
-
-		std::map<G4int , G4double> getDepositedEnergyPerParticleType() const { return depositedEnergyPerParticleType ; }
-		std::map<G4int , G4double> getLeakedEnergyPerParticleType() const { return leakedEnergyPerParticleType ; }
-
-		void PrintTableauEnergie() ;
-		void PrintTableauLeakEnergie() ;
-
-		inline G4double getLastStepTime() const { return lastStepTime ; }
-		inline const std::vector<StepInfo>& getSteps() const { return steps ; }
-
-		SDHCALSteppingAction(const SDHCALSteppingAction&) = delete ;
-		void operator=(const SDHCALSteppingAction&) = delete ;
+ // inline G4double getLastStepTime() const { return lastStepTime ; }
+  inline const std::vector<StepInfo>& getSteps() const { return steps ; }
 
 private:
-  G4Region* interestedRegion{nullptr};
+  G4Region* m_InterestedRegion{nullptr};
+  G4double depositedEnergy{0.};
+  G4double leakedEnergy{0.};
 
-		G4double depositedEnergy = 0.0 ;
-		G4double leakedEnergy = 0.0 ;
+  std::map<G4int , G4double> depositedEnergyPerParticleType;
+  std::map<G4int , G4double> leakedEnergyPerParticleType;
 
-		std::map<G4int , G4double> depositedEnergyPerParticleType = {} ;
-		std::map<G4int , G4double> leakedEnergyPerParticleType = {} ;
+  G4double leakEnergy{0.};
 
-		G4double leakEnergy = 0.0 ;
-		G4double sideleakEnergy = 0.0 ;
-		G4double frontleakEnergy = 0.0 ;
-		G4double rearleakEnergy = 0.0 ;
-
-		G4double lastStepTime = 0.0 ;
-
-  std::vector<StepInfo> steps = {} ;
+  std::vector<StepInfo> steps;
 };

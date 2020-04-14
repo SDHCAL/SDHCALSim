@@ -18,9 +18,9 @@ public:
     G4ThreeVector momentum;
   };
 
-  virtual void PreUserTrackingAction(const G4Track* track) ;
-  G4int getPrimaryParent(const G4int& trackID) const ;
-  PrimaryParticleInfo getPrimaryParticleInfo(G4int id) const ;
+  virtual void PreUserTrackingAction(const G4Track* track);
+  G4int getPrimaryParent(const G4int& trackID) const;
+  PrimaryParticleInfo getPrimaryParticleInfo(G4int id) const;
   void reset() ;
   
 private:
