@@ -5,6 +5,8 @@
 
 #include "SDHCALRPC.hpp"
 
+G4ThreadLocal G4Allocator<SDHCALHit>* SDHCALHitHitAllocator=0;
+
 SDHCALHit::SDHCALHit(const G4Step* step , SDHCALRPC* _rpc)
 {
 	rpc = _rpc ;

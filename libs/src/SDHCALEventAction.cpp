@@ -20,26 +20,23 @@ void SDHCALEventAction::BeginOfEventAction(const G4Event* event)
   m_SteppingAction->reset();
   m_TrackingAction->reset();
   m_StackingAction->reset();
-
-  SDHCALLcioWriter* lcioWriter = m_RunAction->getLcioWriter() ;
-  lcioWriter->clear() ;
-  lcioWriter->createLCEvent(event) ;
 }
 
 void SDHCALEventAction::EndOfEventAction(const G4Event* event)
 {
+  G4AutoLock	l(&aMutex);
 	G4cout << "-------------------------------------------------------" << G4endl ;
 	G4cout << "Event " << event->GetEventID() << G4endl ;
-
-	SDHCALLcioWriter* lcioWriter = m_RunAction->getLcioWriter() ;
+  SDHCALLcioWriter* lcioWriter = m_RunAction->getLcioWriter() ;
+  lcioWriter->clear() ;
+  lcioWriter->createLCEvent(event) ;
 	SDHCALRootWriter* rootWriter = m_RunAction->getRootWriter() ;
 
-	G4HCofThisEvent* col = event->GetHCofThisEvent() ;
-
 	std::vector<SDHCALHit*> hits ;
-	for (int i = 0 ; i < col->GetNumberOfCollections() ; i++ )
+   //std::cout<< event->GetHCofThisEvent()->GetNumberOfCollections() <<std::endl;
+	for (int i = 0 ; i < event->GetHCofThisEvent()->GetNumberOfCollections() ; i++ )
 	{
-		SDHCALHitCollection* hCol = dynamic_cast<SDHCALHitCollection*>( col->GetHC(i) ) ;
+		SDHCALHitCollection* hCol = dynamic_cast<SDHCALHitCollection*>( event->GetHCofThisEvent()->GetHC(i) ) ;
 		std::vector<SDHCALHit*> hitVec = *( hCol->GetVector() ) ;
 		hits.insert(hits.end() , hitVec.begin() , hitVec.end() ) ;
     
@@ -144,10 +141,9 @@ void SDHCALEventAction::EndOfEventAction(const G4Event* event)
 		stepLength.push_back( (*it)->getTrueLength() ) ;
 		stepTime.push_back( (*it)->getTime() ) ;
 	}
-
+	
 	rootWriter->setStepCosAngle( stepCosAngle ) ;
 	rootWriter->setStepLength( stepLength ) ;
 	rootWriter->setStepTime( stepTime ) ;
-
 	rootWriter->fillTree() ;
 }

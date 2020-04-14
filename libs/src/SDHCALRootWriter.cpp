@@ -1,5 +1,29 @@
 #include "SDHCALRootWriter.hpp"
 
+std::unique_ptr<TFile> SDHCALRootWriter::m_File{nullptr};
+
+TTree* SDHCALRootWriter::m_Tree{nullptr};
+
+int SDHCALRootWriter::m_EventNumber{0};
+int SDHCALRootWriter::m_NHit{0};
+int SDHCALRootWriter::m_PrimaryID{0};
+double SDHCALRootWriter::m_PrimaryEnergy{0.};
+double SDHCALRootWriter::m_PrimaryPos[3]{0.,0.,0.};
+double SDHCALRootWriter::m_PrimaryMom[3]{0.,0.,0.};
+double SDHCALRootWriter::m_DepositedEnergy{0.};
+double SDHCALRootWriter::m_DepositedEnergyNeutron{0.};
+double SDHCALRootWriter::m_LeakedEnergy{0.};
+double SDHCALRootWriter::m_EmFraction{0.};
+double SDHCALRootWriter::m_ComputingTime{0.};
+
+int SDHCALRootWriter::m_NNeutrons{0};
+int SDHCALRootWriter::m_NPi0{0};
+
+std::vector<double> SDHCALRootWriter::m_StepCosAngle{};
+std::vector<double> SDHCALRootWriter::m_StepLength{};
+std::vector<double> SDHCALRootWriter::m_StepTime{};
+
+
 void SDHCALRootWriter::openFile()
 {
   m_File=std::make_unique<TFile>(m_FileName.c_str(),"RECREATE");
