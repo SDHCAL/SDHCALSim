@@ -33,12 +33,12 @@ void SDHCALEventAction::EndOfEventAction(const G4Event* event)
   
   std::vector<SDHCALHit*> hits;
    //std::cout<< event->GetHCofThisEvent()->GetNumberOfCollections() <<std::endl;
- /* for (int i = 0 ; i < event->GetHCofThisEvent()->GetNumberOfCollections() ; i++ )
+  for (int i = 0 ; i < event->GetHCofThisEvent()->GetNumberOfCollections() ; i++ )
   {
     SDHCALHitCollection* hCol = dynamic_cast<SDHCALHitCollection*>( event->GetHCofThisEvent()->GetHC(i) ) ;
     std::vector<SDHCALHit*> hitVec = *( hCol->GetVector() ) ;
     hits.insert(hits.end() , hitVec.begin() , hitVec.end() ) ;
-  }*/
+  }
 
   for(std::size_t i=0;i!=hits.size();++i)
   {
