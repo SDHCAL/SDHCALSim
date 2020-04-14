@@ -35,10 +35,10 @@ public:
 
 private:
   G4String m_FileName{""};
-  std::unique_ptr<lcio::LCWriter> m_Writer{nullptr};
-  std::unique_ptr<IMPL::LCEventImpl> m_LcEvent{nullptr};
-  IMPL::LCCollectionVec* m_ParticleCol{nullptr};
-  IMPL::LCCollectionVec* m_SimVec{nullptr};
-  std::map<G4int,IMPL::MCParticleImpl*> m_PrimaryParticleMap{};
-  G4String m_DetectorName{""};
+  static lcio::LCWriter* m_Writer;
+  static G4ThreadLocal IMPL::LCEventImpl* m_LcEvent;
+  static G4ThreadLocal std::map<G4int,IMPL::MCParticleImpl*> m_PrimaryParticleMap;
+  static G4ThreadLocal IMPL::LCCollectionVec* m_ParticleCol;
+  static G4ThreadLocal IMPL::LCCollectionVec* m_SimVec;
+  static G4String m_DetectorName;
 };

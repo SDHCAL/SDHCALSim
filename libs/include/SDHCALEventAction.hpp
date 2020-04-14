@@ -10,6 +10,15 @@ class SDHCALStackingAction;
 class SDHCALTrackingAction;
 class SDHCALPrimaryGeneratorAction;
 
+#include "G4AutoLock.hh"
+  
+namespace
+{
+  G4Mutex aMutex=G4MUTEX_INITIALIZER;
+}
+  
+
+
 class SDHCALEventAction : public G4UserEventAction
 {
 public :

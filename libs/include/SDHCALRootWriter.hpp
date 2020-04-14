@@ -4,6 +4,7 @@
 #include "TTree.h"
 
 #include "G4ThreeVector.hh"
+#include "G4Event.hh"
 
 #include<vector>
 #include<memory>
@@ -44,25 +45,25 @@ public:
 
 private:
   G4String m_FileName{""};
-  std::unique_ptr<TFile> m_File{nullptr};
-  TTree* m_Tree{nullptr};
+  static std::unique_ptr<TFile> m_File;
+  static TTree* m_Tree;
 
-  int m_EventNumber{0};
-  int m_NHit{0};
-  int m_PrimaryID{0};
-  double m_PrimaryEnergy{0.};
-  double m_PrimaryPos[3]{0.,0.,0.};
-  double m_PrimaryMom[3]{0.,0.,0.};
-  double m_DepositedEnergy{0.};
-  double m_DepositedEnergyNeutron{0.};
-  double m_LeakedEnergy{0.};
-  double m_EmFraction{0.};
-  double m_ComputingTime{0.};
+  static  int m_EventNumber;
+  static  int m_NHit;
+  static  int m_PrimaryID;
+  static  double m_PrimaryEnergy;
+  static  double m_PrimaryPos[3];
+  static  double m_PrimaryMom[3];
+  static  double m_DepositedEnergy;
+  static  double m_DepositedEnergyNeutron;
+  static  double m_LeakedEnergy;
+  static  double m_EmFraction;
+  static  double m_ComputingTime;
 
-  int m_NNeutrons{0};
-  int m_NPi0{0};
+  static  int m_NNeutrons;
+  static  int m_NPi0;
 
-  std::vector<double> m_StepCosAngle{};
-  std::vector<double> m_StepLength{};
-  std::vector<double> m_StepTime{};
+  static  std::vector<double> m_StepCosAngle;
+  static  std::vector<double> m_StepLength;
+  static  std::vector<double> m_StepTime;
 };

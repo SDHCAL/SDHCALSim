@@ -4,9 +4,12 @@
 #include <G4ThreeVector.hh>
 #include <G4THitsCollection.hh>
 #include <G4PrimaryParticle.hh>
+#include "G4Step.hh"
+
 #include "SDHCALRPC.hpp"
 
-class G4Step ;
+class SDHCALHit;
+extern G4ThreadLocal G4Allocator<SDHCALHit>* SDHCALHitHitAllocator;
 
 class SDHCALHit : public G4VHit
 {
@@ -46,6 +49,17 @@ class SDHCALHit : public G4VHit
 		SDHCALHit() = delete ;
 		SDHCALHit(const SDHCALHit&) = delete ;
 		void operator=(const SDHCALHit&) = delete ;
+  inline void* operator new(size_t)
+  {
+    if(!SDHCALHitHitAllocator) SDHCALHitHitAllocator=new G4Allocator<SDHCALHit>;
+    return (void*) SDHCALHitHitAllocator->MallocSingle();
+  }
+  
+  inline void operator delete(void*hit)
+  {
+    SDHCALHitHitAllocator->FreeSingle((SDHCALHit*)hit);
+  }
+
 
 	protected :
 		G4ThreeVector beginPos {} ;
@@ -71,4 +85,4 @@ class SDHCALHit : public G4VHit
 		G4int trackStatus {} ;
 } ;
 
-typedef G4THitsCollection<SDHCALHit> SDHCALHitCollection ;
+typedef G4THitsCollection<SDHCALHit> SDHCALHitCollection;
