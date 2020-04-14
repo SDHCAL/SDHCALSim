@@ -127,7 +127,7 @@ void SDHCALEventAction::EndOfEventAction(const G4Event* event)
   std::vector<double> stepTime ;
   for ( std::vector<SDHCALHit*>::const_iterator it = hits.begin() ; it != hits.end() ; ++it )
   {
-    stepCosAngle.push_back( std::cos( (*it)->getDeltaPos().angle( (*it)->getRPC()->rpcToGlobalCoordTransform( G4ThreeVector(0,0,1) ) ) ) ) ;
+    stepCosAngle.push_back(std::cos((*it)->getDeltaPos().angle((*it)->RPCToGlobalCoordTransform( G4ThreeVector(0,0,1)))));
     stepLength.push_back( (*it)->getTrueLength() ) ;
     stepTime.push_back( (*it)->getTime() ) ;
   }

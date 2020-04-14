@@ -1,18 +1,16 @@
 #include "SDHCALHit.hpp"
 
-#include <G4Step.hh>
-#include <G4TouchableHistory.hh>
-
-#include "SDHCALRPC.hpp"
+#include "G4Step.hh"
+#include "G4TouchableHistory.hh"
 
 G4ThreadLocal G4Allocator<SDHCALHit>* SDHCALHitHitAllocator=0;
 
-SDHCALHit::SDHCALHit(const G4Step* step , SDHCALRPC* _rpc)
+SDHCALHit::SDHCALHit(const G4Step* step,const G4int id):m_K(id)
 {
-	rpc = _rpc ;
-	if ( !rpc->isTransformComputed() )
-		rpc->setCoordTransform( step->GetPreStepPoint()->GetTouchable()->GetHistory()->GetTopTransform() ) ;
-
+  if(!m_Coordinates.isTransformComputed())
+  {
+    m_Coordinates.setCoordTransform(step->GetPreStepPoint()->GetTouchable()->GetHistory()->GetTopTransform());
+  }
 	beginPos = step->GetPreStepPoint()->GetPosition() ;
 	endPos = step->GetPostStepPoint()->GetPosition() ;
 	deltaPos = endPos - beginPos ;
@@ -21,30 +19,23 @@ SDHCALHit::SDHCALHit(const G4Step* step , SDHCALRPC* _rpc)
 	energyDeposited = step->GetTotalEnergyDeposit() ;
 
 	betaGamma = step->GetPreStepPoint()->GetBeta()*step->GetPreStepPoint()->GetGamma() ;
-
-	RPCID = rpc->getID() ;
 	isEnteringStep = (step->GetPreStepPoint()->GetStepStatus() == fGeomBoundary) ;
 	isLeavingStep = (step->GetPostStepPoint()->GetStepStatus() == fGeomBoundary) ;
 	time = step->GetPreStepPoint()->GetGlobalTime() ;
 	trueLength = deltaPos.mag() ;
 	charge = step->GetTrack()->GetDynamicParticle()->GetCharge() ;
 	trackStatus = step->GetTrack()->GetTrackStatus() ;
-
- // std::cout<<"LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL"<<primaryID<<std::endl;
-  
-
-
 	//I , J and coordInPad are computed when hit is finalized
 }
 
 void SDHCALHit::computePosition()
 {
 	G4ThreeVector globalPosition = 0.5*( endPos + beginPos ) ;
-	G4ThreeVector posInRPC = rpc->globalToRpcCoordTransform(globalPosition) ;
+	G4ThreeVector posInRPC = m_Coordinates.globalToRPCCoordTransform(globalPosition) ;
 
-	I = rpc->localCoordToIJ(posInRPC).at(0) ;
-	J = rpc->localCoordToIJ(posInRPC).at(1) ;
-	coordInPad = posInRPC - rpc->IJToLocalCoord(I,J) ;
+	I = m_Coordinates.localCoordToIJ(posInRPC).at(0) ;
+	J = m_Coordinates.localCoordToIJ(posInRPC).at(1) ;
+	coordInPad = posInRPC - m_Coordinates.IJToLocalCoord(I,J) ;
 }
 
 void SDHCALHit::updateWith(const G4Step* step)
@@ -66,5 +57,5 @@ void SDHCALHit::finalize()
 
 void SDHCALHit::Print()
 {
-	std::cout << "Hit at " << "I:" << I << " J:" << J << " K:" << RPCID << " at pos " << endPos-beginPos << std::endl ;
+  G4cout<<"Hit at "<<"I:"<<I<<" J:"<<J<<" K:"<<m_K<<" at pos "<<endPos-beginPos<<G4endl;
 }
