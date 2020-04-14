@@ -57,8 +57,8 @@ int main(int argc , char** argv)
     if(json.value("MultiThread",false))
     {
       std::unique_ptr<G4MTRunManager> runManagerMT{std::make_unique<G4MTRunManager>()};
-      runManagerMT->SetNumberOfThreads(json.value("NbrThreads",4));
-      G4cout<<"**** Geant4 running in MultiThread mode ("<<json.value("NbrThreads",4)<<" threads)*****"<<G4endl;
+      runManagerMT->SetNumberOfThreads(json.value("NbrThreads",G4Threading::G4GetNumberOfCores()));
+      G4cout<<"**** Geant4 running in MultiThread mode ("<<runManagerMT->GetNumberOfThreads()<<" threads)*****"<<G4endl;
       // Detector construction
       runManagerMT->SetUserInitialization(detectorConstruction);
       // Physics list
