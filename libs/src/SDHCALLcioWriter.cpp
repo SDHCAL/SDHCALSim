@@ -104,16 +104,17 @@ void SDHCALLcioWriter::createSimCalorimeterHits(std::vector<SDHCALHit*> hits)
     step->Length=static_cast<float>(hit->getDeltaPos().mag());
     int I=hit->getI(); // + 1 ;
     int J=hit->getJ(); // + 1 ;
-    int K=hit->getRPCID();
+    int K=hit->getK();
     //G4ThreeVector realPos = (*it)->getRPC()->getGlobalCoord(I,J) ;
     //float cellPos[3] ;
     //cellPos[0] = static_cast<float>( realPos.x() ) ;
     //cellPos[1] = static_cast<float>( realPos.y() ) ;
     //cellPos[2] = static_cast<float>( realPos.z() ) ;
-    G4double cellSize=hit->getRPC()->getCellSize();
+    G4double cellSizeX=hit->getCellSizeX();
+    G4double cellSizeY=hit->getCellSizeY();
     float cellPos[3];
-    cellPos[0]=static_cast<float>((I+1)*cellSize);
-    cellPos[1]=static_cast<float>((J+1)*cellSize);
+    cellPos[0]=static_cast<float>((I+1)*cellSizeX);
+    cellPos[1]=static_cast<float>((J+1)*cellSizeY);
     cellPos[2]=static_cast<float>((K+1)*26.131); //same as TriventProc.cc
     //G4ThreeVector globalPos = (*it)->getPos() ;
     G4ThreeVector cheatPos(cellPos[0]+ hit->getCoordInPad().x(),

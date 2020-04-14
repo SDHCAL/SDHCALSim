@@ -9,32 +9,35 @@
 
 #include "SDHCALHit.hpp"
 
-class SDHCALRPC ;
-
 class SDHCALRPCSensitiveDetector : public G4VSensitiveDetector
 {
-public :
-		SDHCALRPCSensitiveDetector(G4String name , SDHCALRPC* _rpc) ;
-		virtual ~SDHCALRPCSensitiveDetector()=default;
-
-		virtual void Initialize(G4HCofThisEvent*) ;
-		virtual G4bool ProcessHits(G4Step* step , G4TouchableHistory*) ;
-
-		virtual void EndOfEvent(G4HCofThisEvent*) ;
-
-		virtual G4bool Interested(const G4Step* step) const ;
-
-		void finalizeLastHit() ;
-
-		SDHCALRPCSensitiveDetector(const SDHCALRPCSensitiveDetector&) = delete ;
-		void operator=(const SDHCALRPCSensitiveDetector&) = delete ;
+public:
+  void setSizes(const G4double& X,const G4double& Y, const G4double& Z)
+  {
+    m_SizeX=X;
+    m_SizeY=Y;
+    m_SizeZ=Z;
+  }
+  void setCellXYSize(const G4double& X,const G4double& Y)
+  {
+    m_CellSizeX=X;
+    m_CellSizeY=Y;
+  }
+  SDHCALRPCSensitiveDetector(G4String name ,const G4int& id);
+  virtual ~SDHCALRPCSensitiveDetector()=default;
+  virtual void Initialize(G4HCofThisEvent*);
+  virtual G4bool ProcessHits(G4Step* step , G4TouchableHistory*);
+  virtual void EndOfEvent(G4HCofThisEvent*);
+  virtual G4bool Interested(const G4Step* step) const;
+  void finalizeLastHit();
 
 private:
-
-		SDHCALHitCollection* hitsCollection {} ;
-		G4int ID {} ;
-
-		SDHCALRPC* rpc {} ;
-
-		SDHCALHit* currentHit {} ;
+  SDHCALHitCollection* hitsCollection {} ;
+  G4int m_ID{0};
+  SDHCALHit* currentHit {};
+  G4double m_SizeX{0.};
+  G4double m_SizeY{0.};
+  G4double m_SizeZ{0.};
+  G4double m_CellSizeX{0.};
+  G4double m_CellSizeY{0.};
 };

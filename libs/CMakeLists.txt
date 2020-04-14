@@ -16,6 +16,7 @@ set(INCLUDES
     include/SDHCALDetectorConstruction.hpp 
     include/SDHCALRun.hpp
     include/SDHCALMaterials.hpp
+    include/SDHCALCoordinates.hpp
     )
     
 set(SRC
@@ -36,6 +37,7 @@ set(SRC
     src/SDHCALRun.cpp
     src/SDHCALMaterials.cpp
     src/MyRandom.cpp
+    src/SDHCALCoordinates.cpp
     )    
 
 add_library(MyLib STATIC ${SRC})
