@@ -1,9 +1,9 @@
 #pragma once
 
 #include "G4VUserDetectorConstruction.hh"
+#include "CLHEP/Units/SystemOfUnits.h"
 
 #include "json.hpp"
-#include "CLHEP/Units/SystemOfUnits.h"
 
 enum RPCType
 {

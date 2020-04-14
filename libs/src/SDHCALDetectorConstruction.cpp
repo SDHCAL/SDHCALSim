@@ -95,6 +95,5 @@ G4VPhysicalVolume* SDHCALDetectorConstruction::Construct()
   //for stepping action
   G4Region* regionCalor = G4RegionStore::GetInstance()->FindOrCreateRegion("RegionCalorimeter");
   regionCalor->AddRootLogicalVolume(logicCalorimeter);
-  calorimeter=calorimeter;
   return physiWorld;
 }
