@@ -85,9 +85,7 @@ void SDHCALRPC::build()
 
   //create logic RPC volume (indefined placement)
   G4Box* solidCassette = new G4Box(m_Name , m_SizeX/2, m_SizeY/2, cassetteThickness/2);
-  G4LogicalVolume* logicCassette = new G4LogicalVolume(solidCassette ,  defaultMaterial ,m_Name);
-
-  G4LogicalVolume* logicGap = nullptr;
+  m_LogicRPC = new G4LogicalVolume(solidCassette ,  defaultMaterial ,m_Name);
 
   //construct all the layers 
   G4double zPos = -cassetteThickness/2; //we start at front of the cassette
@@ -107,24 +105,23 @@ void SDHCALRPC::build()
     zPos += layer.m_Width*mm/2; //we are now at center of the current layer (where it has to be placed)
 
     //place the layer at zPos
-    G4VPhysicalVolume* volume = new G4PVPlacement(nullptr , G4ThreeVector(0,0,zPos) , logic , layer.m_Name , logicCassette,false,0,true);	//logicCassette is the mother volume
+    G4VPhysicalVolume* volume = new G4PVPlacement(nullptr , G4ThreeVector(0,0,zPos) , logic , layer.m_Name , m_LogicRPC,false,0,true);	//m_LogicRPC is the mother volume
 
     zPos += layer.m_Width*mm/2; //we are now at the back of the current layer
 
     if(layer.m_Name == "GasGap") //we keep trace of the gas gap
     {
-      if(logicGap) //we only want one gas gap
+      if(m_GasGap) //we only want one gas gap
       {
         G4cerr << "Error : there is more than one gas gap in the RPC" << G4endl;
         std::exit(-1);
       }
 
-      logicGap = logic;
-      physiGasGap = volume;
+      m_GasGap = logic;
     }
   }
 
-  if(!logicGap) //if we don't have the gas gap we have a problem
+  if(!m_GasGap) //if we don't have the gas gap we have a problem
   {
     G4cerr << "Error : no gas gap in the RPC" << G4endl;
     std::exit(-1);
@@ -134,12 +131,10 @@ void SDHCALRPC::build()
   sensitiveDetector->setSizes(m_SizeX,m_SizeY,m_SizeZ);
   sensitiveDetector->setCellXYSize(m_CellSizeX,m_CellSizeY);
   G4SDManager::GetSDMpointer()->AddNewDetector(sensitiveDetector);
-  logicGap->SetSensitiveDetector(sensitiveDetector);
-  logicRPC = logicCassette;
+  m_GasGap->SetSensitiveDetector(sensitiveDetector);
 }
 
 G4VPhysicalVolume* SDHCALRPC::createPhysicalVolume(G4RotationMatrix* rot , G4ThreeVector trans , G4LogicalVolume* motherLogic)
 {
-  physicRPC = new G4PVPlacement(rot , trans , logicRPC , m_Name , motherLogic , false , 0 , true) ;
-  return physicRPC ;
+  return new G4PVPlacement(rot , trans , m_LogicRPC , m_Name , motherLogic , false , 0 , true);
 }

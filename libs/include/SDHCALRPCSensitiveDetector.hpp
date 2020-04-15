@@ -2,10 +2,7 @@
 
 #include "G4VSensitiveDetector.hh"
 #include "G4HCofThisEvent.hh"
-#include "G4Event.hh"
 #include "G4Step.hh"
-
-#include <set>
 
 #include "SDHCALHit.hpp"
 

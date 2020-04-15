@@ -1,18 +1,9 @@
 #include "SDHCALRPCSensitiveDetector.hpp"
 
-#include <G4VProcess.hh>
-#include <G4Track.hh>
-#include <G4Step.hh>
-#include <G4SDManager.hh>
-#include <G4ios.hh>
-
-#include <sstream>
-
 SDHCALRPCSensitiveDetector::SDHCALRPCSensitiveDetector(G4String name,const G4int& id):G4VSensitiveDetector(name),m_ID(id)
 {
-  std::stringstream colName;
-  colName<<"HitsRPC"<<m_ID;
-  collectionName.insert(colName.str());
+  std::string colName="HitsRPC"+std::to_string(m_ID);
+  collectionName.insert(colName);
 }
 
 void SDHCALRPCSensitiveDetector::Initialize(G4HCofThisEvent* HCE)
