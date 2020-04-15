@@ -3,6 +3,7 @@
 #include "G4UserEventAction.hh"
 
 #include <ctime>
+#include <chrono>
 
 class SDHCALRunAction;
 class SDHCALSteppingAction;
@@ -29,7 +30,7 @@ public :
   virtual void EndOfEventAction(const G4Event* event) ;
 
 private :
-  clock_t beginClock{};
+  std::chrono::time_point<std::chrono::high_resolution_clock> m_Start;
   double averageTime{0.};
   unsigned int nEventsProcessed{0};
   SDHCALRunAction* m_RunAction{nullptr};
