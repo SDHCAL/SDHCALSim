@@ -4,6 +4,7 @@
 #include "CLHEP/Units/SystemOfUnits.h"
 
 #include "json.hpp"
+#include "SDHCALRPC.hpp"
 
 enum RPCType
 {
@@ -34,5 +35,6 @@ private:
   G4double m_CaloSizeX{m_NbrPadX*m_PadSizeX};
   G4double m_CaloSizeY{m_NbrPadY*m_PadSizeY};
   G4double m_CaloSizeZ{0.0};
+  std::vector<SDHCALRPC> rpcVec;
 };
 
