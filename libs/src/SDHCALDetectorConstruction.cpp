@@ -11,6 +11,11 @@
 #include "SDHCALMaterials.hpp"
 #include "SDHCALRPC.hpp"
 
+void SDHCALDetectorConstruction::ConstructSDandField()
+{
+  
+}
+
 SDHCALDetectorConstruction::SDHCALDetectorConstruction(const nlohmann::json& json):m_Json(json)
 {
   if(m_Json.count("detectorConfig"))
@@ -85,7 +90,6 @@ G4VPhysicalVolume* SDHCALDetectorConstruction::Construct()
     new G4PVPlacement(nullptr,G4ThreeVector(0,0,currentPos),logicAbsorberStructure,"AbsorberStructure",logicCalorimeter,false,0,true);
 
     currentPos += absorberStructureSizeZ/2 + airGapSizeZ + RPCSizeZ/2;
-    std::stringstream name ; name << "Cassette" << i;
     rpcVec.at(i).createPhysicalVolume(nullptr,G4ThreeVector(0,0,currentPos),logicCalorimeter);
     currentPos += RPCSizeZ/2 + airGapSizeZ;
   }

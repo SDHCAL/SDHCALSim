@@ -17,6 +17,7 @@ public :
   SDHCALDetectorConstruction(const nlohmann::json& json);
   ~SDHCALDetectorConstruction() = default;
   G4VPhysicalVolume* Construct();
+  virtual void 	ConstructSDandField();
   G4double getCaloSizeX(){return m_CaloSizeX;}
   G4double getCaloSizeY(){return m_CaloSizeY;}
   G4double getCaloSizeZ(){return m_CaloSizeZ;}

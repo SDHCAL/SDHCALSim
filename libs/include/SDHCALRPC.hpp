@@ -41,15 +41,14 @@ public:
   void buildOldStandardRPC();
   void buildWithScintillatorRPC();
 
+  G4LogicalVolume* getGasGap(){return m_GasGap;}
+  
   SDHCALRPC(G4int _id);
   virtual ~SDHCALRPC()=default;
+  
+  inline G4double getSizeZ() const {return m_SizeZ;}
 
-		G4LogicalVolume* getLogicRPC() { return logicRPC ; }
-		G4VPhysicalVolume* getPhysicRPC() { return physicRPC ; }
-		inline G4double getSizeZ() const {return m_SizeZ;}
-		//inline G4int getID() const { return id ; }
-
-		G4VPhysicalVolume* createPhysicalVolume(G4RotationMatrix* rot , G4ThreeVector trans , G4LogicalVolume* motherLogic) ;
+  G4VPhysicalVolume* createPhysicalVolume(G4RotationMatrix* rot , G4ThreeVector trans , G4LogicalVolume* motherLogic) ;
     
 private:
   G4int m_ID{0};
@@ -61,12 +60,9 @@ private:
   G4double m_SizeX{0.};
   G4double m_SizeY{0.};
   G4double m_SizeZ{0.};
-
-
-		G4LogicalVolume* logicRPC {} ;
-		G4VPhysicalVolume* physicRPC {} ;
+  G4LogicalVolume* m_GasGap{nullptr};
+  G4LogicalVolume* m_LogicRPC{nullptr};
 		SDHCALRPCSensitiveDetector* sensitiveDetector {} ;
 
-		G4VPhysicalVolume* physiGasGap {} ;
 
 };
