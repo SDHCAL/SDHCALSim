@@ -7,13 +7,22 @@
 #include "G4PVPlacement.hh"
 #include "G4Region.hh"
 #include "G4RegionStore.hh"
+#include "G4SDManager.hh"
 
 #include "SDHCALMaterials.hpp"
-#include "SDHCALRPC.hpp"
+#include "SDHCALRPCSensitiveDetector.hpp"
 
 void SDHCALDetectorConstruction::ConstructSDandField()
 {
-  
+  for( G4int i = 0 ; i < m_NbrLayers ; ++i )
+  {
+     std::string sensName="RPC"+std::to_string(i);
+     SDHCALRPCSensitiveDetector* sensitiveDetector = new SDHCALRPCSensitiveDetector(sensName,i);
+     sensitiveDetector->setSizes(m_CaloSizeX,m_CaloSizeY,m_CaloSizeZ);
+     sensitiveDetector->setCellXYSize(m_PadSizeX,m_PadSizeY);
+     G4SDManager::GetSDMpointer()->AddNewDetector(sensitiveDetector);
+     rpcVec[i].getGasGap()->SetSensitiveDetector(sensitiveDetector);
+  }
 }
 
 SDHCALDetectorConstruction::SDHCALDetectorConstruction(const nlohmann::json& json):m_Json(json)
@@ -55,7 +64,6 @@ G4VPhysicalVolume* SDHCALDetectorConstruction::Construct()
   G4LogicalVolume* logicWorld = new G4LogicalVolume(solidWorld , defaultMaterial , "World");
   G4VPhysicalVolume* physiWorld=new G4PVPlacement(nullptr,G4ThreeVector(),logicWorld,"World",nullptr,false,0,true);
 
-  std::vector<SDHCALRPC> rpcVec ;
   for ( G4int i = 0 ; i < m_NbrLayers ; ++i )
   {
     rpcVec.push_back(SDHCALRPC(i));

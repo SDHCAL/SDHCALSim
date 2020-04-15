@@ -100,12 +100,12 @@ void SDHCALRPC::build()
 
     //create logic layer volume (indefined placement)
     auto solid = new G4Box(layer.m_Name , m_SizeX/2 , m_SizeY/2 , layer.m_Width*mm/2);
-    auto logic = new G4LogicalVolume(solid , material , layer.m_Name);
+    auto logic = new G4LogicalVolume(solid , material ,layer.m_Name+std::to_string(m_ID));
 
     zPos += layer.m_Width*mm/2; //we are now at center of the current layer (where it has to be placed)
 
     //place the layer at zPos
-    G4VPhysicalVolume* volume = new G4PVPlacement(nullptr , G4ThreeVector(0,0,zPos) , logic , layer.m_Name , m_LogicRPC,false,0,true);	//m_LogicRPC is the mother volume
+    G4VPhysicalVolume* volume = new G4PVPlacement(nullptr , G4ThreeVector(0,0,zPos) , logic , layer.m_Name+std::to_string(m_ID) , m_LogicRPC,false,0,true);	//m_LogicRPC is the mother volume
 
     zPos += layer.m_Width*mm/2; //we are now at the back of the current layer
 
@@ -126,12 +126,12 @@ void SDHCALRPC::build()
     G4cerr << "Error : no gas gap in the RPC" << G4endl;
     std::exit(-1);
   }
-  std::string sensName="RPC"+std::to_string(m_ID);
+ /* std::string sensName="RPC"+std::to_string(m_ID);
   sensitiveDetector = new SDHCALRPCSensitiveDetector(sensName,m_ID);
   sensitiveDetector->setSizes(m_SizeX,m_SizeY,m_SizeZ);
   sensitiveDetector->setCellXYSize(m_CellSizeX,m_CellSizeY);
   G4SDManager::GetSDMpointer()->AddNewDetector(sensitiveDetector);
-  m_GasGap->SetSensitiveDetector(sensitiveDetector);
+  m_GasGap->SetSensitiveDetector(sensitiveDetector);*/
 }
 
 G4VPhysicalVolume* SDHCALRPC::createPhysicalVolume(G4RotationMatrix* rot , G4ThreeVector trans , G4LogicalVolume* motherLogic)
