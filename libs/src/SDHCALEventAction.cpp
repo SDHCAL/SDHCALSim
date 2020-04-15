@@ -15,7 +15,7 @@ SDHCALEventAction::SDHCALEventAction(SDHCALRunAction* runAction,SDHCALSteppingAc
 
 void SDHCALEventAction::BeginOfEventAction(const G4Event* event)
 {
-  beginClock = clock() ;
+  m_Start = std::chrono::high_resolution_clock::now();
   m_SteppingAction->reset();
   m_TrackingAction->reset();
   m_StackingAction->reset();
@@ -101,7 +101,8 @@ void SDHCALEventAction::EndOfEventAction(const G4Event* event)
   }
 
   //processing time
-  double timeOfThisEvent = 1.0*( clock() - beginClock )/CLOCKS_PER_SEC ;
+  int elapsed= std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now()-m_Start).count();
+  double timeOfThisEvent =  elapsed/10e6;
   G4cout << "computing time : " << timeOfThisEvent << G4endl ;
 
   averageTime = (averageTime*nEventsProcessed + timeOfThisEvent)/(nEventsProcessed+1) ;
@@ -120,7 +121,7 @@ void SDHCALEventAction::EndOfEventAction(const G4Event* event)
   rootWriter->setNPi0( nPi0 ) ;
   rootWriter->setLeakedEnergy( leakedEnergy ) ;
   rootWriter->setEmFraction( emFraction ) ;
-  rootWriter->setComputingTime( timeOfThisEvent ) ;
+  rootWriter->setComputingTime( timeOfThisEvent) ;
 
   std::vector<double> stepCosAngle ;
   std::vector<double> stepLength ;
