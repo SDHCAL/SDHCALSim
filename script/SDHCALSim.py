@@ -32,11 +32,18 @@ class Particle :
 class Params :
   def __init__(self) :
     self.MultiThread = True
+    self.Types = os.environ["SIMCONFIG"]+"/Types.json"
+    self.NumberOfLayers = 48
+    self.NumberCellX = 96
+    self.NumberCellY = 96
+    self.CellSizeX = 10.408
+    self.CellSizeY = 10.408
     self.physicsList = "FTFP_BERT"
     self.nEvent = 100
     self.seed = 0
     self.particleList = []
-    self.rpcType = "normal"
+    self.RPCType = "Standard"
+    self.AbsorberType = "Standard"
     self.oldConfig = False
     self.outputFileName = "output"
     self.killNeutrons = False
@@ -84,7 +91,14 @@ def launch(a) :
     "MultiThread" : ''' + MultiThreadBool + ''',
     "detectorConfig" :
     {
-      "rpcType" : "'''+ a.rpcType +'''",
+      "Types" : "'''+ a.Types +'''",
+      "NumberOfLayers" : '''+ str(a.NumberOfLayers) +''',
+      "NumberCellX" : '''+ str(a.NumberCellX) +''',
+      "NumberCellY" : '''+ str(a.NumberCellY) +''',
+      "CellSizeX" : '''+ str(a.CellSizeX) +''',
+      "CellSizeY" : '''+ str(a.CellSizeY) +''',
+      "RPCType" : "'''+ a.RPCType +'''",
+      "AbsorberType" : "'''+ a.AbsorberType +'''",
       "oldConfig" : ''' + oldConfigBool + '''
     },
 

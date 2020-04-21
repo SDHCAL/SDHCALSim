@@ -10,7 +10,7 @@ import math
 if __name__ == '__main__' :
   executable='SDHCALSim'
   os.environ["SIMEXE"] = os.path.join(os.path.dirname(__file__),os.pardir,'bin',executable)
-
+  os.environ["SIMCONFIG"] = os.path.join(os.path.dirname(__file__),os.pardir,'script')
   particle = 'e-'
   energy = 10
   params = sim.Params()

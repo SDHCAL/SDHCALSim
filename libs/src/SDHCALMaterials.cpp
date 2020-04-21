@@ -6,6 +6,11 @@
 void buildSDHCALMaterials()
 {
   G4NistManager* man = G4NistManager::Instance();
+  
+  man->FindOrBuildMaterial("G4_AIR");
+  man->FindOrBuildMaterial("G4_Galactic");
+  man->FindOrBuildMaterial("G4_Al");
+  
   G4Material* Fer = man->FindOrBuildMaterial("G4_Fe") ;
   G4Material* Cr = man->FindOrBuildMaterial("G4_Cr") ;
   G4Material* Ni = man->FindOrBuildMaterial("G4_Ni") ;
