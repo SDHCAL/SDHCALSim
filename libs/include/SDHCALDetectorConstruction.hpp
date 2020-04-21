@@ -7,12 +7,6 @@
 
 #include "PatternTypes.hpp"
 
-enum RPCType
-{
-	kNormalRPC,
-	kWithScintillatorRPC
-} ;
-
 class SDHCALDetectorConstruction : public G4VUserDetectorConstruction
 {
 public :
@@ -29,7 +23,6 @@ private:
   G4String m_TypesAbsorber{""};
   std::vector<G4LogicalVolume*> m_GasGap;
   std::vector<G4LogicalVolume*> m_LogicRPC;
-  RPCType rpcType = kNormalRPC ;
   G4bool oldConfig = false ;
   nlohmann::json m_Json{};
   G4int m_NbrLayers{0};
