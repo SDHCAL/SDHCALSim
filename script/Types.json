@@ -1,0 +1,88 @@
+{
+  "RPCTypes":
+  [
+    {
+      "Name" : "Standard",
+      "Layers" :
+      [
+        {"Name":"FrontCassetteAbsorber" ,"Width": 2.500 ,"Material":"SDHCAL_Steel316L" },
+        {"Name":"Mask"                  ,"Width": 1.600 ,"Material":"SDHCAL_epoxy"     },
+        {"Name":"PCB"                   ,"Width": 1.200 ,"Material":"SDHCAL_g10"       },
+        {"Name":"MylarAnode"            ,"Width": 0.050 ,"Material":"G4_MYLAR"         },
+        {"Name":"GraphiteAnode"         ,"Width": 0.050 ,"Material":"G4_GRAPHITE"      },
+        {"Name":"ThinGlass"             ,"Width": 0.700 ,"Material":"G4_Pyrex_Glass"   },
+        {"Name":"GasGap"                ,"Width": 1.200 ,"Material":"SDHCAL_RPCGaz"    },
+        {"Name":"ThickGlass"            ,"Width": 1.100 ,"Material":"G4_Pyrex_Glass"   },
+        {"Name":"GraphiteCathode"       ,"Width": 0.050 ,"Material":"G4_GRAPHITE"      },
+        {"Name":"MylarCathode"          ,"Width": 0.180 ,"Material":"G4_MYLAR"         },
+        {"Name":"BackCassetteAbsorber"  ,"Width": 2.500 ,"Material":"SDHCAL_Steel316L" }
+      ]
+    }
+    ,
+    {
+      "Name" : "OldStandard",
+      "Layers" :
+      [
+        {"Name":"FrontCassetteAbsorber" ,"Width": 2.500 ,"Material":"SDHCAL_Steel316L_Old" },
+        {"Name":"Mask"                  ,"Width": 1.600 ,"Material":"G4_Galactic"          },
+        {"Name":"PCB"                   ,"Width": 1.200 ,"Material":"G4_Galactic"          },
+        {"Name":"MylarAnode"            ,"Width": 0.050 ,"Material":"G4_MYLAR"             },
+        {"Name":"GraphiteAnode"         ,"Width": 0.050 ,"Material":"G4_GRAPHITE"          },
+        {"Name":"ThinGlass"             ,"Width": 0.700 ,"Material":"G4_Pyrex_Glass"       },
+        {"Name":"GasGap"                ,"Width": 1.200 ,"Material":"SDHCAL_RPCGaz"        },
+        {"Name":"ThickGlass"            ,"Width": 1.100 ,"Material":"G4_Pyrex_Glass"       },
+        {"Name":"GraphiteCathode"       ,"Width": 0.050 ,"Material":"G4_GRAPHITE"          },
+        {"Name":"MylarCathode"          ,"Width": 0.180 ,"Material":"G4_MYLAR"             },
+        {"Name":"BackCassetteAbsorber"  ,"Width": 2.500 ,"Material":"SDHCAL_Steel316L_Old" }
+      ]
+    }
+    ,
+    {
+      "Name" : "ScintillatorRPC",
+      "Layers" :
+      [
+        {"Name":"FrontCassetteAbsorber" ,"Width": 2.500 ,"Material":"SDHCAL_Steel316L" },
+        {"Name":"MylarAnode"            ,"Width": 0.015 ,"Material":"G4_MYLAR"         },
+        {"Name":"GraphiteAnode"         ,"Width": 0.050 ,"Material":"G4_GRAPHITE"      },
+        {"Name":"ThinGlass"             ,"Width": 0.700 ,"Material":"G4_Pyrex_Glass"   },
+        {"Name":"GasGap"                ,"Width": 1.200 ,"Material":"SDHCAL_RPCGaz"    },
+        {"Name":"ThickGlass"            ,"Width": 1.100 ,"Material":"G4_Pyrex_Glass"   },
+        {"Name":"GraphiteCathode"       ,"Width": 0.050 ,"Material":"G4_GRAPHITE"      },
+        {"Name":"MylarCathode"          ,"Width": 0.015 ,"Material":"G4_MYLAR"         },
+        {"Name":"Scintillator"          ,"Width": 3.000 ,"Material":"G4_POLYSTYRENE"   },
+        {"Name":"BackCassetteAbsorber"  ,"Width": 2.500 ,"Material":"SDHCAL_Steel316L" }
+      ]
+    }
+  ],
+  
+  "AbsorberTypes":
+  [
+    {
+      "Name" : "Standard",
+      "Layers" :
+      [
+        {"Name":"AirGapBefore" ,"Width": 1.000 ,"Material":"G4_AIR" },
+        {"Name":"Absorber" ,"Width": 15.000 ,"Material":"SDHCAL_Steel304L" },
+        {"Name":"AirGapAfter" ,"Width": 1.000 ,"Material":"G4_AIR" }
+      ]
+    }
+    ,
+    {
+      "Name" : "OldStandard",
+      "Layers" :
+      [
+        {"Name":"Absorber" ,"Width": 15.000 ,"Material":"SDHCAL_Steel304L_Old" }
+      ]
+    }
+    ,
+    {
+      "Name" : "Aluminium",
+      "Layers" :
+      [
+        {"Name":"AirGapBefore" ,"Width": 1.000 ,"Material":"G4_AIR" },
+        {"Name":"Absorber" ,"Width": 15.000 ,"Material":"G4_AL" },
+        {"Name":"AirGapAfter" ,"Width": 1.000 ,"Material":"G4_AIR" }
+      ]
+    }
+  ]
+}
