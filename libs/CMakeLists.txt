@@ -1,7 +1,6 @@
 set(INCLUDES
     include/SDHCALActionInitialization.hpp
     include/SDHCALPrimaryGeneratorAction.hpp
-    include/SDHCALRPC.hpp
     include/SDHCALSteppingAction.hpp
     include/SDHCALRootWriter.hpp
     include/SDHCALHit.hpp
@@ -17,12 +16,13 @@ set(INCLUDES
     include/SDHCALRun.hpp
     include/SDHCALMaterials.hpp
     include/SDHCALCoordinates.hpp
+    include/Pattern.hpp
+    include/PatternTypes.hpp
     )
     
 set(SRC
     src/SDHCALActionInitialization.cpp
     src/SDHCALPrimaryGeneratorAction.cpp 
-    src/SDHCALRPC.cpp
     src/SDHCALSteppingAction.cpp
     src/SDHCALRootWriter.cpp
     src/SDHCALHit.cpp
@@ -38,6 +38,8 @@ set(SRC
     src/SDHCALMaterials.cpp
     src/MyRandom.cpp
     src/SDHCALCoordinates.cpp
+    src/Pattern.cpp
+    src/PatternTypes.cpp
     )    
 
 add_library(MyLib STATIC ${SRC})
