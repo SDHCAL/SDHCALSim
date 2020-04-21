@@ -12,7 +12,6 @@
 #include <vector>
 #include <set>
 class G4LogicalVolume ;
-class SDHCALRPCSensitiveDetector ;
 
 
 struct Layer
@@ -62,7 +61,6 @@ private:
   G4double m_SizeZ{0.};
   G4LogicalVolume* m_GasGap{nullptr};
   G4LogicalVolume* m_LogicRPC{nullptr};
-		SDHCALRPCSensitiveDetector* sensitiveDetector {} ;
 
 
 };
