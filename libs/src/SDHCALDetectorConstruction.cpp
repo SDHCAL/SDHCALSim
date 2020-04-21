@@ -31,6 +31,15 @@ SDHCALDetectorConstruction::SDHCALDetectorConstruction(const nlohmann::json& jso
   m_RPCTypes.setJsonFile(m_Json);
   m_RPCTypes.buildTypes();
   m_AbsorberTypes.buildTypes();
+  for(PatternTypesIterator it=m_RPCTypes.begin();it!=m_RPCTypes.end();++it)
+  {
+    if(!it->second.hasLayer("GasGap"))
+    {
+      G4cerr<<"RPCType "<<it->second.getName()<<" doesn't have a GasGap layer ! !"<<G4endl;
+      std::exit(-1);
+    }
+  }
+  
   if(m_Json.count("detectorConfig"))
   {
     auto detectorConfig = m_Json.at("detectorConfig");
@@ -73,11 +82,9 @@ SDHCALDetectorConstruction::SDHCALDetectorConstruction(const nlohmann::json& jso
     if(detectorConfig.count("oldConfig"))oldConfig = detectorConfig.at("oldConfig").get<G4bool>();
   }
   m_GasGap.reserve(m_NbrLayers);
-  m_LogicRPC.reserve(m_NbrLayers);
   for(G4int i=0;i!=m_NbrLayers;++i)
   {
     m_GasGap[i]=nullptr;
-    m_LogicRPC[i]=nullptr;
   }
 }
 
@@ -88,11 +95,6 @@ G4VPhysicalVolume* SDHCALDetectorConstruction::Construct()
   G4double worldSize{10*CLHEP::m};
   buildSDHCALMaterials();
   G4NistManager* man = G4NistManager::Instance();
-  
-  
-	G4Material* absorberMaterial = G4Material::GetMaterial("SDHCAL_Steel304L" , true);
-  //to reproduce old results
-  if(oldConfig) absorberMaterial = G4Material::GetMaterial("SDHCAL_Steel304L_Old" , true);
 
   // World
   G4Box* solidWorld = new G4Box("World", worldSize/2 , worldSize/2 , worldSize/2);
@@ -110,26 +112,45 @@ G4VPhysicalVolume* SDHCALDetectorConstruction::Construct()
   //Build Calorimeter Volume 
   G4Box* solidCalorimeter = new G4Box("Calorimeter",m_CaloSizeX/2,m_CaloSizeY/2,m_CaloSizeZ/2);
   G4LogicalVolume* logicCalorimeter = new G4LogicalVolume(solidCalorimeter,G4Material::GetMaterial("G4_AIR",true),"Calorimeter");
-  //Start at -m_CaloSizeZ/2 as the origin is at the center of the calorimeter box
-  
-  
-  
+  new G4PVPlacement(nullptr,G4ThreeVector(0,0,0.5*m_CaloSizeZ),logicCalorimeter,"Calorimeter",logicWorld,false,0,true);
 
+  //Start at -m_CaloSizeZ/2 as the origin is at the center of the calorimeter box
+  G4double currentPos = -m_CaloSizeZ/2;
   for( G4int i = 0 ; i < m_NbrLayers ; ++i)
   {
+    ////////////////////////////////////
+    ///////////////////////////////////
+    //Build Absorber
+    ////////////////////////////////////
+    ///////////////////////////////////
+    for(G4int j=0;j!=m_AbsorberTypes[m_TypesAbsorber].getNbrLayers();++j)
+    {
+      auto material = man->FindOrBuildMaterial(m_AbsorberTypes[m_TypesAbsorber].getLayerMaterial(j));
+      if(!material)
+      {
+        G4cerr << "Error : material " << m_AbsorberTypes[m_TypesAbsorber].getLayerMaterial(j) << " not known" << G4endl;
+        std::exit(-1);
+      }
+      //create logic layer volume (indefined placement)
+      auto solid = new G4Box(m_AbsorberTypes[m_TypesAbsorber].getLayerName(j) , m_CaloSizeX/2 , m_CaloSizeY/2 , m_AbsorberTypes[m_TypesAbsorber].getLayerWidth(j)/2);
+      auto logic = new G4LogicalVolume(solid , material ,m_AbsorberTypes[m_TypesAbsorber].getLayerName(j));
+      currentPos += m_AbsorberTypes[m_TypesAbsorber].getLayerWidth(j)/2; //we are now at center of the current layer (where it has to be placed)
+      new G4PVPlacement(nullptr , G4ThreeVector(0,0,currentPos) , logic , m_AbsorberTypes[m_TypesAbsorber].getLayerName(j),logicCalorimeter,false,0,true);
+      currentPos += m_AbsorberTypes[m_TypesAbsorber].getLayerWidth(j)/2; //we are now at the back of the current layer
+    }
+    ////////////////////////////////////
+    ///////////////////////////////////
+    //Build RPC
+    ////////////////////////////////////
+    ///////////////////////////////////
     G4String m_Name="Cassette"+std::to_string(i);
-    //compute total RPC cassette width
     G4double cassetteThickness = m_RPCTypes[m_TypesRPC].getWidth();
-    
-    //create logic RPC volume (indefined placement)
     G4Box* solidCassette = new G4Box(m_Name , m_CaloSizeX/2, m_CaloSizeY/2, cassetteThickness/2);
-    m_LogicRPC[i] = new G4LogicalVolume(solidCassette ,G4Material::GetMaterial("G4_Galactic",true),m_Name);
-    
-    //construct all the layers 
+    G4LogicalVolume* logicRPC = new G4LogicalVolume(solidCassette ,G4Material::GetMaterial("G4_Galactic",true),m_Name);
+    //construct all the layers of the cassette
     G4double zPos = -cassetteThickness/2; //we start at front of the cassette
     for(G4int j=0;j!=m_RPCTypes[m_TypesRPC].getNbrLayers();++j)
     {
-      std::cout<<m_RPCTypes[m_TypesRPC].getLayerName(j)<<std::endl;
       auto material = man->FindOrBuildMaterial(m_RPCTypes[m_TypesRPC].getLayerMaterial(j));
       if(!material)
       {
@@ -143,7 +164,7 @@ G4VPhysicalVolume* SDHCALDetectorConstruction::Construct()
       zPos += m_RPCTypes[m_TypesRPC].getLayerWidth(j)/2; //we are now at center of the current layer (where it has to be placed)
       
       //place the layer at zPos
-      new G4PVPlacement(nullptr , G4ThreeVector(0,0,zPos) , logic , m_RPCTypes[m_TypesRPC].getLayerName(j)+std::to_string(i) , m_LogicRPC[i],false,0,true);	//m_LogicRPC is the mother volume
+      new G4PVPlacement(nullptr , G4ThreeVector(0,0,zPos) , logic , m_RPCTypes[m_TypesRPC].getLayerName(j)+std::to_string(i) , logicRPC,false,0,true);	//m_LogicRPC is the mother volume
       
       zPos += m_RPCTypes[m_TypesRPC].getLayerWidth(j)/2; //we are now at the back of the current layer
       
@@ -158,42 +179,15 @@ G4VPhysicalVolume* SDHCALDetectorConstruction::Construct()
         m_GasGap[i] = logic;
       }
     }
-    
-    if(!m_GasGap[i]) //if we don't have the gas gap we have a problem
-    {
-      G4cerr << "Error : no gas gap in the RPC" << G4endl;
-      std::exit(-1);
-    }
+    ////////////////////////////////////
+    ///////////////////////////////////
+    //Place the RPC
+    ////////////////////////////////////
+    ///////////////////////////////////
+    currentPos +=  m_RPCTypes[m_TypesRPC].getWidth()/2;
+    new G4PVPlacement(nullptr,G4ThreeVector(0,0,currentPos), logicRPC ,"Cassette"+std::to_string(i) ,logicCalorimeter , false , 0 , true);
+    currentPos += m_RPCTypes[m_TypesRPC].getWidth()/2;
   }
-
-  //G4double RPCSizeZ = rpcVec.at(0).getSizeZ();
-  G4double absorberStructureSizeZ = 15*CLHEP::mm;
-
-  G4double airGapSizeZ = 1*CLHEP::mm;
- // to reproduce old results
-  if(oldConfig) airGapSizeZ = 0*CLHEP::mm;
-
-  
-  
-  
-  
-  
-
-  G4double currentPos = -m_CaloSizeZ/2;
-  for ( G4int i = 0 ; i < m_NbrLayers ; ++i )
-  {
-    currentPos += absorberStructureSizeZ/2;
-    G4Box* solidAbsorberStructure = new G4Box("AbsorberStructure",m_CaloSizeX/2,m_CaloSizeY/2,absorberStructureSizeZ/2);
-    G4LogicalVolume* logicAbsorberStructure = new G4LogicalVolume(solidAbsorberStructure,absorberMaterial,"AbsorberStructure");
-    new G4PVPlacement(nullptr,G4ThreeVector(0,0,currentPos),logicAbsorberStructure,"AbsorberStructure",logicCalorimeter,false,0,true);
-
-    currentPos += absorberStructureSizeZ/2 + airGapSizeZ + m_RPCTypes[m_TypesRPC].getWidth()/2;
-    new G4PVPlacement(nullptr,G4ThreeVector(0,0,currentPos), m_LogicRPC[i] ,"Cassette"+std::to_string(i) ,logicCalorimeter , false , 0 , true);
-    
-    currentPos += m_RPCTypes[m_TypesRPC].getWidth()/2 + airGapSizeZ;
-  }
-
-  new G4PVPlacement(nullptr,G4ThreeVector(0,0,0.5*m_CaloSizeZ),logicCalorimeter,"Calorimeter",logicWorld,false,0,true);
 
   //for stepping action
   G4Region* regionCalor = G4RegionStore::GetInstance()->FindOrCreateRegion("RegionCalorimeter");

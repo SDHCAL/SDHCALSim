@@ -72,7 +72,6 @@ void PatternTypes::buildTypes()
       {
         m_Pattern[it->at("Name")].addLayer(itt->at("Name").get<G4String>(),itt->at("Width").get<G4double>(),itt->at("Material").get<G4String>());
       }
-      m_Pattern[it->at("Name")].print();
     }
   }
   else
