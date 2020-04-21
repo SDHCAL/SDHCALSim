@@ -10,8 +10,6 @@
 #include "G4SDManager.hh"
 #include "G4LogicalVolumeStore.hh"
 
-#include "SDHCALRPCSensitiveDetector.hpp"
-
 
 void SDHCALRPC::buildStandardRPC()
 {
@@ -126,12 +124,6 @@ void SDHCALRPC::build()
     G4cerr << "Error : no gas gap in the RPC" << G4endl;
     std::exit(-1);
   }
- /* std::string sensName="RPC"+std::to_string(m_ID);
-  sensitiveDetector = new SDHCALRPCSensitiveDetector(sensName,m_ID);
-  sensitiveDetector->setSizes(m_SizeX,m_SizeY,m_SizeZ);
-  sensitiveDetector->setCellXYSize(m_CellSizeX,m_CellSizeY);
-  G4SDManager::GetSDMpointer()->AddNewDetector(sensitiveDetector);
-  m_GasGap->SetSensitiveDetector(sensitiveDetector);*/
 }
 
 G4VPhysicalVolume* SDHCALRPC::createPhysicalVolume(G4RotationMatrix* rot , G4ThreeVector trans , G4LogicalVolume* motherLogic)
