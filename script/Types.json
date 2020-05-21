@@ -80,7 +80,7 @@
       "Layers" :
       [
         {"Name":"AirGapBefore" ,"Width": 1.000 ,"Material":"G4_AIR" },
-        {"Name":"Absorber" ,"Width": 15.000 ,"Material":"G4_AL" },
+        {"Name":"Absorber" ,"Width": 15.000 ,"Material":"G4_Al" },
         {"Name":"AirGapAfter" ,"Width": 1.000 ,"Material":"G4_AIR" }
       ]
     }
