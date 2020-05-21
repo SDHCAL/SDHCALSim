@@ -39,7 +39,7 @@ class Params :
     self.CellSizeX = 10.408
     self.CellSizeY = 10.408
     self.physicsList = "FTFP_BERT"
-    self.nEvent = 100
+    self.nEvent = 5000
     self.seed = 0
     self.particleList = []
     self.RPCType = "Standard"
