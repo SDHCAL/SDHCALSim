@@ -103,7 +103,7 @@ jobs:
            COMMAND cmake
             -S geant4-$ENV{GEANT4_VERSION}
             -B build-geant4
-            -D CMAKE_BUILD_TYPE=$ENV{BUILD_TYPE} -DGEANT4_INSTALL_DATA=ON
+            -DCMAKE_BUILD_TYPE=$ENV{BUILD_TYPE} -DGEANT4_INSTALL_DATA=ON -DCMAKE_CXX_STANDARD=17
           RESULT_VARIABLE result
         )
         if (NOT result EQUAL 0)
@@ -146,7 +146,7 @@ jobs:
           COMMAND cmake
             -S root-$ENV{ROOT_VERSION}
             -B build-root
-            -D CMAKE_BUILD_TYPE=$ENV{BUILD_TYPE} -Dx11=OFF -Dbuiltin_gsl=OFF -Dpython=OFF
+            -DCMAKE_BUILD_TYPE=$ENV{BUILD_TYPE} -Dx11=OFF -Dbuiltin_gsl=OFF -Dpython=OFF -DCMAKE_CXX_STANDARD=17 -Dcxx17=ON
           RESULT_VARIABLE result
         )
         else()
@@ -154,7 +154,7 @@ jobs:
              COMMAND cmake
             -S root-$ENV{ROOT_VERSION}
             -B build-root
-            -D CMAKE_BUILD_TYPE=$ENV{BUILD_TYPE} -Dx11=OFF -Dbuiltin_gsl=OFF
+            -DCMAKE_BUILD_TYPE=$ENV{BUILD_TYPE} -Dx11=OFF -Dbuiltin_gsl=OFF -DCMAKE_CXX_STANDARD=17 -Dcxx17=ON
           RESULT_VARIABLE result)
         endif()
         if (NOT result EQUAL 0)
@@ -189,7 +189,7 @@ jobs:
           COMMAND cmake
             -S .
             -B build-sdhcalsim
-            -D CMAKE_BUILD_TYPE=$ENV{BUILD_TYPE}
+            -DCMAKE_BUILD_TYPE=$ENV{BUILD_TYPE} -DCMAKE_CXX_STANDARD=17
           RESULT_VARIABLE result
         )
         if (NOT result EQUAL 0)
@@ -200,7 +200,7 @@ jobs:
       shell: cmake -P {0}
       run: |
         execute_process(
-          COMMAND cmake --build build-sdhcalsim
+          COMMAND cmake --build build-sdhcalsim 
           RESULT_VARIABLE result
         )
         if (NOT result EQUAL 0)
