@@ -1,0 +1,206 @@
+name: CMake Build Matrix Linux
+
+on: [push, pull_request]
+
+env:
+  BUILD_TYPE: Release
+  GEANT4_VERSION: 10.6.1
+  ROOT_VERSION: 6-18-04
+  LCIO_VERSION: 02-13-03
+  
+jobs:
+  build:
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+        #- {
+        #    name: "Windows Latest MSVC", artifact: "Windows-MSVC.tar.xz",
+        #    os: windows-latest,
+        #    cc: "cl", cxx: "cl",
+        #    environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
+        #  }
+        #- {
+        #    name: "Windows Latest MinGW", artifact: "Windows-MinGW.tar.xz",
+        #    os: windows-latest,
+        #    cc: "gcc", cxx: "g++"
+        #  }
+        - {
+            name: "macOS Latest Clang", artifact: "macOS.tar.xz",
+            os: macos-latest,
+            cc: "clang", cxx: "clang++"
+          }
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Download LCIO
+      id: lcio
+      if: steps.cache-lcio.outputs.cache-hit != 'true'
+      shell: cmake -P {0}
+      run: |
+        set(lcio_url "https://github.com/iLCSoft/LCIO/archive/v$ENV{LCIO_VERSION}.tar.gz")
+        file(DOWNLOAD "${lcio_url}" ./lcio.tar.gz SHOW_PROGRESS)
+        execute_process(COMMAND ${CMAKE_COMMAND} -E tar xvf ./lcio.tar.gz)
+        
+    - name: Configure LCIO
+      if: steps.cache-lcio.outputs.cache-hit != 'true'
+      shell: cmake -P {0}
+      run: |
+        execute_process(
+          COMMAND cmake
+            -S LCIO-$ENV{LCIO_VERSION}
+            -B build-lcio
+            -D CMAKE_BUILD_TYPE=$ENV{BUILD_TYPE} -DCMAKE_INSTALL_PREFIX=/usr/local
+          RESULT_VARIABLE result
+        )
+        if (NOT result EQUAL 0)
+          message(FATAL_ERROR "Bad exit status")
+        endif()
+        
+    - name: Build LCIO
+      if: steps.cache-lcio.outputs.cache-hit != 'true'
+      shell: cmake -P {0}
+      run: |
+        execute_process(
+          COMMAND cmake --build build-lcio
+          RESULT_VARIABLE result
+        )
+        if (NOT result EQUAL 0)
+          message(FATAL_ERROR "Bad exit status")
+        endif()
+        
+    - name: Install LCIO
+      run: sudo cmake --install build-lcio     
+      
+    - uses: actions/cache@v1
+      id: cache-lcio
+      with:
+        path: build-lcio
+        key: ${{ runner.os }}-lcio
+
+    - name: Download Geant4
+      if: steps.cache-geant4.outputs.cache-hit != 'true'
+      id: geant4
+      shell: cmake -P {0}
+      run: |
+        set(geant4_url "https://github.com/Geant4/geant4/archive/v$ENV{GEANT4_VERSION}.tar.gz")
+        file(DOWNLOAD "${geant4_url}" ./geant4.tar.gz SHOW_PROGRESS)
+        execute_process(COMMAND ${CMAKE_COMMAND} -E tar xvf ./geant4.tar.gz)
+       
+    - name: Configure Geant4
+      if: steps.cache-geant4.outputs.cache-hit != 'true'
+      shell: cmake -P {0}
+      run: |
+        execute_process(
+           COMMAND cmake
+            -S geant4-$ENV{GEANT4_VERSION}
+            -B build-geant4
+            -DCMAKE_BUILD_TYPE=$ENV{BUILD_TYPE} -DGEANT4_INSTALL_DATA=ON -DCMAKE_CXX_STANDARD=17
+          RESULT_VARIABLE result
+        )
+        if (NOT result EQUAL 0)
+          message(FATAL_ERROR "Bad exit status")
+        endif()
+              
+    - name: Build Geant4
+      if: steps.cache-geant4.outputs.cache-hit != 'true'
+      shell: cmake -P {0}
+      run: |
+        execute_process( COMMAND cmake --build build-geant4 RESULT_VARIABLE result)
+        if (NOT result EQUAL 0)
+          message(FATAL_ERROR "Bad exit status")
+        endif()    
+       
+    - name: Install Geant4
+      run: sudo cmake --install build-geant4   
+       
+    - uses: actions/cache@v1
+      id: cache-geant4
+      with:
+        path: build-geant4
+        key: ${{ runner.os }}-geant4
+    
+    - name : Download ROOT
+      if: steps.cache-root.outputs.cache-hit != 'true'
+      id: ROOT
+      shell: cmake -P {0}
+      run: |
+        set(root_url "https://github.com/root-project/root/archive/v$ENV{ROOT_VERSION}.tar.gz")
+        file(DOWNLOAD "${root_url}" ./root.tar.gz SHOW_PROGRESS)
+        execute_process(COMMAND ${CMAKE_COMMAND} -E tar xvf ./root.tar.gz)
+    
+    - name: Configure ROOT
+      if: steps.cache-root.outputs.cache-hit != 'true'
+      shell: cmake -P {0}
+      run: |
+       if ("${{ runner.os }}" STREQUAL "macOS")
+        execute_process(
+          COMMAND cmake
+            -S root-$ENV{ROOT_VERSION}
+            -B build-root
+            -DCMAKE_BUILD_TYPE=$ENV{BUILD_TYPE} -Dx11=OFF -Dbuiltin_gsl=OFF -Dpython=OFF -DCMAKE_CXX_STANDARD=17 -Dcxx17=ON
+          RESULT_VARIABLE result
+        )
+        else()
+        execute_process(
+             COMMAND cmake
+            -S root-$ENV{ROOT_VERSION}
+            -B build-root
+            -DCMAKE_BUILD_TYPE=$ENV{BUILD_TYPE} -Dx11=OFF -Dbuiltin_gsl=OFF -DCMAKE_CXX_STANDARD=17 -Dcxx17=ON
+          RESULT_VARIABLE result)
+        endif()
+        if (NOT result EQUAL 0)
+          message(FATAL_ERROR "Bad exit status")
+        endif()
+    
+    - name: Build ROOT
+      if: steps.cache-root.outputs.cache-hit != 'true'
+      shell: cmake -P {0}
+      run: |
+        execute_process(
+          COMMAND cmake --build build-root
+          RESULT_VARIABLE result
+        )
+        if (NOT result EQUAL 0)
+          message(FATAL_ERROR "Bad exit status")
+        endif()
+        
+    - name: Install ROOT
+      run: sudo cmake --install build-root
+
+    - uses: actions/cache@v1
+      id: cache-root
+      with:
+        path: build-root
+        key: ${{ runner.os }}-root
+
+    - name: Configure SDHCALSim
+      shell: cmake -P {0}
+      run: |
+        execute_process(
+          COMMAND cmake
+            -S .
+            -B build-sdhcalsim
+            -DCMAKE_BUILD_TYPE=$ENV{BUILD_TYPE} -DCMAKE_CXX_STANDARD=17
+          RESULT_VARIABLE result
+        )
+        if (NOT result EQUAL 0)
+          message(FATAL_ERROR "Bad exit status")
+        endif()
+        
+    - name: Build SDHCALSim
+      shell: cmake -P {0}
+      run: |
+        execute_process(
+          COMMAND cmake --build build-sdhcalsim 
+          RESULT_VARIABLE result
+        )
+        if (NOT result EQUAL 0)
+          message(FATAL_ERROR "Bad exit status")
+        endif()
+        
+    - name: Install SDHCALSim
+      run: sudo cmake --install build-sdhcalsim
