@@ -1,4 +1,4 @@
-name: CMake Build Matrix
+name: CMake Build Matrix Linux
 
 on: [push, pull_request]
 
@@ -31,11 +31,6 @@ jobs:
             name: "Ubuntu Latest GCC", artifact: "Linux.tar.xz",
             os: ubuntu-latest,
             cc: "gcc", cxx: "g++"
-          }
-        - {
-            name: "macOS Latest Clang", artifact: "macOS.tar.xz",
-            os: macos-latest,
-            cc: "clang", cxx: "clang++"
           }
 
     steps:
