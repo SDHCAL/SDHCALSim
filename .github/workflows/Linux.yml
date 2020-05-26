@@ -1,4 +1,4 @@
-name: CMake Build Matrix Linux
+name: Linux
 
 on: [push, pull_request]
 
