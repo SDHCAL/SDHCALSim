@@ -1,3 +1,6 @@
+
+![Linux](https://github.com/RPClab/SDHCALSim/workflows/Linux/badge.svg?branch=master)   ![macOS](https://github.com/RPClab/SDHCALSim/workflows/macOS/badge.svg?branch=master)   ![Windows](https://github.com/RPClab/SDHCALSim/workflows/Windows/badge.svg?branch=master)
+
 # Installation
 
 ## Installation with ilcsoft
