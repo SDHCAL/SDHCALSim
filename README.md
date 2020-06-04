@@ -4,10 +4,11 @@
 # Installation
 
 ## Installation with ilcsoft
-source ${mypath}/init_ilcsoft.sh
-mkdir build ; cd build ;
-cmake .. ;
-make -j4 install ;
+
+- source ${mypath}/init_ilcsoft.sh;
+- mkdir build ; cd build ;
+- cmake .. ;
+- make -j4 install ;
 
 ## Installation without ilcsoft. you'll need LCIO, ROOT and GEANT4 software
 
