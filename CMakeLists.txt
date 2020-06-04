@@ -5,8 +5,12 @@ project(SDHCALSim VERSION "0.2.0" LANGUAGES CXX)
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/cmake")
 
 if(DEFINED ENV{LCIO})
+<<<<<<< HEAD
   set(CMAKE_PREFIX_PATH "$ENV{LCIO};${CMAKE_PREFIX_PATH}" CACHE PATH "CMAKE_PREFIX_PATH" FORCE)
   message(STATUS "LCIO environment found ${CMAKE_PREFIX_PATH}")
+=======
+  set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "$ENV{LCIO}")
+>>>>>>> fa2d844... Fix
 endif()
 
 # Ask CMake to output a compile_commands.json file for use with things like Vim YCM.
@@ -111,7 +115,13 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED OFF)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-file(DOWNLOAD "https://github.com/nlohmann/json/releases/download/v3.7.3/json.hpp" "${CMAKE_INSTALL_PREFIX}/include/json.hpp" SHOW_PROGRESS EXPECTED_HASH SHA256=3b5d2b8f8282b80557091514d8ab97e27f9574336c804ee666fda673a9b59926)
+
+file(DOWNLOAD "https://github.com/nlohmann/json/releases/download/v3.7.3/json.hpp" "${CMAKE_INSTALL_PREFIX}/include/json.hpp" SHOW_PROGRESS EXPECTED_HASH SHA256=3b5d2b8f8282b80557091514d8ab97e27f9574336c804ee666fda673a9b59926 STATUS state)
+list(GET state 0 errorNumber)
+if(NOT ${errorNumber} STREQUAL "0")
+  list(GET state 1 error)
+  message(WARNING "ERROR : ${error} \nCMake can't download the file \"https://github.com/nlohmann/json/releases/download/v3.7.3/json.hpp\" ! Do it by yourself and add it to \"${CMAKE_INSTALL_PREFIX}/include/json.hpp\" and rerun CMake !")
+endif()
 
 add_subdirectory(libs)
 
