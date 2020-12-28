@@ -6,13 +6,12 @@ set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/cmake")
 
 # Download CMakeCM
 include(GetCMakeMM)
-cmmm(VERSION "1.1"
-      GIT_REPOSITORY "flagarde/CMakeMM"
-      VERBOSITY VERBOSE
-      DESTINATION "CMakeMM"
-    )
+cmmm(VERSION "1.2"
+     GIT_REPOSITORY "flagarde/CMakeMM"
+     VERBOSITY VERBOSE
+     DESTINATION "CMakeMM")
     
-cmmm_modules_list(URL "https://raw.githubusercontent.com/flagarde/CMakeCMTests" BRANCH master DESTINATION "Modules")
+cmmm_modules_list(URL "https://cdn.jsdelivr.net/gh/flagarde/CMakeCMTests@master" BRANCH "/" DESTINATION "Modules")
 
 #PreventInSourceBuilds is in  common but try to avoid downloading many files
 include(PreventInSourceBuilds)
