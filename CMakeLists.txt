@@ -4,25 +4,27 @@ project(SDHCALSim VERSION "0.2.0" LANGUAGES CXX)
 
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/cmake")
 
-if(DEFINED ENV{LCIO})
-  set(CMAKE_PREFIX_PATH "$ENV{LCIO};${CMAKE_PREFIX_PATH}" CACHE PATH "CMAKE_PREFIX_PATH" FORCE)
-  message(STATUS "LCIO environment found ${CMAKE_PREFIX_PATH}")
-endif()
+# Download CMakeCM
+include(GetCMakeMM)
+cmmm(VERSION "1.1"
+      GIT_REPOSITORY "flagarde/CMakeMM"
+      VERBOSITY VERBOSE
+      DESTINATION "CMakeMM"
+    )
+    
+cmmm_modules_list(URL "https://raw.githubusercontent.com/flagarde/CMakeCMTests" BRANCH master DESTINATION "Modules")
+
+#PreventInSourceBuilds is in  common but try to avoid downloading many files
+include(PreventInSourceBuilds)
+prevent_in_source_builds()
+
+include(DefaultInstallPrefix)
+default_install_prefix("${CMAKE_SOURCE_DIR}/bin")
 
 # Ask CMake to output a compile_commands.json file for use with things like Vim YCM.
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 set(CMAKE_LINK_DEPENDS_NO_SHARED TRUE)
-
-# guard against in-source builds
-if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
-  message(FATAL_ERROR "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there.")
-endif()
-
-if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-  set(CMAKE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/bin" CACHE PATH "Default Install Prefix" FORCE)
-  message(STATUS "Install Prefix set to : ${CMAKE_INSTALL_PREFIX}")
-endif()
 
 set(LIBRARY_OUTPUT_DIR "${CMAKE_INSTALL_PREFIX}/lib")
 set(RUNTIME_OUTPUT_DIR "${CMAKE_INSTALL_PREFIX}")
@@ -78,19 +80,6 @@ else()
   set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 endif()
 
-# Optional IPO. Do not use IPO if it's not supported by compiler.
-include(CheckIPOSupported)
-check_ipo_supported(RESULT result OUTPUT output)
-if(result)
-  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
-else()
-  message(WARNING "IPO is not supported: ${output}")
-endif()
-
-option(ENABLE_ALL_WARNINGS "Enable all warnings" TRUE)
-
-include(CompilerOptions)
-
 #----------------------------------------------------------------------------
 # Find Geant4 package, activating all available UI and Vis drivers by default
 # You can set WITH_GEANT4_UIVIS to OFF via the command line or ccmake/cmake-gui
@@ -105,7 +94,8 @@ else()
 endif()
 
 find_package(ROOT REQUIRED)
-find_package(LCIO 2.11 REQUIRED)
+
+include(Lcio)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED OFF)
